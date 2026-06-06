@@ -11,11 +11,21 @@ model = SentenceTransformer('clip-ViT-B-32')
 
 #blank_emb = model.encode(Image.open("blank.png"))
 
+class TextApp(object):
+    exposed = True
+
+    @cherrypy.tools.json_out()
+    def GET(self, text):
+        text_emb = model.encode(text)
+        return {
+                "inner": [x.item() for x in text_emb]
+        }
+
 @cherrypy.expose
 class ScoringApp(object):
     exposed = True
     def __init__(self):
-        pass
+        self.text = TextApp()
 
     @cherrypy.tools.json_out()
     def GET(self, path):
