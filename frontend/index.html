@@ -17,7 +17,16 @@
             <div class="full"> Enter your name: </div> <input type="text" class="full" maxlength="24" name="FirstName" id="name" value="">
         </div>
     </div>
-    <div align="center" id="game">
+    <div id="lobby-selection" align="center" style="display: none;">
+        <h3 class="full">Select a Lobby</h3>
+        <ul id="lobby-list" style="list-style-type: none; padding: 0;"></ul>
+        <div class="flex" style="margin-top: 10px;">
+            <input type="text" id="new-lobby-name" placeholder="New Lobby Name" maxlength="24">
+            <button id="create-lobby" style="margin-left: 10px;">Create & Join</button>
+        </div>
+        <button id="refresh-lobbies" style="margin-top: 10px;">Refresh</button>
+    </div>
+    <div align="center" id="game" style="display: none;">
         <meter id="timer" min="0" max="120"></meter>
         <div id="gamecontainer">
             <div id="progress-container">

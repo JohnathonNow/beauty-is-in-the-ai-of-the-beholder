@@ -16,7 +16,7 @@ type PeerMap = HashMap<String, broadcast::Sender<String>>;
 
 const MAX_NAME_LENGTH: usize = 24;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Word {
     pub word: String,
     pub embedding: Vec<f32>,
@@ -81,7 +81,7 @@ impl State {
         return Ok(response.inner
                 .iter()
                 .zip(self.offset_embedding.iter())
-                .map(|(&x1, &x2)| (x1 - x2))
+                .map(|(&x1, &x2)| x1 - x2)
                 .zip(self.embedding.iter())
                 .map(|(x1, &x2)| (x1 - x2).powi(2))
                 .sum())
@@ -95,7 +95,7 @@ impl State {
         self.sendable.bad_score = self.blank_embedding
             .iter()
             .zip(self.offset_embedding.iter())
-            .map(|(&x1, &x2)| (x1 - x2))
+            .map(|(&x1, &x2)| x1 - x2)
             .zip(self.embedding.iter())
             .map(|(x1, &x2)| (x1 - x2).powi(2))
             .sum();
@@ -124,7 +124,7 @@ pub async fn handle(
     ws: WebSocket,
     game_state: GameServerState,
     gtx: broadcast::Sender<String>,
-    lobby_name: String,
+    _lobby_name: String,
     login_name_pre: String,
 ) {
     let login_name = truncate(&login_name_pre, MAX_NAME_LENGTH).to_string();
