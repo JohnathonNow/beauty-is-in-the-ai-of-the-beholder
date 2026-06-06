@@ -44,6 +44,37 @@ button:hover {
     background-color: #e2e6ea;
 }
 
+#drawing-workspace {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+}
+
+#gallery {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#controls {
+    flex: 0 0 200px;
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#tool-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 #login {
     background-color: white;
     padding: 20px;
@@ -89,16 +120,20 @@ input {
 
 #gamecontainer {
     display: flex;
-    flex-wrap: wrap;
-    height: 90%;
+    flex-wrap: nowrap;
+    height: calc(100vh - 80px);
+    align-items: stretch;
 }
 
 #progress-container {
-    flex: 65%;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    min-width: 0; /* Important for flex items to shrink below their content size */
 }
 
 #drawing-container {
-    flex: 90%;
+    flex: 1;
     background-color: white;
     padding: 15px;
     border-radius: 8px;
@@ -107,6 +142,7 @@ input {
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-width: 0;
 }
 
 .full {
@@ -118,7 +154,7 @@ input {
 }
 
 #answerscontainer {
-    flex: 30%;
+    flex: 0 0 250px;
     word-wrap: break-word;
     overflow-x: hidden;
     background-color: white;
@@ -126,6 +162,8 @@ input {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     margin: 10px;
+    display: flex;
+    flex-direction: column;
 }
 
 #dummy {
@@ -135,8 +173,8 @@ input {
 #answers {
     text-align: left;
     overflow-y: auto;
-    height: 50%;
-    max-height: 50%;
+    flex: 1;
+    max-height: none;
 }
 
 .image {
@@ -273,7 +311,7 @@ input {
 }
 
 #player-container {
-    flex: 10%;
+    flex: 0 0 150px;
     margin-top: 10px;
     margin-left: 10px;
     padding: 20px;
@@ -281,6 +319,7 @@ input {
     border-radius: 8px;
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
 }
 
 #endgame-container {
