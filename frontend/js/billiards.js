@@ -16,6 +16,7 @@ var gImgMap = new Map();
 var gMyGuessers = null;
 var gMyGuesses = null;
 var lastJudged = null;
+var gLobby = null;
 
 function reset() {
     gStrokes = new Map();
@@ -38,7 +39,7 @@ function reset() {
 function onload_billiards() {
     function connect() {
         reset();
-        socket = new WebSocket('ws://' + window.location.hostname + ':' + window.location.port + '/chat?name=' + encodeURIComponent(gName) + "&lobby=default");
+        socket = new WebSocket('ws://' + window.location.hostname + ':' + window.location.port + '/chat?name=' + encodeURIComponent(gName) + "&lobby=" + encodeURIComponent(gLobby));
         //socket = new WebSocket('ws://' + window.location.hostname + ':3030/chat');
         console.log(socket)
         // Event listener for when the WebSocket connection is established
@@ -407,13 +408,54 @@ function onload_billiards() {
     canvas.addEventListener("touchend", draw_event_handler);
     canvas.addEventListener("mouseleave", draw_event_handler);
     canvas.addEventListener("mouseup", draw_event_handler);
+    function fetch_lobbies() {
+        fetch('/lobbies')
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById("lobby-list");
+                list.innerHTML = "";
+                data.forEach(lobby => {
+                    const li = document.createElement("li");
+                    const btn = document.createElement("button");
+                    btn.textContent = lobby;
+                    btn.onclick = () => join_lobby(lobby);
+                    li.appendChild(btn);
+                    list.appendChild(li);
+                });
+            });
+    }
+
+    function join_lobby(lobby) {
+        if (!lobby) return;
+        gLobby = lobby;
+        document.getElementById("lobby-selection").style.display = "none";
+        document.getElementById("game").style.display = "block";
+        connect();
+    }
+
     document.getElementById("name").addEventListener("keydown", function (e) {
         if (e.key  == "Enter") {
             gName = e.target.value;
-            document.getElementById("game").style.display = "block";
             document.getElementById("login").style.display = "none";
-            connect();
+            document.getElementById("lobby-selection").style.display = "block";
+            fetch_lobbies();
             document.cookie = gName;
+        }
+    });
+
+    document.getElementById("refresh-lobbies").onclick = fetch_lobbies;
+    document.getElementById("create-lobby").onclick = function() {
+        const name = document.getElementById("new-lobby-name").value;
+        if (name.trim() !== "") {
+            join_lobby(name.trim());
+        }
+    };
+    document.getElementById("new-lobby-name").addEventListener("keydown", function (e) {
+        if (e.key  == "Enter") {
+            const name = e.target.value;
+            if (name.trim() !== "") {
+                join_lobby(name.trim());
+            }
         }
     });
     document.getElementById("guess").addEventListener("keydown", function search(e) {
