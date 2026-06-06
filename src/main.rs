@@ -10,6 +10,8 @@ use warp::Filter;
 use clap::Parser;
 use rand::thread_rng;
 use rand::seq::SliceRandom;
+use futures::{StreamExt, SinkExt};
+use warp::ws::Message;
 
 mod packets;
 mod game;
@@ -37,28 +39,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let lobby_manager: LobbyManager = Arc::new(Mutex::new(HashMap::new()));
 
-    // Create the default lobby
-    {
-        let mut inner_game_state = game::State::new(cliargs.timelimit, cliargs.maxpoints, cliargs.endontime);
-        inner_game_state.add_words(base_words.clone());
-        let game_state: game::GameServerState = Arc::new(Mutex::new(inner_game_state));
-        let (tx, mut _rx) = broadcast::channel::<String>(100);
-
-        let game_clone = game_state.clone();
-        task::spawn(async move {
-            while let Ok(msg) = _rx.recv().await {
-                for (_, sender) in game_clone.lock().await.peer_map.iter() {
-                    let _ = sender.send(msg.clone());
-                }
-            }
-        });
-
-        lobby_manager.lock().await.insert("default".to_string(), Lobby {
-            state: game_state,
-            tx,
-        });
-    }
-
     let lobby_manager_clone = lobby_manager.clone();
     let forever = task::spawn(async move {
         let mut interval = time::interval(Duration::from_millis(1000));
@@ -74,6 +54,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let lobby_manager_ws = lobby_manager.clone();
     let base_words_ws = base_words.clone();
+
+    let (global_tx, _) = broadcast::channel::<String>(100);
 
     let ws_route = warp::path("chat")
         .and(warp::query::<Query>())
@@ -115,6 +97,49 @@ async fn main() -> Result<(), Box<dyn Error>> {
             ws.on_upgrade(move |socket| game::handle(socket, state, tx, query.lobby, query.name))
         });
 
+    #[derive(Deserialize)]
+    struct GlobalChatQuery {
+        name: String,
+    }
+
+    let global_tx_filter = global_tx.clone();
+    let global_chat_route = warp::path("global_chat")
+        .and(warp::query::<GlobalChatQuery>())
+        .and(warp::ws())
+        .and(warp::any().map(move || global_tx_filter.clone()))
+        .then(|query: GlobalChatQuery, ws: warp::ws::Ws, tx: broadcast::Sender<String>| async move {
+            ws.on_upgrade(move |socket| async move {
+                let (mut ws_tx, mut ws_rx) = socket.split();
+                let mut rx = tx.subscribe();
+
+                // Forward messages from the broadcast channel to the websocket
+                let tx_task_sender = tx.clone();
+                let name_clone = query.name.clone();
+
+                tokio::spawn(async move {
+                    while let Ok(msg) = rx.recv().await {
+                        if let Err(_) = ws_tx.send(Message::text(msg)).await {
+                            break;
+                        }
+                    }
+                });
+
+                // Forward messages from the websocket to the broadcast channel
+                tokio::spawn(async move {
+                    while let Some(result) = ws_rx.next().await {
+                        if let Ok(msg) = result {
+                            if let Ok(text) = msg.to_str() {
+                                let formatted_msg = format!("{}: {}", name_clone, text);
+                                let _ = tx_task_sender.send(formatted_msg);
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                });
+            })
+        });
+
     let lobby_manager_api = lobby_manager.clone();
     let lobbies_api = warp::path("lobbies")
         .and(warp::get())
@@ -126,7 +151,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         });
 
     let static_files = warp::fs::dir("frontend");
-    let routes = ws_route.or(lobbies_api).or(static_files);
+    let routes = ws_route.or(global_chat_route).or(lobbies_api).or(static_files);
 
     let server = task::spawn(async move {warp::serve(routes).run(([0, 0, 0, 0], cliargs.port)).await;});
 

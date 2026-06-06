@@ -17,6 +17,7 @@ var gMyGuessers = null;
 var gMyGuesses = null;
 var lastJudged = null;
 var gLobby = null;
+var globalChatSocket = null;
 
 function reset() {
     gStrokes = new Map();
@@ -440,10 +441,36 @@ function onload_billiards() {
             document.getElementById("lobby-selection").style.display = "block";
             fetch_lobbies();
             document.cookie = gName;
+
+            // Connect to global chat
+            globalChatSocket = new WebSocket('ws://' + window.location.hostname + ':' + window.location.port + '/global_chat?name=' + encodeURIComponent(gName));
+            globalChatSocket.addEventListener('message', event => {
+                let chat = document.getElementById('global-chat-messages');
+                let line = document.createElement("div");
+                line.textContent = event.data;
+                chat.append(line);
+                while (chat.children.length > MAX_CHAT) {
+                    chat.removeChild(chat.children[0]);
+                }
+                chat.scrollTop = chat.scrollHeight;
+            });
+        }
+    });
+
+    document.getElementById("global-chat-input").addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && e.target.value.trim() !== "") {
+            if (globalChatSocket && globalChatSocket.readyState === WebSocket.OPEN) {
+                globalChatSocket.send(e.target.value);
+                e.target.value = "";
+            }
         }
     });
 
     document.getElementById("refresh-lobbies").onclick = fetch_lobbies;
+    document.getElementById("show-create-lobby-btn").onclick = function() {
+        document.getElementById("create-lobby-section").style.display = "flex";
+        document.getElementById("show-create-lobby-btn").style.display = "none";
+    };
     document.getElementById("create-lobby").onclick = function() {
         const name = document.getElementById("new-lobby-name").value;
         if (name.trim() !== "") {

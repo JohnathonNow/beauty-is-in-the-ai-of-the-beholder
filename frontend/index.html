@@ -20,11 +20,18 @@
     <div id="lobby-selection" align="center" style="display: none;">
         <h3 class="full">Select a Lobby</h3>
         <ul id="lobby-list" style="list-style-type: none; padding: 0;"></ul>
-        <div class="flex" style="margin-top: 10px;">
+        <button id="show-create-lobby-btn" style="margin-top: 10px;">Create Lobby</button>
+        <div id="create-lobby-section" class="flex" style="display: none; margin-top: 10px;">
             <input type="text" id="new-lobby-name" placeholder="New Lobby Name" maxlength="24">
             <button id="create-lobby" style="margin-left: 10px;">Create & Join</button>
         </div>
         <button id="refresh-lobbies" style="margin-top: 10px;">Refresh</button>
+
+        <div id="global-chat-container" style="margin-top: 20px; width: 80%; max-width: 600px; text-align: left; border: 1px solid #ccc; padding: 10px;">
+            <h3>Global Chat</h3>
+            <div id="global-chat-messages" style="height: 150px; overflow-y: scroll; border: 1px solid #eee; margin-bottom: 10px; padding: 5px;"></div>
+            <input type="text" id="global-chat-input" placeholder="Say something..." maxlength="256" style="width: 100%;">
+        </div>
     </div>
     <div align="center" id="game" style="display: none;">
         <meter id="timer" min="0" max="120"></meter>
