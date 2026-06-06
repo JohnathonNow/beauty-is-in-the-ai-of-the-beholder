@@ -32,20 +32,27 @@
                     <div id="score">
                         <br>
                     </div>
-                    <div id="gallery">
-                        <div id="drawing">
-                            <canvas class="image" id="canvas" style="display: block;"></canvas>
+                    <div id="drawing-workspace">
+                        <div id="gallery">
+                            <div id="drawing">
+                                <canvas class="image" id="canvas" style="display: block;"></canvas>
+                            </div>
                         </div>
-                    </div>
-                    <div id="controls"> <br>
-                        <p>Color: <div id="colorpicker"></div></p>
-                        <p>Stroke: <input type="range" id="size" value="5" min="1" max="50"></p>
-                        <button id="erase" title="Eraser">🧽</button>
-                        <button id="pencil" title="Pencil">✏️</button>
-                        <button id="flood" title="Flood Fill">🪣</button>
-                        <button id="undo" title="Undo">↩️</button>
-                        <button id="judge" title="Judge">👨‍⚖️</button>
-                        <br>
+                        <div id="controls">
+                            <div id="colorpicker-container">
+                                <p>Color:</p> <div id="colorpicker"></div>
+                            </div>
+                            <div id="stroke-container">
+                                <p>Stroke:</p> <input type="range" id="size" value="5" min="1" max="50">
+                            </div>
+                            <div id="tool-buttons">
+                                <button id="erase" title="Eraser">🧽</button>
+                                <button id="pencil" title="Pencil">✏️</button>
+                                <button id="flood" title="Flood Fill">🪣</button>
+                                <button id="undo" title="Undo">↩️</button>
+                                <button id="judge" title="Judge">👨‍⚖️</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

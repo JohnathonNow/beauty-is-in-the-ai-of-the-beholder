@@ -52,9 +52,31 @@ function clear_canvas() {
 }
 
 function see_element(element) {
-	let mw = window.innerHeight - document.getElementById("controls").offsetHeight*1.5 - element.getBoundingClientRect().top;
-	element.style.width = mw;
-	element.style.height = mw;
+	let container = document.getElementById("drawing-workspace");
+	if (!container) return;
+
+	let isRowLayout = window.getComputedStyle(container).flexDirection === 'row';
+	let mw;
+
+	if (isRowLayout && window.innerWidth >= 800) {
+		let containerWidth = container.clientWidth;
+		let controlsWidth = document.getElementById("controls").offsetWidth;
+		let maxWidth = containerWidth - controlsWidth - 60; // Extra padding
+		let maxHeight = window.innerHeight - container.getBoundingClientRect().top - 60;
+		mw = Math.min(maxWidth, maxHeight);
+	} else {
+		// Fallback for smaller screens where wrap happens or it isn't flex-row
+		let controlsHeight = document.getElementById("controls").offsetHeight;
+		mw = window.innerHeight - controlsHeight - container.getBoundingClientRect().top - 40;
+		if (mw > container.clientWidth - 40) {
+			mw = container.clientWidth - 40;
+		}
+	}
+
+	if (mw < 100) mw = 100;
+
+	element.style.width = mw + "px";
+	element.style.height = mw + "px";
 	element.setAttribute('width', mw);
 	element.setAttribute('height', mw);
 	redraw();
