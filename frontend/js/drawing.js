@@ -66,11 +66,8 @@ function see_element(element) {
 		mw = Math.min(maxWidth, maxHeight);
 	} else {
 		// Fallback for smaller screens where wrap happens or it isn't flex-row
-		let controlsHeight = document.getElementById("controls").offsetHeight;
-		mw = window.innerHeight - controlsHeight - container.getBoundingClientRect().top - 40;
-		if (mw > container.clientWidth - 40) {
-			mw = container.clientWidth - 40;
-		}
+		// Make the canvas as wide as possible, allowing scrolling if it gets too tall
+		mw = container.clientWidth - 40;
 	}
 
 	if (mw < 100) mw = 100;
