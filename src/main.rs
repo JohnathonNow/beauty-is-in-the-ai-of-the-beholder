@@ -23,6 +23,7 @@ use std::collections::HashMap;
 struct Query {
     lobby: String,
     name: String,
+    words: Option<String>,
 }
 
 struct Lobby {
@@ -72,7 +73,33 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     (lobby.state.clone(), lobby.tx.clone())
                 } else {
                     let mut inner_game_state = game::State::new(tl, mp, eot);
-                    inner_game_state.add_words(bw);
+
+                    let mut final_words = bw;
+                    if let Some(custom_words_str) = &query.words {
+                        if !custom_words_str.trim().is_empty() {
+                            let words_list: Vec<&str> = custom_words_str.split(',').map(|s| s.trim()).filter(|s| !s.is_empty()).collect();
+                            let mut fetched_words = Vec::new();
+                            let client = reqwest::Client::new();
+                            for w in words_list {
+                                let request_url = "http://localhost:9991/text";
+                                let query_text = format!("an electronic doodle depicting {}", w);
+                                if let Ok(response) = client.get(request_url).query(&[("text", &query_text)]).send().await {
+                                    if let Ok(vector) = response.json::<game::Vector>().await {
+                                        fetched_words.push(game::Word {
+                                            word: w.to_string(),
+                                            embedding: vector.inner,
+                                        });
+                                    }
+                                }
+                            }
+                            if !fetched_words.is_empty() {
+                                fetched_words.shuffle(&mut thread_rng());
+                                final_words = fetched_words;
+                            }
+                        }
+                    }
+                    inner_game_state.add_words(final_words);
+
                     let game_state: game::GameServerState = Arc::new(Mutex::new(inner_game_state));
                     let (tx, mut _rx) = broadcast::channel::<String>(100);
 
