@@ -22,9 +22,12 @@
         <h3 class="full">Select a Lobby</h3>
         <ul id="lobby-list" style="list-style-type: none; padding: 0;"></ul>
         <button id="show-create-lobby-btn" style="margin-top: 10px;">Create Lobby</button>
-        <div id="create-lobby-section" class="flex" style="display: none; margin-top: 10px;">
-            <input type="text" id="new-lobby-name" placeholder="New Lobby Name" maxlength="24">
-            <button id="create-lobby" style="margin-left: 10px;">Create & Join</button>
+        <div id="create-lobby-section" class="flex" style="display: none; margin-top: 10px; flex-direction: column; align-items: center;">
+            <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; margin-bottom: 5px;">
+                <input type="text" id="new-lobby-name" placeholder="New Lobby Name" maxlength="24">
+                <button id="create-lobby" style="margin-left: 10px;">Create & Join</button>
+            </div>
+            <textarea id="new-lobby-words" placeholder="Optional: Custom word list (comma-separated)" rows="3" style="width: 80%; max-width: 400px; margin-top: 5px;"></textarea>
         </div>
         <button id="refresh-lobbies" style="margin-top: 10px;">Refresh</button>
 

@@ -38,9 +38,13 @@ function reset() {
 }
 
 function onload_billiards() {
-    function connect() {
+    function connect(customWords) {
         reset();
-        socket = new WebSocket('ws://' + window.location.hostname + ':' + window.location.port + '/chat?name=' + encodeURIComponent(gName) + "&lobby=" + encodeURIComponent(gLobby));
+        let wsUrl = 'ws://' + window.location.hostname + ':' + window.location.port + '/chat?name=' + encodeURIComponent(gName) + "&lobby=" + encodeURIComponent(gLobby);
+        if (customWords && customWords.length > 0) {
+            wsUrl += "&words=" + encodeURIComponent(customWords);
+        }
+        socket = new WebSocket(wsUrl);
         //socket = new WebSocket('ws://' + window.location.hostname + ':3030/chat');
         console.log(socket)
         // Event listener for when the WebSocket connection is established
@@ -426,12 +430,12 @@ function onload_billiards() {
             });
     }
 
-    function join_lobby(lobby) {
+    function join_lobby(lobby, customWords) {
         if (!lobby) return;
         gLobby = lobby;
         document.getElementById("lobby-selection").style.display = "none";
         document.getElementById("game").style.display = "block";
-        connect();
+        connect(customWords);
     }
 
     document.getElementById("name").addEventListener("keydown", function (e) {
@@ -473,15 +477,17 @@ function onload_billiards() {
     };
     document.getElementById("create-lobby").onclick = function() {
         const name = document.getElementById("new-lobby-name").value;
+        const customWords = document.getElementById("new-lobby-words").value;
         if (name.trim() !== "") {
-            join_lobby(name.trim());
+            join_lobby(name.trim(), customWords.trim());
         }
     };
     document.getElementById("new-lobby-name").addEventListener("keydown", function (e) {
         if (e.key  == "Enter") {
             const name = e.target.value;
+            const customWords = document.getElementById("new-lobby-words").value;
             if (name.trim() !== "") {
-                join_lobby(name.trim());
+                join_lobby(name.trim(), customWords.trim());
             }
         }
     });
