@@ -502,7 +502,7 @@ function onload_billiards() {
         }
     });
 
-    document.onmouseup = function () { document.getElementById("guess").focus(); };
+    //document.onmouseup = function () { document.getElementById("guess").focus(); };
 
     document.getElementById("start").onclick = function search(e) {
         start();

@@ -161,8 +161,8 @@ function onload_drawing() {
 			px = (touches[0].pageX + b - rect.left) / context.canvas.offsetWidth * 1000;
 			py = (touches[0].pageY + b - rect.top) / context.canvas.offsetHeight * 1000;
 		} else {
-			px = (e.pageX + b - rect.left) / context.canvas.offsetWidth * 1000;
-			py = (e.pageY + b - rect.top) / context.canvas.offsetHeight * 1000;
+			px = (e.clientX - b - rect.left) / context.canvas.offsetWidth * 1000;
+			py = (e.clientY - b - rect.top) / context.canvas.offsetHeight * 1000;
 		}
 
 		startX = px;
@@ -292,8 +292,8 @@ function onload_drawing() {
 				px = (touches[0].pageX + b - rect.left) / context.canvas.offsetWidth * 1000;
 				py = (touches[0].pageY + b - rect.top) / context.canvas.offsetHeight * 1000;
 			} else {
-				px = (e.pageX + b - rect.left) / context.canvas.offsetWidth * 1000;
-				py = (e.pageY + b - rect.top) / context.canvas.offsetHeight * 1000;
+				px = (e.clientX - rect.left - b) / context.canvas.offsetWidth * 1000;
+				py = (e.clientY - rect.top - b) / context.canvas.offsetHeight * 1000;
 			}
 
 			if (tool === "shape") {

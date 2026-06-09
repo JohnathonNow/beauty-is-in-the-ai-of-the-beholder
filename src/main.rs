@@ -181,6 +181,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let routes = ws_route.or(global_chat_route).or(lobbies_api).or(static_files);
 
     let server = task::spawn(async move {warp::serve(routes).run(([0, 0, 0, 0], cliargs.port)).await;});
+    println!("Webserver listening on http://127.0.0.0:{}", cliargs.port);
 
     (forever.await?, server.await?);
 
