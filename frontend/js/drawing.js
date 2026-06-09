@@ -118,6 +118,11 @@ function onload_drawing() {
 	context = canvas.getContext("2d");
 	DRAW_MODE = context.globalCompositeOperation;
 	mode = DRAW_MODE;
+
+	var selection_start = null;
+	var selection_end = null;
+	var is_selecting = false;
+
 	var touch = function(e){
 		e.preventDefault();
 		e.stopPropagation();
@@ -125,24 +130,28 @@ function onload_drawing() {
 		paint = true;
 		border = parseInt(border);
 		var touches = e.touches;
+
+		var px, py;
 		if (touches) {
 			var border = parseInt(getComputedStyle(this).getPropertyValue('border-left-width'));
 			var rect = e.target.getBoundingClientRect();
-			addClick((touches[0].pageX + border + rect.left) / context.canvas.offsetWidth * 1000,
-				(touches[0].pageY + border + rect.top) / context.canvas.offsetHeight * 1000,
-				color,
-				size,
-				mode,
-				tool);
+			px = (touches[0].pageX + border + rect.left) / context.canvas.offsetWidth * 1000;
+			py = (touches[0].pageY + border + rect.top) / context.canvas.offsetHeight * 1000;
 		} else {
 			var border = parseInt(getComputedStyle(e.target).getPropertyValue('border-left-width'));
-			addClick((e.offsetX + border) / context.canvas.offsetWidth * 1000,
-				(e.offsetY + border) / context.canvas.offsetHeight * 1000,
-				color,
-				size,
-				mode, 
-				tool);
+			px = (e.offsetX + border) / context.canvas.offsetWidth * 1000;
+			py = (e.offsetY + border) / context.canvas.offsetHeight * 1000;
 		}
+
+		if (tool === "copy") {
+			is_selecting = true;
+			selection_start = { x: px, y: py };
+			selection_end = { x: px, y: py };
+			redraw();
+			return;
+		}
+
+		addClick(px, py, color, size, mode, tool);
 		redraw();
 	}
 
@@ -164,23 +173,23 @@ function onload_drawing() {
 			b = parseInt(b);
 			var touches = e.changedTouches;
 			var rect = e.target.getBoundingClientRect();
+
+			var px, py;
 			if (touches) {
-				addClick((touches[0].pageX + b - rect.left) / context.canvas.offsetWidth * 1000,
-					(touches[0].pageY + b - rect.top) / context.canvas.offsetHeight * 1000,
-					color,
-					size,
-					mode,
-					tool,
-					true);
+				px = (touches[0].pageX + b - rect.left) / context.canvas.offsetWidth * 1000;
+				py = (touches[0].pageY + b - rect.top) / context.canvas.offsetHeight * 1000;
 			} else {
-				addClick((e.pageX + b - rect.left) / context.canvas.offsetWidth * 1000,
-					(e.pageY + b - rect.top) / context.canvas.offsetHeight * 1000,
-					color,
-					size,
-					mode,
-					tool,
-					true);
+				px = (e.pageX + b - rect.left) / context.canvas.offsetWidth * 1000;
+				py = (e.pageY + b - rect.top) / context.canvas.offsetHeight * 1000;
 			}
+
+			if (tool === "copy" && is_selecting) {
+				selection_end = { x: px, y: py };
+				redraw();
+				return;
+			}
+
+			addClick(px, py, color, size, mode, tool, true);
 			redraw();
 		}
 	}
@@ -203,6 +212,10 @@ function onload_drawing() {
 		tool = "flood";
 	}
 
+	function copy()
+	{
+		tool = "copy";
+	}
 
 
 	function undo()
@@ -257,6 +270,26 @@ function onload_drawing() {
 				}
 			}
 		}
+
+		if (tool === "copy" && is_selecting && selection_start && selection_end) {
+			ctx.globalCompositeOperation = "source-over";
+			ctx.setLineDash([5, 5]);
+			ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";
+			ctx.lineWidth = 1;
+			var x = selection_start.x * ctx.canvas.width / 1000;
+			var y = selection_start.y * ctx.canvas.height / 1000;
+			var w = (selection_end.x - selection_start.x) * ctx.canvas.width / 1000;
+			var h = (selection_end.y - selection_start.y) * ctx.canvas.height / 1000;
+			ctx.strokeRect(x, y, w, h);
+
+			// Optional: draw an inner white dashed line for visibility on dark backgrounds
+			ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
+			ctx.lineDashOffset = 5;
+			ctx.strokeRect(x, y, w, h);
+
+			ctx.setLineDash([]);
+			ctx.lineDashOffset = 0;
+		}
 	}
 
 	load_drawing = function(strks) {
@@ -268,6 +301,48 @@ function onload_drawing() {
 	document.getElementById("canvas").ontouchmove = document.getElementById("canvas").onmousemove = untouch;
 	document.getElementById("canvas").ontouchend = document.getElementById("canvas").onmouseleave = document.getElementById("canvas").onmouseup = function(e) {
 		e.preventDefault();
+
+		if (tool === "copy" && is_selecting) {
+			if (selection_start && selection_end) {
+				var x1 = selection_start.x * context.canvas.width / 1000;
+				var y1 = selection_start.y * context.canvas.height / 1000;
+				var x2 = selection_end.x * context.canvas.width / 1000;
+				var y2 = selection_end.y * context.canvas.height / 1000;
+
+				var x = Math.min(x1, x2);
+				var y = Math.min(y1, y2);
+				var w = Math.abs(x2 - x1);
+				var h = Math.abs(y2 - y1);
+
+				if (w > 0 && h > 0) {
+					var tempCanvas = document.createElement("canvas");
+					tempCanvas.width = w;
+					tempCanvas.height = h;
+					var tempCtx = tempCanvas.getContext("2d");
+
+					// Temporarily remove the selection rectangle for a clean copy
+					is_selecting = false;
+					redraw();
+
+					tempCtx.drawImage(context.canvas, x, y, w, h, 0, 0, w, h);
+
+					tempCanvas.toBlob(function(blob) {
+						if (blob) {
+							const item = new ClipboardItem({ "image/png": blob });
+							navigator.clipboard.write([item]).then(function() {
+								console.log("Copied to clipboard!");
+							}).catch(function(err) {
+								console.error("Could not copy image: ", err);
+							});
+						}
+					}, "image/png");
+				}
+			}
+			is_selecting = false;
+			selection_start = null;
+			selection_end = null;
+		}
+
 		redraw();
 		paint = false;
 
@@ -279,6 +354,7 @@ function onload_drawing() {
 	document.getElementById("pencil").onclick = pencil;
 	document.getElementById("flood").onclick = flood;
 	document.getElementById("erase").onclick = erase;
+	document.getElementById("copy").onclick = copy;
 
 
 	function getPixel(pixelData, x, y) {
