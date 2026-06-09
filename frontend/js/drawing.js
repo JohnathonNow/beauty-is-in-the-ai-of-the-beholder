@@ -1,5 +1,7 @@
 var canvas;
 var context;
+var uilayer;
+var uicontext;
 var strokes = new Array();
 var redraw = null;
 var redraw_other = null;
@@ -76,6 +78,15 @@ function see_element(element) {
 	element.style.height = mw + "px";
 	element.setAttribute('width', mw);
 	element.setAttribute('height', mw);
+
+	let uil = document.getElementById('ui-layer');
+	if (uil) {
+		uil.style.width = mw + "px";
+		uil.style.height = mw + "px";
+		uil.setAttribute('width', mw);
+		uil.setAttribute('height', mw);
+	}
+
 	redraw();
 }
 
@@ -128,6 +139,12 @@ function onload_drawing() {
 	canvas.width = 512;
 	canvas.height = 512;
 	context = canvas.getContext("2d");
+	uilayer = document.getElementById('ui-layer');
+	if (uilayer) {
+		uilayer.width = 512;
+		uilayer.height = 512;
+		uicontext = uilayer.getContext("2d");
+	}
 	DRAW_MODE = context.globalCompositeOperation;
 	mode = DRAW_MODE;
 	var touch = function(e){
@@ -438,6 +455,9 @@ function onload_drawing() {
 		//return;
 		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 		ctx.lineJoin = "round";
+		if (typeof uicontext !== 'undefined' && uicontext) {
+			uicontext.clearRect(0, 0, uicontext.canvas.width, uicontext.canvas.height);
+		}
 
 		for(var i=0; i < stks.length; i++) {		
 			if (!stks[i] || stks[i].deleted) continue;
@@ -485,13 +505,20 @@ function onload_drawing() {
 				ctx.textBaseline = "middle";
 				ctx.fillText(stks[i]["text"], 0, 0);
 
-				if (tool === "text" && activeStrokeIndex === i) {
-					ctx.strokeStyle = "blue";
-					ctx.strokeRect(-ctx.measureText(stks[i]["text"]).width/2 - 5, -text_size/2 - 5, ctx.measureText(stks[i]["text"]).width + 10, text_size + 10);
-					ctx.beginPath();
-					ctx.arc(0, -text_size/2 - 20, 5, 0, 2*Math.PI);
-					ctx.fill();
-					ctx.stroke();
+				if (tool === "text" && activeStrokeIndex === i && typeof uicontext !== 'undefined' && uicontext) {
+					uicontext.save();
+					uicontext.translate(x, y);
+					if (stks[i]["rotation"]) {
+						uicontext.rotate(stks[i]["rotation"]);
+					}
+					uicontext.strokeStyle = "blue";
+					uicontext.fillStyle = "blue";
+					uicontext.strokeRect(-ctx.measureText(stks[i]["text"]).width/2 - 5, -text_size/2 - 5, ctx.measureText(stks[i]["text"]).width + 10, text_size + 10);
+					uicontext.beginPath();
+					uicontext.arc(0, -text_size/2 - 20, 5, 0, 2*Math.PI);
+					uicontext.fill();
+					uicontext.stroke();
+					uicontext.restore();
 				}
 				ctx.restore();
 			} else if (stks[i]["o"] == "delete_rect") {
@@ -527,20 +554,30 @@ function onload_drawing() {
 					img.src = stks[i]["imgData"];
 				}
 
-				if (tool === "select" && activeStrokeIndex === i) {
-					ctx.strokeStyle = "blue";
-					ctx.strokeRect(-stks[i]["w"]/2 - 5, -stks[i]["h"]/2 - 5, stks[i]["w"] + 10, stks[i]["h"] + 10);
+				if (tool === "select" && activeStrokeIndex === i && typeof uicontext !== 'undefined' && uicontext) {
+					uicontext.save();
+					uicontext.translate(x, y);
+					if (stks[i]["rotation"]) {
+						uicontext.rotate(stks[i]["rotation"]);
+					}
+					if (stks[i]["scaleX"] && stks[i]["scaleY"]) {
+						uicontext.scale(stks[i]["scaleX"], stks[i]["scaleY"]);
+					}
 
-					ctx.fillStyle = "blue";
-					ctx.beginPath();
-					ctx.arc(0, -stks[i]["h"]/2 - 20, 5, 0, 2*Math.PI);
-					ctx.fill();
-					ctx.stroke();
+					uicontext.strokeStyle = "blue";
+					uicontext.strokeRect(-stks[i]["w"]/2 - 5, -stks[i]["h"]/2 - 5, stks[i]["w"] + 10, stks[i]["h"] + 10);
 
-					ctx.beginPath();
-					ctx.arc(stks[i]["w"]/2, stks[i]["h"]/2, 5, 0, 2*Math.PI);
-					ctx.fill();
-					ctx.stroke();
+					uicontext.fillStyle = "blue";
+					uicontext.beginPath();
+					uicontext.arc(0, -stks[i]["h"]/2 - 20, 5, 0, 2*Math.PI);
+					uicontext.fill();
+					uicontext.stroke();
+
+					uicontext.beginPath();
+					uicontext.arc(stks[i]["w"]/2, stks[i]["h"]/2, 5, 0, 2*Math.PI);
+					uicontext.fill();
+					uicontext.stroke();
+					uicontext.restore();
 				}
 
 				ctx.restore();
@@ -563,17 +600,17 @@ function onload_drawing() {
 			}
 		}
 
-		if (tool === "select" && isSelecting && selectionRect) {
-			ctx.globalCompositeOperation = "source-over";
-			ctx.strokeStyle = "rgba(0, 150, 255, 0.8)";
-			ctx.lineWidth = 1;
-			ctx.setLineDash([5, 5]);
+		if (tool === "select" && isSelecting && selectionRect && typeof uicontext !== 'undefined' && uicontext) {
+			uicontext.globalCompositeOperation = "source-over";
+			uicontext.strokeStyle = "rgba(0, 150, 255, 0.8)";
+			uicontext.lineWidth = 1;
+			uicontext.setLineDash([5, 5]);
 			let rx = Math.min(selectionRect.x, selectionRect.x + selectionRect.w) * ctx.canvas.width/1000;
 			let ry = Math.min(selectionRect.y, selectionRect.y + selectionRect.h) * ctx.canvas.height/1000;
 			let rw = Math.abs(selectionRect.w) * ctx.canvas.width/1000;
 			let rh = Math.abs(selectionRect.h) * ctx.canvas.height/1000;
-			ctx.strokeRect(rx, ry, rw, rh);
-			ctx.setLineDash([]);
+			uicontext.strokeRect(rx, ry, rw, rh);
+			uicontext.setLineDash([]);
 		}
 	}
 

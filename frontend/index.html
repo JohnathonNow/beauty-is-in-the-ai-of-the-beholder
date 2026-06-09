@@ -54,8 +54,9 @@
                     </div>
                     <div id="drawing-workspace">
                         <div id="gallery">
-                            <div id="drawing">
+                            <div id="drawing" style="position: relative;">
                                 <canvas class="image" id="canvas" style="display: block;"></canvas>
+                                <canvas class="image" id="ui-layer" style="display: block; position: absolute; top: 0; left: 0; pointer-events: none; z-index: 10;"></canvas>
                             </div>
                         </div>
                         <div id="controls">
