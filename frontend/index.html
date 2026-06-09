@@ -71,6 +71,32 @@
                                 <button id="flood" title="Flood Fill">🪣</button>
                                 <button id="undo" title="Undo">↩️</button>
                                 <button id="judge" title="Judge">👨‍⚖️</button>
+                                <button id="select" title="Select">⬚</button>
+                                <button id="text" title="Text">T</button>
+                                <button id="shape" title="Shape">△</button>
+                            </div>
+                            <div id="selection-options" style="display: none;">
+                                <button id="copy-btn">Copy</button>
+                                <button id="delete-btn">Delete</button>
+                                <button id="paste-btn" style="display: none;">Paste</button>
+                            </div>
+                            <div id="text-options" style="display: none;">
+                                <input type="text" id="text-input" placeholder="Enter text">
+                                <select id="font-select">
+                                    <option value="Arial">Arial</option>
+                                    <option value="Times New Roman">Times New Roman</option>
+                                    <option value="Courier New">Courier New</option>
+                                    <option value="Georgia">Georgia</option>
+                                </select>
+                                <input type="number" id="text-size" value="20" min="10" max="100">
+                            </div>
+                            <div id="shape-options" style="display: none;">
+                                <select id="shape-select">
+                                    <option value="rectangle">Rectangle</option>
+                                    <option value="circle">Circle</option>
+                                    <option value="triangle">Triangle</option>
+                                    <option value="line">Line</option>
+                                </select>
                             </div>
                         </div>
                     </div>
