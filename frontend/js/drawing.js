@@ -93,6 +93,18 @@ function onload_drawing() {
 	var mode;
 	var TRACEBACK = 0;
 
+	var activeShape = "rectangle";
+	var activeFont = "Arial";
+	var activeTextSize = 20;
+	var startX = 0, startY = 0;
+	var activeStrokeIndex = -1;
+	var clipboardData = null;
+	var selectionRect = null;
+	var isSelecting = false;
+	var isDraggingSelection = false;
+	var isRotating = false;
+	var isScaling = false;
+
 	let colorpicker = document.getElementById('colorpicker');
 	for (const c of gradientColors) {
 		let ce = document.createElement("div");
@@ -123,25 +135,118 @@ function onload_drawing() {
 		e.stopPropagation();
 		TRACEBACK = 0;
 		paint = true;
-		border = parseInt(border);
+		var b = parseInt(getComputedStyle(e.target).getPropertyValue('border-left-width'));
+		var rect = e.target.getBoundingClientRect();
 		var touches = e.touches;
+
+		var px, py;
 		if (touches) {
-			var border = parseInt(getComputedStyle(this).getPropertyValue('border-left-width'));
-			var rect = e.target.getBoundingClientRect();
-			addClick((touches[0].pageX + border + rect.left) / context.canvas.offsetWidth * 1000,
-				(touches[0].pageY + border + rect.top) / context.canvas.offsetHeight * 1000,
-				color,
-				size,
-				mode,
-				tool);
+			px = (touches[0].pageX + b - rect.left) / context.canvas.offsetWidth * 1000;
+			py = (touches[0].pageY + b - rect.top) / context.canvas.offsetHeight * 1000;
 		} else {
-			var border = parseInt(getComputedStyle(e.target).getPropertyValue('border-left-width'));
-			addClick((e.offsetX + border) / context.canvas.offsetWidth * 1000,
-				(e.offsetY + border) / context.canvas.offsetHeight * 1000,
-				color,
-				size,
-				mode, 
-				tool);
+			px = (e.pageX + b - rect.left) / context.canvas.offsetWidth * 1000;
+			py = (e.pageY + b - rect.top) / context.canvas.offsetHeight * 1000;
+		}
+
+		startX = px;
+		startY = py;
+
+		if (tool === "shape") {
+			addShapeClick(startX, startY, px, py, color, size, activeShape);
+		} else if (tool === "text") {
+			let clickedIndex = -1;
+			for (let i = strokes.length - 1; i >= 0; i--) {
+				if (strokes[i] && strokes[i].o === "text") {
+					let rotation = strokes[i].rotation || 0;
+					let cx = strokes[i].x;
+					let cy = strokes[i].y;
+					let dx0 = px - cx;
+					let dy0 = py - cy;
+					let dx = dx0 * Math.cos(-rotation) - dy0 * Math.sin(-rotation);
+					let dy = dx0 * Math.sin(-rotation) + dy0 * Math.cos(-rotation);
+
+					let text_size = strokes[i].size * context.canvas.height / 1000;
+
+					if (Math.abs(dx) < 20 && dy > -text_size/2 - 40 && dy < -text_size/2 - 10) { // top handle
+						clickedIndex = i;
+						isRotating = true;
+						isDraggingSelection = false;
+						break;
+					} else if (Math.abs(dx) < context.measureText(strokes[i].text).width * 1000 / context.canvas.width / 2 && Math.abs(dy) < text_size) {
+						clickedIndex = i;
+						isRotating = false;
+						isDraggingSelection = true;
+						break;
+					}
+				}
+			}
+			if (clickedIndex !== -1) {
+				activeStrokeIndex = clickedIndex;
+				document.getElementById("text-input").value = strokes[clickedIndex].text;
+			} else {
+				let textVal = document.getElementById("text-input").value || "Text";
+				addTextClick(px, py, color, activeFont, activeTextSize, textVal);
+				activeStrokeIndex = strokes.length - 1;
+				isDraggingSelection = true;
+				isRotating = false;
+			}
+		} else if (tool === "select") {
+			let clickedIndex = -1;
+			for (let i = strokes.length - 1; i >= 0; i--) {
+				if (strokes[i] && strokes[i].o === "image" && !strokes[i].deleted) {
+					let scaleX = strokes[i].scaleX || 1;
+					let scaleY = strokes[i].scaleY || 1;
+					let rotation = strokes[i].rotation || 0;
+
+					let w = (strokes[i].w * scaleX * 1000) / context.canvas.width;
+					let h = (strokes[i].h * scaleY * 1000) / context.canvas.height;
+
+					let cx = strokes[i].x;
+					let cy = strokes[i].y;
+
+					// Un-rotate the point for hit testing
+					let dx0 = px - cx;
+					let dy0 = py - cy;
+					let dx = dx0 * Math.cos(-rotation) - dy0 * Math.sin(-rotation);
+					let dy = dx0 * Math.sin(-rotation) + dy0 * Math.cos(-rotation);
+
+					if (Math.abs(dx) < 20 && dy > -h/2 - 40 && dy < -h/2 - 10) {
+						clickedIndex = i;
+						isRotating = true;
+						isDraggingSelection = false;
+						isScaling = false;
+						break;
+					}
+					else if (Math.abs(dx - w/2) < 20 && Math.abs(dy - h/2) < 20) {
+						clickedIndex = i;
+						isScaling = true;
+						isRotating = false;
+						isDraggingSelection = false;
+						break;
+					}
+					else if (Math.abs(dx) < w/2 && Math.abs(dy) < h/2) {
+						clickedIndex = i;
+						isDraggingSelection = true;
+						isRotating = false;
+						isScaling = false;
+						break;
+					}
+				}
+			}
+			if (clickedIndex !== -1) {
+				activeStrokeIndex = clickedIndex;
+				isSelecting = false;
+				selectionRect = null;
+			} else {
+				activeStrokeIndex = -1;
+				isSelecting = true;
+				isDraggingSelection = false;
+				isRotating = false;
+				isScaling = false;
+				selectionRect = {x: px, y: py, w: 0, h: 0};
+			}
+		} else {
+			addClick(px, py, color, size, mode, tool);
 		}
 		redraw();
 	}
@@ -164,22 +269,67 @@ function onload_drawing() {
 			b = parseInt(b);
 			var touches = e.changedTouches;
 			var rect = e.target.getBoundingClientRect();
+
+			var px, py;
 			if (touches) {
-				addClick((touches[0].pageX + b - rect.left) / context.canvas.offsetWidth * 1000,
-					(touches[0].pageY + b - rect.top) / context.canvas.offsetHeight * 1000,
-					color,
-					size,
-					mode,
-					tool,
-					true);
+				px = (touches[0].pageX + b - rect.left) / context.canvas.offsetWidth * 1000;
+				py = (touches[0].pageY + b - rect.top) / context.canvas.offsetHeight * 1000;
 			} else {
-				addClick((e.pageX + b - rect.left) / context.canvas.offsetWidth * 1000,
-					(e.pageY + b - rect.top) / context.canvas.offsetHeight * 1000,
-					color,
-					size,
-					mode,
-					tool,
-					true);
+				px = (e.pageX + b - rect.left) / context.canvas.offsetWidth * 1000;
+				py = (e.pageY + b - rect.top) / context.canvas.offsetHeight * 1000;
+			}
+
+			if (tool === "shape") {
+				let last = strokes[strokes.length - 1];
+				if (last && last.o === "shape") {
+					last.x = px;
+					last.y = py;
+					if (typeof sendDrawing === 'function') sendDrawing();
+				}
+			} else if (tool === "text") {
+				if (activeStrokeIndex !== -1 && strokes[activeStrokeIndex] && strokes[activeStrokeIndex].o === "text") {
+					if (isRotating) {
+						let cx = strokes[activeStrokeIndex].x;
+						let cy = strokes[activeStrokeIndex].y;
+						strokes[activeStrokeIndex].rotation = Math.atan2(py - cy, px - cx) + Math.PI/2;
+					} else if (isDraggingSelection) {
+						strokes[activeStrokeIndex].x = px;
+						strokes[activeStrokeIndex].y = py;
+					}
+					if (typeof sendDrawing === 'function') sendDrawing();
+				}
+			} else if (tool === "select") {
+				if (isSelecting && selectionRect) {
+					selectionRect.w = px - selectionRect.x;
+					selectionRect.h = py - selectionRect.y;
+				} else if (activeStrokeIndex !== -1 && strokes[activeStrokeIndex]) {
+					if (isDraggingSelection) {
+						strokes[activeStrokeIndex].x = px;
+						strokes[activeStrokeIndex].y = py;
+					} else if (isRotating) {
+						let cx = strokes[activeStrokeIndex].x;
+						let cy = strokes[activeStrokeIndex].y;
+						strokes[activeStrokeIndex].rotation = Math.atan2(py - cy, px - cx) + Math.PI/2;
+					} else if (isScaling) {
+						let cx = strokes[activeStrokeIndex].x;
+						let cy = strokes[activeStrokeIndex].y;
+						let rotation = strokes[activeStrokeIndex].rotation || 0;
+
+						let dx0 = px - cx;
+						let dy0 = py - cy;
+						let dist_x = Math.abs(dx0 * Math.cos(-rotation) - dy0 * Math.sin(-rotation));
+						let dist_y = Math.abs(dx0 * Math.sin(-rotation) + dy0 * Math.cos(-rotation));
+
+						let unscaled_w_1000 = (strokes[activeStrokeIndex].w * 1000) / context.canvas.width;
+						let unscaled_h_1000 = (strokes[activeStrokeIndex].h * 1000) / context.canvas.height;
+
+						strokes[activeStrokeIndex].scaleX = dist_x * 2 / unscaled_w_1000;
+						strokes[activeStrokeIndex].scaleY = dist_y * 2 / unscaled_h_1000;
+					}
+					if (typeof sendDrawing === 'function') sendDrawing();
+				}
+			} else {
+				addClick(px, py, color, size, mode, tool, true);
 			}
 			redraw();
 		}
@@ -203,6 +353,12 @@ function onload_drawing() {
 		tool = "flood";
 	}
 
+	function selectTool(t) {
+		tool = t;
+		document.getElementById("selection-options").style.display = t === "select" ? "block" : "none";
+		document.getElementById("text-options").style.display = t === "text" ? "block" : "none";
+		document.getElementById("shape-options").style.display = t === "shape" ? "block" : "none";
+	}
 
 
 	function undo()
@@ -227,18 +383,167 @@ function onload_drawing() {
 			"t": --TRACEBACK});
 	}
 
+	function addShapeClick(sx, sy, x, y, c, s, shape) {
+		strokes.push({
+			"sx": sx,
+			"sy": sy,
+			"x": x,
+			"y": y,
+			"c": c,
+			"s": s,
+			"o": "shape",
+			"shape": shape,
+			"t": --TRACEBACK
+		});
+		if (typeof sendDrawing === 'function') sendDrawing();
+	}
+
+	function addTextClick(x, y, c, font, size, text) {
+		strokes.push({
+			"x": x,
+			"y": y,
+			"c": c,
+			"size": size,
+			"font": font,
+			"text": text,
+			"rotation": 0,
+			"o": "text",
+			"t": --TRACEBACK
+		});
+		if (typeof sendDrawing === 'function') sendDrawing();
+	}
+
+	function addImageClick(x, y, imgData, w, h) {
+		strokes.push({
+			"x": x,
+			"y": y,
+			"imgData": imgData,
+			"w": w,
+			"h": h,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotation": 0,
+			"o": "image",
+			"t": --TRACEBACK
+		});
+		if (typeof sendDrawing === 'function') sendDrawing();
+	}
+
 	redraw = function(){
 		redraw_other(context, strokes);
 	}
 
+	let imageCache = new Map();
 	redraw_other = function(ctx, stks){
 		//return;
 		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 		ctx.lineJoin = "round";
 
 		for(var i=0; i < stks.length; i++) {		
+			if (!stks[i] || stks[i].deleted) continue;
 			if (stks[i]["o"] == "flood") {
 				floodFill(ctx, stks[i]["x"]*ctx.canvas.width/1000, stks[i]["y"]*ctx.canvas.height/1000, cssTo32BitColor(stks[i]["c"]));
+			} else if (stks[i]["o"] == "shape") {
+				ctx.fillStyle = stks[i]["c"];
+				ctx.strokeStyle = stks[i]["c"];
+				ctx.lineWidth = stks[i]["s"];
+				ctx.globalCompositeOperation = "source-over";
+				var stx = stks[i]["sx"] * ctx.canvas.width/1000;
+				var sty = stks[i]["sy"] * ctx.canvas.height/1000;
+				var enx = stks[i]["x"] * ctx.canvas.width/1000;
+				var eny = stks[i]["y"] * ctx.canvas.height/1000;
+
+				ctx.beginPath();
+				if (stks[i]["shape"] === "rectangle") {
+					ctx.rect(stx, sty, enx - stx, eny - sty);
+				} else if (stks[i]["shape"] === "circle") {
+					var r = Math.sqrt(Math.pow(enx - stx, 2) + Math.pow(eny - sty, 2));
+					ctx.arc(stx, sty, r, 0, 2 * Math.PI);
+				} else if (stks[i]["shape"] === "triangle") {
+					ctx.moveTo(stx, sty);
+					ctx.lineTo(enx, eny);
+					ctx.lineTo(stx - (enx - stx), eny);
+					ctx.closePath();
+				} else if (stks[i]["shape"] === "line") {
+					ctx.moveTo(stx, sty);
+					ctx.lineTo(enx, eny);
+				}
+				ctx.stroke();
+			} else if (stks[i]["o"] == "text") {
+				ctx.fillStyle = stks[i]["c"];
+				ctx.globalCompositeOperation = "source-over";
+				ctx.save();
+				var x = stks[i]["x"] * ctx.canvas.width/1000;
+				var y = stks[i]["y"] * ctx.canvas.height/1000;
+				ctx.translate(x, y);
+				if (stks[i]["rotation"]) {
+					ctx.rotate(stks[i]["rotation"]);
+				}
+				var text_size = stks[i]["size"] * ctx.canvas.height / 1000;
+				ctx.font = text_size + "px " + stks[i]["font"];
+				ctx.textAlign = "center";
+				ctx.textBaseline = "middle";
+				ctx.fillText(stks[i]["text"], 0, 0);
+
+				if (tool === "text" && activeStrokeIndex === i) {
+					ctx.strokeStyle = "blue";
+					ctx.strokeRect(-ctx.measureText(stks[i]["text"]).width/2 - 5, -text_size/2 - 5, ctx.measureText(stks[i]["text"]).width + 10, text_size + 10);
+					ctx.beginPath();
+					ctx.arc(0, -text_size/2 - 20, 5, 0, 2*Math.PI);
+					ctx.fill();
+					ctx.stroke();
+				}
+				ctx.restore();
+			} else if (stks[i]["o"] == "delete_rect") {
+				ctx.globalCompositeOperation = "destination-out";
+				var x = stks[i]["x"] * ctx.canvas.width/1000;
+				var y = stks[i]["y"] * ctx.canvas.height/1000;
+				var w = stks[i]["w"] * ctx.canvas.width/1000;
+				var h = stks[i]["h"] * ctx.canvas.height/1000;
+				ctx.fillRect(x, y, w, h);
+			} else if (stks[i]["o"] == "image") {
+				ctx.globalCompositeOperation = "source-over";
+				ctx.save();
+				var x = stks[i]["x"] * ctx.canvas.width/1000;
+				var y = stks[i]["y"] * ctx.canvas.height/1000;
+				ctx.translate(x, y);
+				if (stks[i]["rotation"]) {
+					ctx.rotate(stks[i]["rotation"]);
+				}
+				if (stks[i]["scaleX"] && stks[i]["scaleY"]) {
+					ctx.scale(stks[i]["scaleX"], stks[i]["scaleY"]);
+				}
+				let cachedImg = imageCache.get(stks[i]["imgData"]);
+				if (cachedImg) {
+				    ctx.drawImage(cachedImg, -stks[i]["w"]/2, -stks[i]["h"]/2, stks[i]["w"], stks[i]["h"]);
+				} else {
+					let img = new Image();
+					imageCache.set(stks[i]["imgData"], img);
+					img.onload = function() {
+						stks[i]["w"] = img.width;
+						stks[i]["h"] = img.height;
+						redraw();
+					}
+					img.src = stks[i]["imgData"];
+				}
+
+				if (tool === "select" && activeStrokeIndex === i) {
+					ctx.strokeStyle = "blue";
+					ctx.strokeRect(-stks[i]["w"]/2 - 5, -stks[i]["h"]/2 - 5, stks[i]["w"] + 10, stks[i]["h"] + 10);
+
+					ctx.fillStyle = "blue";
+					ctx.beginPath();
+					ctx.arc(0, -stks[i]["h"]/2 - 20, 5, 0, 2*Math.PI);
+					ctx.fill();
+					ctx.stroke();
+
+					ctx.beginPath();
+					ctx.arc(stks[i]["w"]/2, stks[i]["h"]/2, 5, 0, 2*Math.PI);
+					ctx.fill();
+					ctx.stroke();
+				}
+
+				ctx.restore();
 			} else {
 				var sss = stks[i]["s"];
 				ctx.fillStyle = stks[i]["c"];
@@ -256,6 +561,19 @@ function onload_drawing() {
 					ctx.fillRect(xx, yy, sss, sss);
 				}
 			}
+		}
+
+		if (tool === "select" && isSelecting && selectionRect) {
+			ctx.globalCompositeOperation = "source-over";
+			ctx.strokeStyle = "rgba(0, 150, 255, 0.8)";
+			ctx.lineWidth = 1;
+			ctx.setLineDash([5, 5]);
+			let rx = Math.min(selectionRect.x, selectionRect.x + selectionRect.w) * ctx.canvas.width/1000;
+			let ry = Math.min(selectionRect.y, selectionRect.y + selectionRect.h) * ctx.canvas.height/1000;
+			let rw = Math.abs(selectionRect.w) * ctx.canvas.width/1000;
+			let rh = Math.abs(selectionRect.h) * ctx.canvas.height/1000;
+			ctx.strokeRect(rx, ry, rw, rh);
+			ctx.setLineDash([]);
 		}
 	}
 
@@ -276,10 +594,82 @@ function onload_drawing() {
 		size = e.target.value;
 	};
 	document.getElementById("undo").onclick = undo;
-	document.getElementById("pencil").onclick = pencil;
-	document.getElementById("flood").onclick = flood;
-	document.getElementById("erase").onclick = erase;
+	document.getElementById("pencil").onclick = () => { pencil(); selectTool("paint"); };
+	document.getElementById("flood").onclick = () => { flood(); selectTool("flood"); };
+	document.getElementById("erase").onclick = () => { erase(); selectTool("erase"); };
+	document.getElementById("select").onclick = () => selectTool("select");
+	document.getElementById("text").onclick = () => selectTool("text");
+	document.getElementById("shape").onclick = () => selectTool("shape");
 
+	document.getElementById("shape-select").onchange = function(e) { activeShape = e.target.value; };
+	document.getElementById("font-select").onchange = function(e) { activeFont = e.target.value; };
+	document.getElementById("text-size").onchange = function(e) { activeTextSize = e.target.value; };
+	document.getElementById("text-input").oninput = function(e) {
+		if (activeStrokeIndex !== -1 && strokes[activeStrokeIndex] && strokes[activeStrokeIndex].o === "text") {
+			strokes[activeStrokeIndex].text = e.target.value;
+			redraw();
+			if (typeof sendDrawing === 'function') sendDrawing();
+		}
+	};
+
+	document.getElementById("copy-btn").onclick = function() {
+		if (selectionRect && selectionRect.w !== 0 && selectionRect.h !== 0) {
+			let rx = Math.min(selectionRect.x, selectionRect.x + selectionRect.w) * context.canvas.width/1000;
+			let ry = Math.min(selectionRect.y, selectionRect.y + selectionRect.h) * context.canvas.height/1000;
+			let rw = Math.abs(selectionRect.w) * context.canvas.width/1000;
+			let rh = Math.abs(selectionRect.h) * context.canvas.height/1000;
+
+			if (rw > 0 && rh > 0) {
+				let tempCanvas = document.createElement('canvas');
+				tempCanvas.width = rw;
+				tempCanvas.height = rh;
+				let tctx = tempCanvas.getContext('2d');
+				tctx.drawImage(context.canvas, rx, ry, rw, rh, 0, 0, rw, rh);
+				clipboardData = tempCanvas.toDataURL();
+				document.getElementById("paste-btn").style.display = "inline-block";
+			}
+		} else if (activeStrokeIndex !== -1 && strokes[activeStrokeIndex] && strokes[activeStrokeIndex].o === "image") {
+			clipboardData = strokes[activeStrokeIndex].imgData;
+			document.getElementById("paste-btn").style.display = "inline-block";
+		}
+	};
+
+	document.getElementById("delete-btn").onclick = function() {
+		if (selectionRect && selectionRect.w !== 0 && selectionRect.h !== 0) {
+			let rx = Math.min(selectionRect.x, selectionRect.x + selectionRect.w);
+			let ry = Math.min(selectionRect.y, selectionRect.y + selectionRect.h);
+			let rw = Math.abs(selectionRect.w);
+			let rh = Math.abs(selectionRect.h);
+
+			strokes.push({
+				"x": rx, "y": ry, "w": rw, "h": rh,
+				"o": "delete_rect",
+				"t": --TRACEBACK
+			});
+			selectionRect = null;
+			isSelecting = false;
+			redraw();
+			if (typeof sendDrawing === 'function') sendDrawing();
+		} else if (activeStrokeIndex !== -1 && strokes[activeStrokeIndex] && (strokes[activeStrokeIndex].o === "image" || strokes[activeStrokeIndex].o === "text")) {
+			strokes[activeStrokeIndex].deleted = true;
+			activeStrokeIndex = -1;
+			redraw();
+			if (typeof sendDrawing === 'function') sendDrawing();
+		}
+	};
+
+	document.getElementById("paste-btn").onclick = function() {
+		if (clipboardData) {
+			let img = new Image();
+			img.onload = function() {
+				addImageClick(500, 500, clipboardData, img.width, img.height);
+				activeStrokeIndex = strokes.length - 1;
+				tool = "select";
+				redraw();
+			}
+			img.src = clipboardData;
+		}
+	};
 
 	function getPixel(pixelData, x, y) {
 		if (x < 0 || y < 0 || x >= pixelData.width || y >= pixelData.height) {
