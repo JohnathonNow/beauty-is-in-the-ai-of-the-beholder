@@ -182,14 +182,17 @@ function onload_drawing() {
 					let dx = dx0 * Math.cos(-rotation) - dy0 * Math.sin(-rotation);
 					let dy = dx0 * Math.sin(-rotation) + dy0 * Math.cos(-rotation);
 
+					let dx_px = dx * context.canvas.width / 1000;
+					let dy_px = dy * context.canvas.height / 1000;
+
 					let text_size = strokes[i].size * context.canvas.height / 1000;
 
-					if (Math.abs(dx) < 20 && dy > -text_size/2 - 40 && dy < -text_size/2 - 10) { // top handle
+					if (Math.abs(dx_px) < 20 && dy_px > -text_size/2 - 40 && dy_px < -text_size/2 - 10) { // top handle
 						clickedIndex = i;
 						isRotating = true;
 						isDraggingSelection = false;
 						break;
-					} else if (Math.abs(dx) < context.measureText(strokes[i].text).width * 1000 / context.canvas.width / 2 && Math.abs(dy) < text_size) {
+					} else if (Math.abs(dx_px) < context.measureText(strokes[i].text).width / 2 && Math.abs(dy_px) < text_size) {
 						clickedIndex = i;
 						isRotating = false;
 						isDraggingSelection = true;
@@ -227,21 +230,30 @@ function onload_drawing() {
 					let dx = dx0 * Math.cos(-rotation) - dy0 * Math.sin(-rotation);
 					let dy = dx0 * Math.sin(-rotation) + dy0 * Math.cos(-rotation);
 
-					if (Math.abs(dx) < 20 && dy > -h/2 - 40 && dy < -h/2 - 10) {
+					let dx_px = dx * context.canvas.width / 1000;
+					let dy_px = dy * context.canvas.height / 1000;
+
+					let unscaled_dx_px = dx_px / scaleX;
+					let unscaled_dy_px = dy_px / scaleY;
+
+					let w_px = strokes[i].w * context.canvas.width / 1000;
+					let h_px = strokes[i].h * context.canvas.height / 1000;
+
+					if (Math.abs(unscaled_dx_px) < 20 && unscaled_dy_px > -h_px/2 - 40 && unscaled_dy_px < -h_px/2 - 10) {
 						clickedIndex = i;
 						isRotating = true;
 						isDraggingSelection = false;
 						isScaling = false;
 						break;
 					}
-					else if (Math.abs(dx - w/2) < 20 && Math.abs(dy - h/2) < 20) {
+					else if (Math.abs(unscaled_dx_px - w_px/2) < 20 && Math.abs(unscaled_dy_px - h_px/2) < 20) {
 						clickedIndex = i;
 						isScaling = true;
 						isRotating = false;
 						isDraggingSelection = false;
 						break;
 					}
-					else if (Math.abs(dx) < w/2 && Math.abs(dy) < h/2) {
+					else if (Math.abs(unscaled_dx_px) < w_px/2 && Math.abs(unscaled_dy_px) < h_px/2) {
 						clickedIndex = i;
 						isDraggingSelection = true;
 						isRotating = false;
