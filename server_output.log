@@ -1,0 +1,8 @@
+127.0.0.1 - - [12/Jun/2026 21:15:52] "GET /frontend/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Jun/2026 21:15:52] "GET /frontend/style/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [12/Jun/2026 21:15:52] "GET /frontend/js/drawing.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Jun/2026 21:15:52] "GET /frontend/js/billiards.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Jun/2026 21:16:10] "GET /frontend/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [12/Jun/2026 21:16:10] "GET /frontend/style/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [12/Jun/2026 21:16:10] "GET /frontend/js/billiards.js HTTP/1.1" 200 -
+127.0.0.1 - - [12/Jun/2026 21:16:10] "GET /frontend/js/drawing.js HTTP/1.1" 200 -
