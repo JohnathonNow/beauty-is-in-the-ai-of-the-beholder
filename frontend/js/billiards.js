@@ -40,7 +40,8 @@ function reset() {
 function onload_billiards() {
     function connect(customWords) {
         reset();
-        let wsUrl = 'ws://' + window.location.hostname + ':' + window.location.port + '/chat?name=' + encodeURIComponent(gName) + "&lobby=" + encodeURIComponent(gLobby);
+        let wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+        let wsUrl = wsProtocol + window.location.hostname + ':' + window.location.port + window.location.pathname + 'chat?name=' + encodeURIComponent(gName) + "&lobby=" + encodeURIComponent(gLobby);
         if (customWords && customWords.length > 0) {
             wsUrl += "&words=" + encodeURIComponent(customWords);
         }
@@ -224,7 +225,7 @@ function onload_billiards() {
                     if (gstrks) {
                         redraw_other(gMap.get(player).getContext("2d"), gstrks);
                     }
-                    picture.src = "/drawings/" + player + "-" + gAssign.replaceAll(" ", "-") + ".png"
+                    picture.src = "drawings/" + player + "-" + gAssign.replaceAll(" ", "-") + ".png"
                     image.onclick = function() {
                         //picture.src = "/drawings/" + 
                         Array.prototype.forEach.call(document.getElementsByClassName("finalimagecontainer"), d=>d.style.display = "none");
@@ -414,7 +415,7 @@ function onload_billiards() {
     canvas.addEventListener("mouseleave", draw_event_handler);
     canvas.addEventListener("mouseup", draw_event_handler);
     function fetch_lobbies() {
-        fetch('/lobbies')
+        fetch('lobbies')
             .then(response => response.json())
             .then(data => {
                 const list = document.getElementById("lobby-list");
@@ -447,7 +448,10 @@ function onload_billiards() {
             document.cookie = gName;
 
             // Connect to global chat
-            globalChatSocket = new WebSocket('ws://' + window.location.hostname + ':' + window.location.port + '/global_chat?name=' + encodeURIComponent(gName));
+            let wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            let wsPort = window.location.port ? ':' + window.location.port : '';
+            console.log(wsProtocol + window.location.hostname + wsPort + window.location.pathname + 'global_chat?name=' + encodeURIComponent(gName));
+            globalChatSocket = new WebSocket(wsProtocol + window.location.hostname + wsPort + window.location.pathname + 'global_chat?name=' + encodeURIComponent(gName));
             globalChatSocket.addEventListener('message', event => {
                 let chat = document.getElementById('global-chat-messages');
                 let line = document.createElement("div");

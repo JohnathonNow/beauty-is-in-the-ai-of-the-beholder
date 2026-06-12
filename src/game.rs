@@ -225,6 +225,7 @@ pub async fn handle(
                         let mut gs = game_state.lock().await;
                         let path = &format!("frontend/drawings/{}-{}.png", &login_name, &gs.sendable.wordname());
                         let _ = save_png_from_data_url(&image, path);
+                        println!("Saved image to {}", path);
                         let score = gs.score(path).await.unwrap_or(0f32);
                         println!("Wow, score is {}", score);
                         gs.sendable.get_player_mut(&login_name).score = score;

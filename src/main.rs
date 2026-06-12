@@ -77,7 +77,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     let mut final_words = bw;
                     if let Some(custom_words_str) = &query.words {
                         if !custom_words_str.trim().is_empty() {
-                            let words_list: Vec<&str> = custom_words_str.split(',').map(|s| s.trim()).filter(|s| !s.is_empty()).collect();
+                            let words_list: Vec<&str> = custom_words_str.split('\n').map(|s| s.trim()).filter(|s| !s.is_empty()).collect();
                             let mut fetched_words = Vec::new();
                             let client = reqwest::Client::new();
                             for w in words_list {
