@@ -10,6 +10,7 @@ use std::fs::File;
 use std::io::{Write, BufWriter};
 use base64::Engine;
 use std::fs;
+use uuid::Uuid;
 
 pub type GameServerState = Arc<Mutex<State>>;
 type PeerMap = HashMap<String, broadcast::Sender<String>>;
@@ -223,12 +224,21 @@ pub async fn handle(
                     }
                     packets::Incoming::Image { image } => {
                         let mut gs = game_state.lock().await;
-                        let path = &format!("frontend/drawings/{}-{}.png", &login_name, &gs.sendable.wordname());
-                        let _ = save_png_from_data_url(&image, path);
-                        println!("Saved image to {}", path);
-                        let score = gs.score(path).await.unwrap_or(0f32);
+                        let uuid = Uuid::new_v4().to_string();
+                        let dir_prefix = &uuid[..4];
+                        let dir_path = format!("frontend/drawings/{}", dir_prefix);
+                        let _ = fs::create_dir_all(&dir_path);
+                        let file_path = format!("{}/{}.png", dir_path, uuid);
+
+                        let _ = save_png_from_data_url(&image, &file_path);
+                        println!("Saved image to {}", file_path);
+                        let score = gs.score(&file_path).await.unwrap_or(0f32);
                         println!("Wow, score is {}", score);
-                        gs.sendable.get_player_mut(&login_name).score = score;
+
+                        let player = gs.sendable.get_player_mut(&login_name);
+                        player.score = score;
+                        player.image_path = Some(format!("drawings/{}/{}.png", dir_prefix, uuid));
+
                         let _ = gtx.send(
                             serde_json::to_string(&packets::Outgoing::Score {
                                 username: login_name.clone(),
@@ -350,6 +360,7 @@ impl SendableState {
 pub struct PlayerState {
     active: bool,
     score: f32,
+    image_path: Option<String>,
 }
 
 impl PlayerState {
@@ -357,10 +368,12 @@ impl PlayerState {
         Self {
             active: false,
             score: 0.0,
+            image_path: None,
         }
     }
     pub fn restart(&mut self) {
         self.score = 0.0;
+        self.image_path = None;
     }
     pub fn set_active(&mut self, active: bool) {
         self.active = active
