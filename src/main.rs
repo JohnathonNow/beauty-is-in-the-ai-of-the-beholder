@@ -24,6 +24,7 @@ struct Query {
     lobby: String,
     name: String,
     words: Option<String>,
+    time: Option<i32>,
 }
 
 struct Lobby {
@@ -72,7 +73,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 if let Some(lobby) = lobbies.get(&query.lobby) {
                     (lobby.state.clone(), lobby.tx.clone())
                 } else {
-                    let mut inner_game_state = game::State::new(tl, mp, eot);
+                    let mut time_limit = tl;
+                    if let Some(custom_time) = query.time {
+                        time_limit = custom_time.clamp(30, 300);
+                    }
+                    let mut inner_game_state = game::State::new(time_limit, mp, eot);
 
                     let mut final_words = bw;
                     if let Some(custom_words_str) = &query.words {

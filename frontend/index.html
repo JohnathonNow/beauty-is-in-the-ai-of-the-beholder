@@ -28,6 +28,10 @@
                 <button id="create-lobby" style="margin-left: 10px;">Create & Join</button>
             </div>
             <textarea id="new-lobby-words" placeholder="Optional: Custom word list (comma-separated)" rows="3" style="width: 80%; max-width: 400px; margin-top: 5px;"></textarea>
+            <div style="margin-top: 5px;">
+                <label for="new-lobby-time">Time Limit (30-300s):</label>
+                <input type="number" id="new-lobby-time" min="30" max="300" value="120" style="width: 60px;">
+            </div>
         </div>
         <button id="refresh-lobbies" style="margin-top: 10px;">Refresh</button>
 
