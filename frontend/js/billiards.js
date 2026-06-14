@@ -38,12 +38,19 @@ function reset() {
 }
 
 function onload_billiards() {
-    function connect(customWords) {
+    function connect(customWords, timeLimit) {
         reset();
         let wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
         let wsUrl = wsProtocol + window.location.hostname + ':' + window.location.port + window.location.pathname + 'chat?name=' + encodeURIComponent(gName) + "&lobby=" + encodeURIComponent(gLobby);
         if (customWords && customWords.length > 0) {
             wsUrl += "&words=" + encodeURIComponent(customWords);
+        }
+        if (timeLimit) {
+            let parsedTime = parseInt(timeLimit);
+            if (!isNaN(parsedTime)) {
+                let clampedTime = Math.max(30, Math.min(300, parsedTime));
+                wsUrl += "&time=" + clampedTime;
+            }
         }
         socket = new WebSocket(wsUrl);
         //socket = new WebSocket('ws://' + window.location.hostname + ':3030/chat');
@@ -450,12 +457,12 @@ function onload_billiards() {
             });
     }
 
-    function join_lobby(lobby, customWords) {
+    function join_lobby(lobby, customWords, timeLimit) {
         if (!lobby) return;
         gLobby = lobby;
         document.getElementById("lobby-selection").style.display = "none";
         document.getElementById("game").style.display = "block";
-        connect(customWords);
+        connect(customWords, timeLimit);
     }
 
     document.getElementById("name").addEventListener("keydown", function (e) {
@@ -501,16 +508,18 @@ function onload_billiards() {
     document.getElementById("create-lobby").onclick = function() {
         const name = document.getElementById("new-lobby-name").value;
         const customWords = document.getElementById("new-lobby-words").value;
+        const timeLimit = document.getElementById("new-lobby-time").value;
         if (name.trim() !== "") {
-            join_lobby(name.trim(), customWords.trim());
+            join_lobby(name.trim(), customWords.trim(), timeLimit);
         }
     };
     document.getElementById("new-lobby-name").addEventListener("keydown", function (e) {
         if (e.key  == "Enter") {
             const name = e.target.value;
             const customWords = document.getElementById("new-lobby-words").value;
+            const timeLimit = document.getElementById("new-lobby-time").value;
             if (name.trim() !== "") {
-                join_lobby(name.trim(), customWords.trim());
+                join_lobby(name.trim(), customWords.trim(), timeLimit);
             }
         }
     });
