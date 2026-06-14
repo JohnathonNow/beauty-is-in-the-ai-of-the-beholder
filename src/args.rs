@@ -22,4 +22,12 @@ pub struct Args {
     /// End after time limit ends
     #[arg(short, long, default_value_t = true)]
     pub endontime: bool,
+
+    /// TLS certificate file path
+    #[arg(long)]
+    pub tls_cert: Option<String>,
+
+    /// TLS key file path
+    #[arg(long)]
+    pub tls_key: Option<String>,
 }
