@@ -209,6 +209,7 @@ function onload_billiards() {
     function show_winners() {
         let namelist = document.getElementById("user-list-3");
         let values = Object.entries(gState["players"]);
+        values.sort((a, b) => b[1].score - a[1].score); // Sort descending (worst/highest to best/lowest)
         let highscore = Math.max(...values.map(x => x[1].score));
         let lowscore = Math.min(...values.map(x => x[1].score));
         for (let i = 0; i < values.length; ++i) {
@@ -217,6 +218,19 @@ function onload_billiards() {
                 let child = add_player(player);
                 child.style.width = "10%";
                 namelist.appendChild(child);
+                child.innerHTML = "";
+                let thumb = document.createElement("img");
+                thumb.style.height = "50px";
+                thumb.style.width = "50px";
+                thumb.style.objectFit = "contain";
+                thumb.style.marginRight = "10px";
+                thumb.style.verticalAlign = "middle";
+                child.appendChild(thumb);
+
+                let txtSpan = document.createElement("span");
+                txtSpan.style.verticalAlign = "middle";
+                child.appendChild(txtSpan);
+
                 try {
                     let image = document.createElement("div");
                     image.classList = "finalimagecontainer";
@@ -230,6 +244,7 @@ function onload_billiards() {
                     } else {
                         picture.src = "drawings/" + player + "-" + gAssign.replaceAll(" ", "-") + ".png";
                     }
+                   thumb.src = picture.src;
                     image.onclick = function() {
                         //picture.src = "/drawings/" + 
                         Array.prototype.forEach.call(document.getElementsByClassName("finalimagecontainer"), d=>d.style.display = "none");
@@ -238,7 +253,7 @@ function onload_billiards() {
                     document.getElementById("finalgallery").appendChild(image);
                     gImgMap.set(player, image);
                 } catch (e) {console.log(e)}
-                child.textContent = player + " [0]";
+                txtSpan.textContent = player + " [0]";
                 if (gState["players"][player]["score"] == lowscore) {
                     child.setAttribute("winner", "true");
                 }
@@ -252,7 +267,7 @@ function onload_billiards() {
                             tally = gState["players"][player]["score"];
                             clearInterval(myInterval);
                         }
-                        child.textContent = player + " [" + tally + "]";
+                        txtSpan.textContent = player + " [" + tally + "]";
                     }, 16);
                     setTimeout(function () {
                         child.setAttribute("moving", "false");
@@ -293,8 +308,8 @@ function onload_billiards() {
         if (gState["state"] == "RUNNING") {
             return;
         } else if (gState["state"] == "POSTGAME") {
-            gImgMap.get(e.target.getAttribute("__player")).style.display = "block";
-            gImgMap.get(e.target.getAttribute("__player")).querySelector("img").style.display = "block";
+            gImgMap.get(e.currentTarget.getAttribute("__player")).style.display = "block";
+            gImgMap.get(e.currentTarget.getAttribute("__player")).querySelector("img").style.display = "block";
 
         }
     }
