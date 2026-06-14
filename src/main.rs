@@ -180,8 +180,25 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let static_files = warp::fs::dir("frontend");
     let routes = ws_route.or(global_chat_route).or(lobbies_api).or(static_files);
 
-    let server = task::spawn(async move {warp::serve(routes).run(([0, 0, 0, 0], cliargs.port)).await;});
-    println!("Webserver listening on http://127.0.0.0:{}", cliargs.port);
+    let port = cliargs.port;
+    let server = if let (Some(cert), Some(key)) = (cliargs.tls_cert, cliargs.tls_key) {
+        println!("Webserver listening on https://127.0.0.0:{}", port);
+        task::spawn(async move {
+            warp::serve(routes)
+                .tls()
+                .cert_path(cert)
+                .key_path(key)
+                .run(([0, 0, 0, 0], port))
+                .await;
+        })
+    } else {
+        println!("Webserver listening on http://127.0.0.0:{}", port);
+        task::spawn(async move {
+            warp::serve(routes)
+                .run(([0, 0, 0, 0], port))
+                .await;
+        })
+    };
 
     (forever.await?, server.await?);
 
