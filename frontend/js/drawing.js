@@ -387,6 +387,16 @@ function onload_drawing() {
 		document.getElementById("selection-options").style.display = t === "select" ? "block" : "none";
 		document.getElementById("text-options").style.display = t === "text" ? "block" : "none";
 		document.getElementById("shape-options").style.display = t === "shape" ? "block" : "none";
+
+		const toolIds = ["pencil", "erase", "flood", "select", "text", "shape"];
+		for (let id of toolIds) {
+			let btn = document.getElementById(id);
+			if (btn) btn.classList.remove("active-tool");
+		}
+		let activeId = t;
+		if (t === "paint") activeId = "pencil";
+		let activeBtn = document.getElementById(activeId);
+		if (activeBtn) activeBtn.classList.add("active-tool");
 	}
 
 
@@ -719,6 +729,8 @@ function onload_drawing() {
 			img.src = clipboardData;
 		}
 	};
+
+	selectTool(tool);
 
 	function getPixel(pixelData, x, y) {
 		if (x < 0 || y < 0 || x >= pixelData.width || y >= pixelData.height) {

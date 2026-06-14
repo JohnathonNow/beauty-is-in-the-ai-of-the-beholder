@@ -44,6 +44,12 @@ button:hover {
     background-color: #e2e6ea;
 }
 
+#controls button.active-tool {
+    background-color: #c8e6c9;
+    border: 2px solid #4CAF50;
+    transform: scale(0.95);
+}
+
 #drawing-workspace {
     display: flex;
     flex-direction: row;
