@@ -225,7 +225,11 @@ function onload_billiards() {
                     if (gstrks) {
                         redraw_other(gMap.get(player).getContext("2d"), gstrks);
                     }
-                    picture.src = "drawings/" + player + "-" + gAssign.replaceAll(" ", "-") + ".png"
+                    if (gState["players"][player] && gState["players"][player]["image_path"]) {
+                        picture.src = gState["players"][player]["image_path"];
+                    } else {
+                        picture.src = "drawings/" + player + "-" + gAssign.replaceAll(" ", "-") + ".png";
+                    }
                     image.onclick = function() {
                         //picture.src = "/drawings/" + 
                         Array.prototype.forEach.call(document.getElementsByClassName("finalimagecontainer"), d=>d.style.display = "none");
