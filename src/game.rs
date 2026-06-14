@@ -11,6 +11,8 @@ use std::io::{Write, BufWriter};
 use base64::Engine;
 use std::fs;
 use uuid::Uuid;
+use rand::thread_rng;
+use rand::seq::SliceRandom;
 
 pub type GameServerState = Arc<Mutex<State>>;
 type PeerMap = HashMap<String, broadcast::Sender<String>>;
@@ -44,14 +46,14 @@ pub struct State {
 }
 
 impl State {
-    pub fn new(timelimit: i32, maxpoints: i32, end_on_time: bool) -> Self {
+    pub fn new(timelimit: i32, maxpoints: i32, end_on_time: bool, gametype: String) -> Self {
 
         //TODO: improve this?
         let config: Options = serde_json::from_str::<Options>(&fs::read_to_string("./resources/offsets.json").unwrap()).unwrap();
 
         Self {
             peer_map: HashMap::new(),
-            sendable: SendableState::new("".into(), timelimit, maxpoints, end_on_time),
+            sendable: SendableState::new("".into(), timelimit, maxpoints, end_on_time, gametype),
             word_pool: Vec::new(),
             embedding: vec![],
             offset_embedding: config.offset,
@@ -112,7 +114,39 @@ impl State {
             GameState::LOBBY => {}
             GameState::RUNNING => {
                 self.sendable.tick_running();
-                if self.sendable.is_over() {
+                let mut should_end = self.sendable.is_over();
+
+                if self.sendable.gametype == "Classic" {
+                    let mut active_count = 0;
+                    let mut guessed_count = 0;
+                    for (name, player) in self.sendable.players.iter() {
+                        if player.active && Some(name.clone()) != self.sendable.drawer {
+                            active_count += 1;
+                            if player.has_guessed {
+                                guessed_count += 1;
+                            }
+                        }
+                    }
+                    if active_count > 0 && guessed_count == active_count {
+                        should_end = true;
+                    }
+
+                    if should_end {
+                        if let Some(drawer_name) = &self.sendable.drawer {
+                            if let Some(drawer) = self.sendable.players.get_mut(drawer_name) {
+                                let ratio = if active_count > 0 {
+                                    guessed_count as f32 / active_count as f32
+                                } else {
+                                    0.0
+                                };
+                                let points = -10.0 + 50.0 * ratio;
+                                drawer.score = points.max(-10.0).min(40.0);
+                            }
+                        }
+                    }
+                }
+
+                if should_end {
                     self.sendable.set_state(GameState::POSTGAME);
                     self.broadcast_state();
                 }
@@ -190,6 +224,17 @@ pub async fn handle(
                         if let Some(host) = gs.sendable.get_host() {
                             if host == &login_name {
                                 gs.sendable.set_state(GameState::RUNNING);
+                                if gs.sendable.gametype == "Classic" {
+                                    let active_players: Vec<String> = gs.sendable.players.iter()
+                                        .filter_map(|(name, p)| if p.active { Some(name.clone()) } else { None })
+                                        .collect();
+                                    if !active_players.is_empty() {
+                                        let mut rng = thread_rng();
+                                        if let Some(drawer) = active_players.choose(&mut rng) {
+                                            gs.sendable.drawer = Some(drawer.clone());
+                                        }
+                                    }
+                                }
                             }
                         }
                         let _ = gtx.send(
@@ -214,16 +259,89 @@ pub async fn handle(
                         );
                     }
                     packets::Incoming::Guess { guess } => {
-                        let _ = gtx.send(
-                            serde_json::to_string(&packets::Outgoing::Guess {
-                                username: login_name.clone(),
-                                guess,
-                            })
-                            .unwrap(),
-                        );
+                        let mut gs = game_state.lock().await;
+                        let mut is_correct = false;
+                        let mut guess_points = 0;
+                        let mut the_drawer = String::new();
+
+                        if gs.sendable.gametype == "Classic" && gs.sendable.get_state() as u8 == GameState::RUNNING as u8 {
+                            if guess.to_lowercase() == gs.sendable.word.to_lowercase() {
+                                let drawer_clone = gs.sendable.drawer.clone();
+                                if let Some(d) = drawer_clone {
+                                    if d != login_name {
+                                        if let Some(player) = gs.sendable.players.get_mut(&login_name) {
+                                            if !player.has_guessed {
+                                                is_correct = true;
+                                                player.has_guessed = true;
+                                                the_drawer = d;
+                                            }
+                                        }
+                                        if is_correct {
+                                            // Compute points
+                                            let mut first_guess = true;
+                                            for (n, p) in &gs.sendable.players {
+                                                if *n != login_name && p.has_guessed {
+                                                    first_guess = false;
+                                                }
+                                            }
+                                            if first_guess {
+                                                guess_points = 50;
+                                            } else {
+                                                let remaining = gs.sendable.timelimit - gs.sendable.time;
+                                                guess_points = (remaining as f32 / gs.sendable.timelimit as f32 * 50.0) as i32;
+                                            }
+
+                                            if let Some(player) = gs.sendable.players.get_mut(&login_name) {
+                                                player.score += guess_points as f32;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if is_correct {
+                            let _ = gtx.send(
+                                serde_json::to_string(&packets::Outgoing::Guessed {
+                                    guesser: login_name.clone(),
+                                    drawer: the_drawer,
+                                    points: guess_points,
+                                })
+                                .unwrap()
+                            );
+
+                            if let Some(player) = gs.sendable.players.get(&login_name) {
+                                let _ = gtx.send(
+                                    serde_json::to_string(&packets::Outgoing::Score {
+                                        username: login_name.clone(),
+                                        score: player.score,
+                                    })
+                                    .unwrap()
+                                );
+                            }
+                        } else {
+                            let _ = gtx.send(
+                                serde_json::to_string(&packets::Outgoing::Guess {
+                                    username: login_name.clone(),
+                                    guess,
+                                })
+                                .unwrap(),
+                            );
+                        }
                     }
                     packets::Incoming::Image { image } => {
                         let mut gs = game_state.lock().await;
+
+                        if gs.sendable.gametype == "Classic" {
+                            if let Some(drawer) = &gs.sendable.drawer {
+                                if *drawer != login_name {
+                                    continue; // Only the drawer can submit images in Classic mode
+                                }
+                            } else {
+                                continue;
+                            }
+                        }
+
                         let uuid = Uuid::new_v4().to_string();
                         let dir_prefix = &uuid[..4];
                         let dir_path = format!("frontend/drawings/{}", dir_prefix);
@@ -232,20 +350,31 @@ pub async fn handle(
 
                         let _ = save_png_from_data_url(&image, &file_path);
                         println!("Saved image to {}", file_path);
-                        let score = gs.score(&file_path).await.unwrap_or(0f32);
-                        println!("Wow, score is {}", score);
 
+                        let mut final_score = 0.0;
+
+                        if gs.sendable.gametype != "Classic" {
+                            let score = gs.score(&file_path).await.unwrap_or(0f32);
+                            println!("Wow, score is {}", score);
+                            final_score = score;
+                        }
+
+                        let is_classic = gs.sendable.gametype == "Classic";
                         let player = gs.sendable.get_player_mut(&login_name);
-                        player.score = score;
+                        if !is_classic {
+                            player.score = final_score;
+                        }
                         player.image_path = Some(format!("drawings/{}/{}.png", dir_prefix, uuid));
 
-                        let _ = gtx.send(
-                            serde_json::to_string(&packets::Outgoing::Score {
-                                username: login_name.clone(),
-                                score,
-                            })
-                            .unwrap(),
-                        );
+                        if !is_classic {
+                            let _ = gtx.send(
+                                serde_json::to_string(&packets::Outgoing::Score {
+                                    username: login_name.clone(),
+                                    score: final_score,
+                                })
+                                .unwrap(),
+                            );
+                        }
                         gs.broadcast_state();
                     }
                 }
@@ -284,10 +413,12 @@ pub struct SendableState {
     maxpoints: i32,
     end_on_time: bool,
     bad_score: f32,
+    gametype: String,
+    drawer: Option<String>,
 }
 
 impl SendableState {
-    pub fn new(word: String, timelimit: i32, maxpoints: i32, end_on_time: bool) -> Self {
+    pub fn new(word: String, timelimit: i32, maxpoints: i32, end_on_time: bool, gametype: String) -> Self {
         Self {
             players: HashMap::new(),
             state: GameState::LOBBY,
@@ -298,6 +429,8 @@ impl SendableState {
             maxpoints,
             end_on_time,
             bad_score: 1000.0,
+            gametype,
+            drawer: None,
         }
     }
     pub fn fix_host(&mut self) {
@@ -358,9 +491,10 @@ impl SendableState {
 
 #[derive(Serialize, Debug)]
 pub struct PlayerState {
-    active: bool,
-    score: f32,
-    image_path: Option<String>,
+    pub active: bool,
+    pub score: f32,
+    pub image_path: Option<String>,
+    pub has_guessed: bool,
 }
 
 impl PlayerState {
@@ -369,11 +503,13 @@ impl PlayerState {
             active: false,
             score: 0.0,
             image_path: None,
+            has_guessed: false,
         }
     }
     pub fn restart(&mut self) {
         self.score = 0.0;
         self.image_path = None;
+        self.has_guessed = false;
     }
     pub fn set_active(&mut self, active: bool) {
         self.active = active

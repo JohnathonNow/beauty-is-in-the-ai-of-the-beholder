@@ -38,7 +38,7 @@ function reset() {
 }
 
 function onload_billiards() {
-    function connect(customWords, timeLimit) {
+    function connect(customWords, timeLimit, gametype) {
         reset();
         let wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
         let wsUrl = wsProtocol + window.location.hostname + ':' + window.location.port + window.location.pathname + 'chat?name=' + encodeURIComponent(gName) + "&lobby=" + encodeURIComponent(gLobby);
@@ -51,6 +51,9 @@ function onload_billiards() {
                 let clampedTime = Math.max(30, Math.min(300, parsedTime));
                 wsUrl += "&time=" + clampedTime;
             }
+        }
+        if (gametype) {
+            wsUrl += "&gametype=" + encodeURIComponent(gametype);
         }
         socket = new WebSocket(wsUrl);
         //socket = new WebSocket('ws://' + window.location.hostname + ':3030/chat');
@@ -130,7 +133,11 @@ function onload_billiards() {
                     reset();
                 }
                 gAssign = data["FullState"]["state"]["word"];
-                document.getElementById("word").textContent = "Please draw: " + gAssign;
+                if (data["FullState"]["state"]["gametype"] == "Classic" && data["FullState"]["state"]["drawer"] !== gName) {
+                    document.getElementById("word").textContent = "Guess the word!";
+                } else {
+                    document.getElementById("word").textContent = "Please draw: " + gAssign;
+                }
                 let namelist = get_namelist(data["FullState"]["state"]);
                 for (var p in data["FullState"]["state"]["players"]) {
                     let player = data["FullState"]["state"]["players"][p];
@@ -154,6 +161,24 @@ function onload_billiards() {
                     }
                     add_drawing(p, []);
                 }
+
+                if (data["FullState"]["state"]["gametype"] == "Classic" && data["FullState"]["state"]["drawer"] !== gName && data["FullState"]["state"]["drawer"] !== null) {
+                    let drawerName = data["FullState"]["state"]["drawer"];
+                    if (data["FullState"]["state"]["players"][drawerName] && data["FullState"]["state"]["players"][drawerName]["image_path"]) {
+                        let path = data["FullState"]["state"]["players"][drawerName]["image_path"];
+                        if (gImgMap.get(drawerName) !== path) {
+                            gImgMap.set(drawerName, path);
+                            let img = new Image();
+                            img.onload = function() {
+                                let ctx = document.getElementById("canvas").getContext("2d");
+                                ctx.clearRect(0, 0, 1000, 1000);
+                                ctx.drawImage(img, 0, 0, 1000, 1000);
+                            };
+                            img.src = path;
+                        }
+                    }
+                }
+
                 tick(data["FullState"]["state"]);
                 if (data["FullState"]["state"]["state"] == "RUNNING" && !gAssign) {
                     sendAssign();
@@ -216,7 +241,11 @@ function onload_billiards() {
     function show_winners() {
         let namelist = document.getElementById("user-list-3");
         let values = Object.entries(gState["players"]);
-        values.sort((a, b) => b[1].score - a[1].score); // Sort descending (worst/highest to best/lowest)
+        if (gState["gametype"] == "Classic") {
+            values.sort((a, b) => b[1].score - a[1].score); // Sort descending (best to worst for Classic)
+        } else {
+            values.sort((a, b) => a[1].score - b[1].score); // Sort ascending (lowest distance is best for AI)
+        }
         let highscore = Math.max(...values.map(x => x[1].score));
         let lowscore = Math.min(...values.map(x => x[1].score));
         for (let i = 0; i < values.length; ++i) {
@@ -434,7 +463,9 @@ function onload_billiards() {
     }
     function draw_event_handler(e) {
         e.preventDefault();
-        //sendDrawing();
+        if (gState && gState["gametype"] == "Classic" && gState["drawer"] == gName) {
+            sendDrawing();
+        }
     }
     let canvas = document.getElementById("canvas");
     canvas.addEventListener("touchend", draw_event_handler);
@@ -457,12 +488,12 @@ function onload_billiards() {
             });
     }
 
-    function join_lobby(lobby, customWords, timeLimit) {
+    function join_lobby(lobby, customWords, timeLimit, gametype) {
         if (!lobby) return;
         gLobby = lobby;
         document.getElementById("lobby-selection").style.display = "none";
         document.getElementById("game").style.display = "block";
-        connect(customWords, timeLimit);
+        connect(customWords, timeLimit, gametype);
     }
 
     document.getElementById("name").addEventListener("keydown", function (e) {
@@ -509,8 +540,9 @@ function onload_billiards() {
         const name = document.getElementById("new-lobby-name").value;
         const customWords = document.getElementById("new-lobby-words").value;
         const timeLimit = document.getElementById("new-lobby-time").value;
+        const gametype = document.getElementById("new-lobby-mode").value;
         if (name.trim() !== "") {
-            join_lobby(name.trim(), customWords.trim(), timeLimit);
+            join_lobby(name.trim(), customWords.trim(), timeLimit, gametype);
         }
     };
     document.getElementById("new-lobby-name").addEventListener("keydown", function (e) {
@@ -518,8 +550,9 @@ function onload_billiards() {
             const name = e.target.value;
             const customWords = document.getElementById("new-lobby-words").value;
             const timeLimit = document.getElementById("new-lobby-time").value;
+            const gametype = document.getElementById("new-lobby-mode").value;
             if (name.trim() !== "") {
-                join_lobby(name.trim(), customWords.trim(), timeLimit);
+                join_lobby(name.trim(), customWords.trim(), timeLimit, gametype);
             }
         }
     });

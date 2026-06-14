@@ -18,6 +18,11 @@ pub enum Outgoing<'a> {
     FullState {
         state: &'a game::SendableState,
     },
+    Guessed {
+        guesser: String,
+        drawer: String,
+        points: i32,
+    },
     NewName {
         new_name: String,
     },
