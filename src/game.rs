@@ -356,7 +356,7 @@ pub async fn handle(
                         if gs.sendable.gametype != "Classic" {
                             let score = gs.score(&file_path).await.unwrap_or(0f32);
                             println!("Wow, score is {}", score);
-                            final_score = score;
+                            final_score = 160.0 - score;
                         }
 
                         let is_classic = gs.sendable.gametype == "Classic";
