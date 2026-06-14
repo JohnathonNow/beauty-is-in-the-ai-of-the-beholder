@@ -158,11 +158,11 @@ function onload_drawing() {
 
 		var px, py;
 		if (touches) {
-			px = (touches[0].pageX + b - rect.left) / context.canvas.offsetWidth * 1000;
-			py = (touches[0].pageY + b - rect.top) / context.canvas.offsetHeight * 1000;
+			px = (touches[0].clientX - b - rect.left) / context.canvas.clientWidth * 1000;
+			py = (touches[0].clientY - b - rect.top) / context.canvas.clientHeight * 1000;
 		} else {
-			px = (e.clientX - b - rect.left) / context.canvas.offsetWidth * 1000;
-			py = (e.clientY - b - rect.top) / context.canvas.offsetHeight * 1000;
+			px = (e.clientX - b - rect.left) / context.canvas.clientWidth * 1000;
+			py = (e.clientY - b - rect.top) / context.canvas.clientHeight * 1000;
 		}
 
 		startX = px;
@@ -186,6 +186,7 @@ function onload_drawing() {
 					let dy_px = dy * context.canvas.height / 1000;
 
 					let text_size = strokes[i].size * context.canvas.height / 1000;
+					context.font = text_size + "px " + strokes[i].font;
 
 					if (Math.abs(dx_px) < 20 && dy_px > -text_size/2 - 40 && dy_px < -text_size/2 - 10) { // top handle
 						clickedIndex = i;
@@ -236,8 +237,8 @@ function onload_drawing() {
 					let unscaled_dx_px = dx_px / scaleX;
 					let unscaled_dy_px = dy_px / scaleY;
 
-					let w_px = strokes[i].w * context.canvas.width / 1000;
-					let h_px = strokes[i].h * context.canvas.height / 1000;
+					let w_px = strokes[i].w;
+					let h_px = strokes[i].h;
 
 					if (Math.abs(unscaled_dx_px) < 20 && unscaled_dy_px > -h_px/2 - 40 && unscaled_dy_px < -h_px/2 - 10) {
 						clickedIndex = i;
@@ -301,11 +302,11 @@ function onload_drawing() {
 
 			var px, py;
 			if (touches) {
-				px = (touches[0].pageX + b - rect.left) / context.canvas.offsetWidth * 1000;
-				py = (touches[0].pageY + b - rect.top) / context.canvas.offsetHeight * 1000;
+				px = (touches[0].clientX - b - rect.left) / context.canvas.clientWidth * 1000;
+				py = (touches[0].clientY - b - rect.top) / context.canvas.clientHeight * 1000;
 			} else {
-				px = (e.clientX - rect.left - b) / context.canvas.offsetWidth * 1000;
-				py = (e.clientY - rect.top - b) / context.canvas.offsetHeight * 1000;
+				px = (e.clientX - b - rect.left) / context.canvas.clientWidth * 1000;
+				py = (e.clientY - b - rect.top) / context.canvas.clientHeight * 1000;
 			}
 
 			if (tool === "shape") {
