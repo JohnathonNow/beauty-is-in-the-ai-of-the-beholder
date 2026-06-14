@@ -25,6 +25,7 @@ struct Query {
     name: String,
     words: Option<String>,
     time: Option<i32>,
+    gametype: Option<String>,
 }
 
 struct Lobby {
@@ -77,7 +78,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     if let Some(custom_time) = query.time {
                         time_limit = custom_time.clamp(30, 300);
                     }
-                    let mut inner_game_state = game::State::new(time_limit, mp, eot);
+                    let gametype = query.gametype.clone().unwrap_or_else(|| "AI".to_string());
+                    let mut inner_game_state = game::State::new(time_limit, mp, eot, gametype);
 
                     let mut final_words = bw;
                     if let Some(custom_words_str) = &query.words {
