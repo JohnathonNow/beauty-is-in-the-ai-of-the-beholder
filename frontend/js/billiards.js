@@ -234,14 +234,17 @@ function onload_billiards() {
                 if (state["drawer"] !== gName) {
                     document.getElementById("word").textContent = "Guess the word!";
                     document.getElementById("word").style.backgroundColor = "blue";
-                    document.getElementById("canvas").style.display = "none";
-                    document.getElementById("gallery").style.display = "block";
+                    document.getElementById("drawing").style.display = "none";
+                    document.getElementById("gallery").style.display = "flex";
                 } else {
                     document.getElementById("word").textContent = "Please draw: " + state["word"];
                     document.getElementById("word").style.backgroundColor = "green";
-                    document.getElementById("canvas").style.display = "block";
-                    document.getElementById("gallery").style.display = "none";
+                    document.getElementById("drawing").style.display = "block";
+                    document.getElementById("gallery").style.display = "flex";
                 }
+            } else {
+                document.getElementById("drawing").style.display = "block";
+                document.getElementById("gallery").style.display = "flex";
             }
         } else if (state["state"] == "LOBBY") {
             gameover = false;
