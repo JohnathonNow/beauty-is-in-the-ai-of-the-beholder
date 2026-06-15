@@ -7,8 +7,6 @@ pub enum Incoming {
     Image { image: String },
     Start {},
     Restart {},
-    Kick { player: String },
-    Ban { player: String },
 }
 
 #[derive(Serialize, Debug)]
@@ -32,6 +30,4 @@ pub enum Outgoing<'a> {
         username: String,
         score: f32,
     },
-    Kicked {},
-    Banned {},
 }
