@@ -14,5 +14,5 @@ global.gState = {
 
 let values = Object.entries(gState["players"]);
 console.log("Original:", values.map(x => x[0] + ":" + x[1].score));
-values.sort((a, b) => b[1].score - a[1].score);
-console.log("Sorted worst to best (highest score to lowest):", values.map(x => x[0] + ":" + x[1].score));
+values.sort((a, b) => a[1].score - b[1].score);
+console.log("Sorted worst to best (lowest score to highest):", values.map(x => x[0] + ":" + x[1].score));

@@ -277,7 +277,7 @@ function onload_billiards() {
     function show_winners() {
         let namelist = document.getElementById("user-list-3");
         let values = Object.entries(gState["players"]);
-        values.sort((a, b) => b[1].score - a[1].score); // Sort descending (best to worst)
+        values.sort((a, b) => a[1].score - b[1].score); // Sort ascending (worst to best)
         let highscore = Math.max(...values.map(x => x[1].score));
         let lowscore = Math.min(...values.map(x => x[1].score));
         for (let i = 0; i < values.length; ++i) {
