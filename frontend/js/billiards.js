@@ -7,6 +7,7 @@ var gStrokes = null;
 var gMapLobby = null;
 var gAssign = null;
 var gState = null;
+var gLastDrawer = null;
 var lastStroke = 0;
 var gUndo = null; // function
 var gstrks = null;
@@ -211,8 +212,28 @@ function onload_billiards() {
             timer.value = state["time"];
             timer.max = state["timelimit"];
             on_visible();
+
+            if (state["gametype"] == "Classic") {
+                if (gLastDrawer !== state["drawer"]) {
+                    clear_canvas();
+                    gLastDrawer = state["drawer"];
+                }
+
+                if (state["drawer"] !== gName) {
+                    document.getElementById("word").textContent = "Guess the word!";
+                    document.getElementById("word").style.backgroundColor = "blue";
+                    document.getElementById("canvas").style.display = "none";
+                    document.getElementById("gallery").style.display = "block";
+                } else {
+                    document.getElementById("word").textContent = "Please draw: " + state["word"];
+                    document.getElementById("word").style.backgroundColor = "green";
+                    document.getElementById("canvas").style.display = "block";
+                    document.getElementById("gallery").style.display = "none";
+                }
+            }
         } else if (state["state"] == "LOBBY") {
             gameover = false;
+            gLastDrawer = null;
             document.getElementById("progress-container").style.display = "none";
             document.getElementById("lobby-container").style.display = "block";
             document.getElementById("endgame-container").style.display = "none";

@@ -140,15 +140,45 @@ impl State {
                                     0.0
                                 };
                                 let points = -10.0 + 50.0 * ratio;
-                                drawer.score = points.max(-10.0).min(40.0);
+                                drawer.score += points.max(-10.0).min(40.0);
                             }
                         }
                     }
                 }
 
                 if should_end {
-                    self.sendable.set_state(GameState::POSTGAME);
-                    self.broadcast_state();
+                    let mut start_new_turn = false;
+                    if self.sendable.gametype == "Classic" {
+                        let undrawn_players: Vec<String> = self.sendable.players.iter()
+                            .filter_map(|(name, p)| if p.active && !p.has_drawn { Some(name.clone()) } else { None })
+                            .collect();
+                        if !undrawn_players.is_empty() {
+                            start_new_turn = true;
+                            self.sendable.time = 0;
+                            for (_, p) in self.sendable.players.iter_mut() {
+                                p.has_guessed = false;
+                                p.image_path = None;
+                            }
+                            let mut rng = thread_rng();
+                            if let Some(new_drawer) = undrawn_players.choose(&mut rng) {
+                                self.sendable.drawer = Some(new_drawer.clone());
+                                if let Some(player) = self.sendable.players.get_mut(new_drawer) {
+                                    player.has_drawn = true;
+                                }
+                            }
+                            if let Some(word) = self.word_pool.pop() {
+                                self.sendable.word = word.word;
+                                self.embedding = word.embedding;
+                            }
+                        }
+                    }
+
+                    if start_new_turn {
+                        self.broadcast_state();
+                    } else {
+                        self.sendable.set_state(GameState::POSTGAME);
+                        self.broadcast_state();
+                    }
                 }
             }
             GameState::POSTGAME => {}
@@ -232,6 +262,9 @@ pub async fn handle(
                                         let mut rng = thread_rng();
                                         if let Some(drawer) = active_players.choose(&mut rng) {
                                             gs.sendable.drawer = Some(drawer.clone());
+                                            if let Some(player_state) = gs.sendable.players.get_mut(drawer) {
+                                                player_state.has_drawn = true;
+                                            }
                                         }
                                     }
                                 }
@@ -495,6 +528,7 @@ pub struct PlayerState {
     pub score: f32,
     pub image_path: Option<String>,
     pub has_guessed: bool,
+    pub has_drawn: bool,
 }
 
 impl PlayerState {
@@ -504,12 +538,14 @@ impl PlayerState {
             score: 0.0,
             image_path: None,
             has_guessed: false,
+            has_drawn: false,
         }
     }
     pub fn restart(&mut self) {
         self.score = 0.0;
         self.image_path = None;
         self.has_guessed = false;
+        self.has_drawn = false;
     }
     pub fn set_active(&mut self, active: bool) {
         self.active = active
