@@ -13,6 +13,7 @@ use std::fs;
 use uuid::Uuid;
 use rand::thread_rng;
 use rand::seq::SliceRandom;
+use log::{info, error, debug, warn};
 
 pub type GameServerState = Arc<Mutex<State>>;
 type PeerMap = HashMap<String, broadcast::Sender<String>>;
@@ -105,6 +106,7 @@ impl State {
             .zip(self.embedding.iter())
             .map(|(x1, &x2)| (x1 - x2).powi(2))
             .sum();
+        debug!("Game state restarted. New word chosen: {}", self.sendable.word);
         self.sendable.restart();
     }
     pub fn add_words(&mut self, words: Vec<Word>) {
@@ -176,8 +178,10 @@ impl State {
                     }
 
                     if start_new_turn {
+                        debug!("Starting new turn. Current drawer: {:?}", self.sendable.drawer);
                         self.broadcast_state();
                     } else {
+                        debug!("Game over, entering POSTGAME state.");
                         self.sendable.set_state(GameState::POSTGAME);
                         self.broadcast_state();
                     }
@@ -227,6 +231,8 @@ pub async fn handle(
         return;
     }
 
+    info!("Player joined: {}", login_name);
+
     tokio::task::spawn(async move {
         {
             let mut gs = game_state.lock().await;
@@ -244,7 +250,7 @@ pub async fn handle(
             let message = match result {
                 Ok(msg) => msg,
                 Err(e) => {
-                    eprintln!("WebSocket error: {}", e);
+                    error!("WebSocket error: {}", e);
                     break;
                 }
             };
@@ -255,10 +261,11 @@ pub async fn handle(
                 continue;
             };
 
-            println!("{}: {}", &login_name, message);
+            info!("{}: {}", &login_name, message);
             if let Ok(packet) = serde_json::from_str::<packets::Incoming>(&message) {
                 match packet {
                     packets::Incoming::Start {} => {
+                        info!("Received Start packet from {}", login_name);
                         let mut gs = game_state.lock().await;
                         if let Some(host) = gs.sendable.get_host() {
                             if host == &login_name {
@@ -287,6 +294,7 @@ pub async fn handle(
                         );
                     }
                     packets::Incoming::Kick { player } => {
+                        info!("Received Kick packet from {} targeting {}", login_name, player);
                         let mut gs = game_state.lock().await;
                         if let Some(host) = gs.sendable.get_host() {
                             if host == &login_name && host != &player {
@@ -307,6 +315,7 @@ pub async fn handle(
                         }
                     }
                     packets::Incoming::Ban { player } => {
+                        warn!("Received Ban packet from {} targeting {}", login_name, player);
                         let mut gs = game_state.lock().await;
                         if let Some(host) = gs.sendable.get_host() {
                             if host == &login_name && host != &player {
@@ -384,6 +393,7 @@ pub async fn handle(
                         }
 
                         if is_correct {
+                            info!("Player {} guessed correctly!", login_name);
                             let _ = gtx.send(
                                 serde_json::to_string(&packets::Outgoing::Guessed {
                                     guesser: login_name.clone(),
@@ -403,6 +413,7 @@ pub async fn handle(
                                 );
                             }
                         } else {
+                            info!("Player {} guessed incorrectly: {}", login_name, guess);
                             let _ = gtx.send(
                                 serde_json::to_string(&packets::Outgoing::Guess {
                                     username: login_name.clone(),
@@ -432,13 +443,13 @@ pub async fn handle(
                         let file_path = format!("{}/{}.png", dir_path, uuid);
 
                         let _ = save_png_from_data_url(&image, &file_path);
-                        println!("Saved image to {}", file_path);
+                        info!("Saved image to {}", file_path);
 
                         let mut final_score = 0.0;
 
                         if gs.sendable.gametype != "Classic" {
                             let score = gs.score(&file_path).await.unwrap_or(0f32);
-                            println!("Wow, score is {}", score);
+                            info!("Wow, score is {}", score);
                             final_score = 160.0 - score;
                         }
 
@@ -464,6 +475,7 @@ pub async fn handle(
             }
         }
 
+        info!("Player left: {}", login_name);
         let mut x = game_state.lock().await;
         x.peer_map.remove(&login_name);
         x.sendable.get_player_mut(&login_name).set_active(false);

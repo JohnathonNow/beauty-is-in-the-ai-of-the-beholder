@@ -12,6 +12,7 @@ use rand::thread_rng;
 use rand::seq::SliceRandom;
 use futures::{StreamExt, SinkExt};
 use warp::ws::Message;
+use log::{info, debug};
 
 mod packets;
 mod game;
@@ -37,6 +38,7 @@ type LobbyManager = Arc<Mutex<HashMap<String, Lobby>>>;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    env_logger::init();
     let cliargs = args::Args::parse();
     let base_words = read_words(&cliargs.words)?;
 
@@ -72,8 +74,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
             let (state, tx) = {
                 let mut lobbies = lm.lock().await;
                 if let Some(lobby) = lobbies.get(&query.lobby) {
+                    debug!("Lobby {} already exists, joining", query.lobby);
                     (lobby.state.clone(), lobby.tx.clone())
                 } else {
+                    info!("Creating new lobby: {}", query.lobby);
                     let mut time_limit = tl;
                     if let Some(custom_time) = query.time {
                         time_limit = custom_time.clamp(30, 300);
@@ -90,13 +94,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
                             for w in words_list {
                                 let request_url = "http://localhost:9991/text";
                                 let query_text = format!("an electronic doodle depicting {}", w);
+                                debug!("Fetching embedding for word: {}", w);
                                 if let Ok(response) = client.get(request_url).query(&[("text", &query_text)]).send().await {
                                     if let Ok(vector) = response.json::<game::Vector>().await {
                                         fetched_words.push(game::Word {
                                             word: w.to_string(),
                                             embedding: vector.inner,
                                         });
+                                    } else {
+                                        debug!("Failed to parse embedding response for word: {}", w);
                                     }
+                                } else {
+                                    debug!("Failed to fetch embedding for word: {}", w);
                                 }
                             }
                             if !fetched_words.is_empty() {
@@ -128,6 +137,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 }
             };
 
+            info!("Upgrading connection to websocket for lobby: {}, user: {}", query.lobby, query.name);
             ws.on_upgrade(move |socket| game::handle(socket, state, tx, query.lobby, query.name))
         });
 
@@ -189,7 +199,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let port = cliargs.port;
     let server = if let (Some(cert), Some(key)) = (cliargs.tls_cert, cliargs.tls_key) {
-        println!("Webserver listening on https://127.0.0.0:{}", port);
+        info!("Webserver listening on https://127.0.0.0:{}", port);
         task::spawn(async move {
             warp::serve(routes)
                 .tls()
@@ -199,7 +209,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 .await;
         })
     } else {
-        println!("Webserver listening on http://127.0.0.0:{}", port);
+        info!("Webserver listening on http://127.0.0.0:{}", port);
         task::spawn(async move {
             warp::serve(routes)
                 .run(([0, 0, 0, 0], port))
