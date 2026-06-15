@@ -1,0 +1,54 @@
+--- frontend/js/billiards.js
++++ frontend/js/billiards.js
+@@ -143,6 +143,15 @@
+                 for (var p in data["FullState"]["state"]["players"]) {
+                     let player = data["FullState"]["state"]["players"][p];
+                     let nametag = add_player(p);
++                    if (data["FullState"]["state"]["host"] == gName && p != gName) {
++                        if (nametag.querySelector(".kick-btn")) nametag.querySelector(".kick-btn").style.display = "inline-block";
++                        if (nametag.querySelector(".ban-btn")) nametag.querySelector(".ban-btn").style.display = "inline-block";
++                    } else {
++                        if (nametag.querySelector(".kick-btn")) {
++                            nametag.querySelector(".kick-btn").style.display = "none";
++                            nametag.querySelector(".ban-btn").style.display = "none";
++                        }
++                    }
+                     nametag.setAttribute("active", player["active"]);
+                     if (!gameover) {
+                         namelist.append(nametag);
+@@ -188,6 +197,12 @@
+                 for ([player, istrokes] of gStrokes) {
+                     socket.send(JSON.stringify({ "Pull": { "username": player, i: istrokes.length } }));
+                 }
++            } else if (data["Kicked"]) {
++                alert("You have been kicked from the lobby.");
++                window.location.reload();
++            } else if (data["Banned"]) {
++                alert("You have been banned from the lobby.");
++                window.location.reload();
+             }
+         });
+
+@@ -351,6 +366,22 @@
+             listItem.classList.add('user-list-item');
+             listItem.setAttribute("__player", player);
+             listItem.onclick = player_click;
++            let kickBtn = document.createElement("button");
++            kickBtn.textContent = "Kick";
++            kickBtn.className = "kick-btn";
++            kickBtn.style.display = "none";
++            kickBtn.onclick = function(e) { e.stopPropagation(); socket.send(JSON.stringify({"Kick": {"player": player}})); };
++            let banBtn = document.createElement("button");
++            banBtn.textContent = "Ban";
++            banBtn.className = "ban-btn";
++            banBtn.style.display = "none";
++            banBtn.onclick = function(e) { e.stopPropagation(); socket.send(JSON.stringify({"Ban": {"player": player}})); };
++            let nameSpan = document.createElement("span");
++            nameSpan.textContent = player;
++            listItem.innerHTML = "";
++            listItem.appendChild(nameSpan);
++            listItem.appendChild(kickBtn);
++            listItem.appendChild(banBtn);
+             gMapLobby.set(player, listItem);
+         }
+         let nametag = gMapLobby.get(player);

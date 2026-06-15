@@ -43,6 +43,7 @@ pub struct State {
     embedding: Vec<f32>,
     offset_embedding: Vec<f32>,
     blank_embedding: Vec<f32>,
+    banned_players: std::collections::HashSet<String>,
 }
 
 impl State {
@@ -58,6 +59,7 @@ impl State {
             embedding: vec![],
             offset_embedding: config.offset,
             blank_embedding: config.blank,
+            banned_players: std::collections::HashSet::new(),
         }
     }
     fn broadcast_state(&self) {
@@ -198,6 +200,13 @@ pub async fn handle(
     let (mut user_ws_tx, mut user_ws_rx) = ws.split();
     let mut die = false;
     {
+        let gs = game_state.lock().await;
+        if gs.banned_players.contains(&login_name) {
+            let _ = user_ws_tx.send(Message::text(serde_json::to_string(&packets::Outgoing::Banned {}).unwrap())).await;
+            return;
+        }
+    }
+    {
         let mut gs = game_state.lock().await;
         gs.sendable.set_host(&login_name);
         let pm: &mut PlayerState = gs.sendable.get_player_mut(&login_name);
@@ -276,6 +285,47 @@ pub async fn handle(
                             })
                             .unwrap(),
                         );
+                    }
+                    packets::Incoming::Kick { player } => {
+                        let mut gs = game_state.lock().await;
+                        if let Some(host) = gs.sendable.get_host() {
+                            if host == &login_name && host != &player {
+                                if let Some(p) = gs.peer_map.get(&player) {
+                                    let _ = p.send(serde_json::to_string(&packets::Outgoing::Kicked {}).unwrap());
+                                }
+                                gs.peer_map.remove(&player);
+                                if let Some(p_state) = gs.sendable.players.get_mut(&player) {
+                                    p_state.active = false;
+                                }
+                                let _ = gtx.send(
+                                    serde_json::to_string(&packets::Outgoing::FullState {
+                                        state: &gs.sendable,
+                                    })
+                                    .unwrap(),
+                                );
+                            }
+                        }
+                    }
+                    packets::Incoming::Ban { player } => {
+                        let mut gs = game_state.lock().await;
+                        if let Some(host) = gs.sendable.get_host() {
+                            if host == &login_name && host != &player {
+                                gs.banned_players.insert(player.clone());
+                                if let Some(p) = gs.peer_map.get(&player) {
+                                    let _ = p.send(serde_json::to_string(&packets::Outgoing::Banned {}).unwrap());
+                                }
+                                gs.peer_map.remove(&player);
+                                if let Some(p_state) = gs.sendable.players.get_mut(&player) {
+                                    p_state.active = false;
+                                }
+                                let _ = gtx.send(
+                                    serde_json::to_string(&packets::Outgoing::FullState {
+                                        state: &gs.sendable,
+                                    })
+                                    .unwrap(),
+                                );
+                            }
+                        }
                     }
                     packets::Incoming::Restart {} => {
                         let mut gs = game_state.lock().await;
