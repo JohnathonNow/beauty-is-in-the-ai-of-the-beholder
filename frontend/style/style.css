@@ -6,13 +6,14 @@
 
 body{
     overflow-x:hidden;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f2f5;
+    font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f0f2f5 0%, #e0e5ec 100%);
     color: #333;
+    min-height: 100vh;
 }
 
 button {
-    background-color: #4CAF50;
+    background-color: #4361ee;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -23,11 +24,19 @@ button {
     margin: 4px 2px;
     cursor: pointer;
     border-radius: 8px;
-    transition: background-color 0.3s;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(67, 97, 238, 0.3);
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #3a56d4;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(67, 97, 238, 0.4);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(67, 97, 238, 0.3);
 }
 
 #controls button {
@@ -83,11 +92,11 @@ button:hover {
 
 #login {
     background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
     max-width: 400px;
-    margin: 20px auto;
+    margin: 40px auto;
 }
 
 #colorpicker {
@@ -103,15 +112,21 @@ button:hover {
 input {
 	display: block;
 	width: 100%;
-	padding: .375rem .75rem;
+	padding: 0.5rem 0.75rem;
 	font-size: 1rem;
 	line-height: 1.5;
 	color: #495057;
 	background-color: #fff;
 	background-clip: padding-box;
-	border: 1px solid #ced4da;
-	border-radius: .25rem;
-	transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+	border: 2px solid #e2e8f0;
+	border-radius: 8px;
+	transition: all 0.2s ease-in-out;
+}
+
+input:focus {
+    outline: none;
+    border-color: #4361ee;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
 }
 
 #guess {
@@ -141,9 +156,9 @@ input {
 #drawing-container {
     flex: 1;
     background-color: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
     margin: 10px;
     display: flex;
     flex-direction: column;
@@ -164,9 +179,9 @@ input {
     word-wrap: break-word;
     overflow-x: hidden;
     background-color: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
     margin: 10px;
     display: flex;
     flex-direction: column;
@@ -221,10 +236,11 @@ input {
 }
 
 #canvas {
-    border-color: #4CAF50;
+    border-color: #4361ee;
     border-width: 3px;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
+    border-radius: 8px;
 }
 
 .image {
@@ -308,12 +324,12 @@ input {
 
 #lobby-container {
     width: 50%;
-    margin: 0 auto;
-    padding: 20px;
+    margin: 20px auto;
+    padding: 30px;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 #player-container {
@@ -322,9 +338,9 @@ input {
     margin-left: 10px;
     padding: 20px;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
 }
 
@@ -407,3 +423,11 @@ input {
     #progress-container {
         flex-direction: column;
     }
+#lobby-selection {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    max-width: 600px;
+    margin: 40px auto;
+}
