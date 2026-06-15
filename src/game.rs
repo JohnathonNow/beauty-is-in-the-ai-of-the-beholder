@@ -13,6 +13,7 @@ use std::fs;
 use uuid::Uuid;
 use rand::thread_rng;
 use rand::seq::SliceRandom;
+use log::{info, error};
 
 pub type GameServerState = Arc<Mutex<State>>;
 type PeerMap = HashMap<String, broadcast::Sender<String>>;
@@ -244,7 +245,7 @@ pub async fn handle(
             let message = match result {
                 Ok(msg) => msg,
                 Err(e) => {
-                    eprintln!("WebSocket error: {}", e);
+                    error!("WebSocket error: {}", e);
                     break;
                 }
             };
@@ -255,7 +256,7 @@ pub async fn handle(
                 continue;
             };
 
-            println!("{}: {}", &login_name, message);
+            info!("{}: {}", &login_name, message);
             if let Ok(packet) = serde_json::from_str::<packets::Incoming>(&message) {
                 match packet {
                     packets::Incoming::Start {} => {
@@ -432,13 +433,13 @@ pub async fn handle(
                         let file_path = format!("{}/{}.png", dir_path, uuid);
 
                         let _ = save_png_from_data_url(&image, &file_path);
-                        println!("Saved image to {}", file_path);
+                        info!("Saved image to {}", file_path);
 
                         let mut final_score = 0.0;
 
                         if gs.sendable.gametype != "Classic" {
                             let score = gs.score(&file_path).await.unwrap_or(0f32);
-                            println!("Wow, score is {}", score);
+                            info!("Wow, score is {}", score);
                             final_score = 160.0 - score;
                         }
 

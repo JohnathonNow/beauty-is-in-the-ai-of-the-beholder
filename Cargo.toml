@@ -20,3 +20,5 @@ base64 = "0.22.1"
 reqwest = { version = "0.12.12", features = ["json"] }
 async-mutex = "1.4.0"
 uuid = { version = "1.23.3", features = ["v4"] }
+log = "0.4.32"
+env_logger = "0.11.10"
