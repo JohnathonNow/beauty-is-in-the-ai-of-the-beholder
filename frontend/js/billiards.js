@@ -143,10 +143,7 @@ function onload_billiards() {
                 for (var p in data["FullState"]["state"]["players"]) {
                     let player = data["FullState"]["state"]["players"][p];
                     let nametag = add_player(p);
-                    if (data["FullState"]["state"]["host"] == gName && p != gName) {
-                        if (nametag.querySelector(".kick-btn")) nametag.querySelector(".kick-btn").style.display = "inline-block";
-                        if (nametag.querySelector(".ban-btn")) nametag.querySelector(".ban-btn").style.display = "inline-block";
-                    } else {
+                    if (data["FullState"]["state"]["host"] !== gName) {
                         if (nametag.querySelector(".kick-btn")) {
                             nametag.querySelector(".kick-btn").style.display = "none";
                             nametag.querySelector(".ban-btn").style.display = "none";
@@ -389,11 +386,30 @@ function onload_billiards() {
     }
 
     function player_click(e) {
+        let clickedPlayer = e.currentTarget.getAttribute("__player");
+
+        // Prevent toggle if the click was directly on a button
+        if (e.target.tagName.toLowerCase() !== 'button') {
+            if (gState && gState["host"] == gName && clickedPlayer != gName) {
+                let kickBtn = e.currentTarget.querySelector(".kick-btn");
+                let banBtn = e.currentTarget.querySelector(".ban-btn");
+                if (kickBtn && banBtn) {
+                    if (kickBtn.style.display !== "inline-block") {
+                        kickBtn.style.display = "inline-block";
+                        banBtn.style.display = "inline-block";
+                    } else {
+                        kickBtn.style.display = "none";
+                        banBtn.style.display = "none";
+                    }
+                }
+            }
+        }
+
         if (gState["state"] == "RUNNING") {
             return;
         } else if (gState["state"] == "POSTGAME") {
-            gImgMap.get(e.currentTarget.getAttribute("__player")).style.display = "block";
-            gImgMap.get(e.currentTarget.getAttribute("__player")).querySelector("img").style.display = "block";
+            gImgMap.get(clickedPlayer).style.display = "block";
+            gImgMap.get(clickedPlayer).querySelector("img").style.display = "block";
 
         }
     }
