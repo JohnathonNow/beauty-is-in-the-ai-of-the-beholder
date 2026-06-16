@@ -76,24 +76,6 @@ impl State {
             tx.send(message.clone()).unwrap_or(0);
         }
     }
-    async fn score(&self, file: &str) -> Result<f32, ()> {
-		let request_url = format!("http://localhost:9991/?path={}", file);
-		let client = reqwest::Client::new();
-		let response = client
-			.get(request_url)
-			.send().await;
-                let response = if let Ok(x) = response { x } else { return Err(()); };
-                let response = if let Ok(x) = response.json::<Vector>().await { x} else { return Err(()); };
-
-        return Ok(response.inner
-                .iter()
-                .zip(self.offset_embedding.iter())
-                .map(|(&x1, &x2)| x1 - x2)
-                .zip(self.embedding.iter())
-                .map(|(x1, &x2)| (x1 - x2).powi(2))
-                .sum())
-        //f32::INFINITY
-    }
     fn restart(&mut self) {
         if let Some(word) = self.word_pool.pop() {
             self.sendable.word = word.word;
@@ -190,6 +172,24 @@ impl State {
             GameState::POSTGAME => {}
         }
     }
+}
+
+async fn compute_score(file: &str, offset_embedding: &[f32], embedding: &[f32]) -> Result<f32, ()> {
+    let request_url = format!("http://localhost:9991/?path={}", file);
+    let client = reqwest::Client::new();
+    let response = client
+        .get(request_url)
+        .send().await;
+    let response = if let Ok(x) = response { x } else { return Err(()); };
+    let response = if let Ok(x) = response.json::<Vector>().await { x } else { return Err(()); };
+
+    return Ok(response.inner
+            .iter()
+            .zip(offset_embedding.iter())
+            .map(|(&x1, &x2)| x1 - x2)
+            .zip(embedding.iter())
+            .map(|(x1, &x2)| (x1 - x2).powi(2))
+            .sum())
 }
 
 pub async fn handle(
@@ -424,16 +424,24 @@ pub async fn handle(
                         }
                     }
                     packets::Incoming::Image { image } => {
-                        let mut gs = game_state.lock().await;
-
-                        if gs.sendable.gametype == "Classic" {
-                            if let Some(drawer) = &gs.sendable.drawer {
-                                if *drawer != login_name {
-                                    continue; // Only the drawer can submit images in Classic mode
-                                }
+                        let (is_classic, is_drawer, offset_embedding, embedding) = {
+                            let gs = game_state.lock().await;
+                            let is_classic = gs.sendable.gametype == "Classic";
+                            let is_drawer = if let Some(drawer) = &gs.sendable.drawer {
+                                *drawer == login_name
                             } else {
-                                continue;
-                            }
+                                false
+                            };
+                            (
+                                is_classic,
+                                is_drawer,
+                                gs.offset_embedding.clone(),
+                                gs.embedding.clone(),
+                            )
+                        };
+
+                        if is_classic && !is_drawer {
+                            continue;
                         }
 
                         let uuid = Uuid::new_v4().to_string();
@@ -447,29 +455,31 @@ pub async fn handle(
 
                         let mut final_score = 0.0;
 
-                        if gs.sendable.gametype != "Classic" {
-                            let score = gs.score(&file_path).await.unwrap_or(0f32);
+                        if !is_classic {
+                            let score = compute_score(&file_path, &offset_embedding, &embedding).await.unwrap_or(0f32);
                             info!("Wow, score is {}", score);
                             final_score = 160.0 - score;
                         }
 
-                        let is_classic = gs.sendable.gametype == "Classic";
-                        let player = gs.sendable.get_player_mut(&login_name);
-                        if !is_classic {
-                            player.score = final_score;
-                        }
-                        player.image_path = Some(format!("drawings/{}/{}.png", dir_prefix, uuid));
+                        {
+                            let mut gs = game_state.lock().await;
+                            let player = gs.sendable.get_player_mut(&login_name);
+                            if !is_classic {
+                                player.score = final_score;
+                            }
+                            player.image_path = Some(format!("drawings/{}/{}.png", dir_prefix, uuid));
 
-                        if !is_classic {
-                            let _ = gtx.send(
-                                serde_json::to_string(&packets::Outgoing::Score {
-                                    username: login_name.clone(),
-                                    score: final_score,
-                                })
-                                .unwrap(),
-                            );
+                            if !is_classic {
+                                let _ = gtx.send(
+                                    serde_json::to_string(&packets::Outgoing::Score {
+                                        username: login_name.clone(),
+                                        score: final_score,
+                                    })
+                                    .unwrap(),
+                                );
+                            }
+                            gs.broadcast_state();
                         }
-                        gs.broadcast_state();
                     }
                 }
             }
