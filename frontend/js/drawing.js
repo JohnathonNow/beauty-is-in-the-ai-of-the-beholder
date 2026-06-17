@@ -132,6 +132,12 @@ function onload_drawing() {
 				element.classList.remove('colorpicked');
 			}
 			ce.classList.add("colorpicked");
+
+			if (tool === "text" && activeStrokeIndex !== -1 && strokes[activeStrokeIndex] && strokes[activeStrokeIndex].o === "text") {
+				strokes[activeStrokeIndex].c = color;
+				redraw();
+				if (typeof sendDrawing === 'function') sendDrawing();
+			}
 		}
 		colorpicker.appendChild(ce);
 	}
@@ -205,11 +211,15 @@ function onload_drawing() {
 				activeStrokeIndex = clickedIndex;
 				document.getElementById("text-input").value = strokes[clickedIndex].text;
 			} else {
-				let textVal = document.getElementById("text-input").value || "Text";
-				addTextClick(px, py, color, activeFont, activeTextSize, textVal);
-				activeStrokeIndex = strokes.length - 1;
-				isDraggingSelection = true;
-				isRotating = false;
+				if (activeStrokeIndex !== -1) {
+					activeStrokeIndex = -1;
+				} else {
+					let textVal = document.getElementById("text-input").value || "Text";
+					addTextClick(px, py, color, activeFont, activeTextSize, textVal);
+					activeStrokeIndex = strokes.length - 1;
+					isDraggingSelection = true;
+					isRotating = false;
+				}
 			}
 		} else if (tool === "select") {
 			let clickedIndex = -1;
@@ -662,8 +672,22 @@ function onload_drawing() {
 	document.getElementById("shape").onclick = () => selectTool("shape");
 
 	document.getElementById("shape-select").onchange = function(e) { activeShape = e.target.value; };
-	document.getElementById("font-select").onchange = function(e) { activeFont = e.target.value; };
-	document.getElementById("text-size").onchange = function(e) { activeTextSize = e.target.value; };
+	document.getElementById("font-select").onchange = function(e) {
+		activeFont = e.target.value;
+		if (activeStrokeIndex !== -1 && strokes[activeStrokeIndex] && strokes[activeStrokeIndex].o === "text") {
+			strokes[activeStrokeIndex].font = activeFont;
+			redraw();
+			if (typeof sendDrawing === 'function') sendDrawing();
+		}
+	};
+	document.getElementById("text-size").onchange = function(e) {
+		activeTextSize = e.target.value;
+		if (activeStrokeIndex !== -1 && strokes[activeStrokeIndex] && strokes[activeStrokeIndex].o === "text") {
+			strokes[activeStrokeIndex].size = activeTextSize;
+			redraw();
+			if (typeof sendDrawing === 'function') sendDrawing();
+		}
+	};
 	document.getElementById("text-input").oninput = function(e) {
 		if (activeStrokeIndex !== -1 && strokes[activeStrokeIndex] && strokes[activeStrokeIndex].o === "text") {
 			strokes[activeStrokeIndex].text = e.target.value;
