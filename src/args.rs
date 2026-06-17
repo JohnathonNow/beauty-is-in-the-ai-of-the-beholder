@@ -30,4 +30,8 @@ pub struct Args {
     /// TLS key file path
     #[arg(long)]
     pub tls_key: Option<String>,
+
+    /// Admin console port (binds to 127.0.0.1)
+    #[arg(long)]
+    pub admin_port: Option<u16>,
 }

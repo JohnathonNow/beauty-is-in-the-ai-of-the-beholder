@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bitaib Admin Console</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+        .section h2 { margin-top: 0; }
+        input[type="text"] { width: 300px; padding: 5px; margin-bottom: 10px; }
+        button { padding: 5px 15px; cursor: pointer; }
+        .result { margin-top: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Bitaib Admin Console</h1>
+
+    <div class="section">
+        <h2>Close Game</h2>
+        <input type="text" id="closeLobby" placeholder="Lobby Name">
+        <br>
+        <button onclick="closeGame()">Close Game</button>
+        <div id="closeResult" class="result"></div>
+    </div>
+
+    <div class="section">
+        <h2>Ban User</h2>
+        <input type="text" id="banLobby" placeholder="Lobby Name">
+        <br>
+        <input type="text" id="banUser" placeholder="Username">
+        <br>
+        <button onclick="banUser()">Ban User</button>
+        <div id="banResult" class="result"></div>
+    </div>
+
+    <div class="section">
+        <h2>Moderate Image</h2>
+        <input type="text" id="modImage" placeholder="Image Path (e.g. drawings/.../xyz.png)">
+        <br>
+        <button onclick="moderateImage()">Delete Image</button>
+        <div id="modResult" class="result"></div>
+    </div>
+
+    <script>
+        async function sendRequest(endpoint, body, resultElemId) {
+            const resElem = document.getElementById(resultElemId);
+            resElem.innerText = "Processing...";
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const text = await response.json();
+                resElem.innerText = text;
+            } catch (err) {
+                resElem.innerText = "Error: " + err.message;
+            }
+        }
+
+        function closeGame() {
+            const lobby = document.getElementById("closeLobby").value;
+            if (!lobby) return alert("Enter lobby name");
+            sendRequest('/admin/close_game', { lobby }, 'closeResult');
+        }
+
+        function banUser() {
+            const lobby = document.getElementById("banLobby").value;
+            const user = document.getElementById("banUser").value;
+            if (!lobby || !user) return alert("Enter lobby and user");
+            sendRequest('/admin/ban_user', { lobby, user }, 'banResult');
+        }
+
+        function moderateImage() {
+            const image_path = document.getElementById("modImage").value;
+            if (!image_path) return alert("Enter image path");
+            sendRequest('/admin/moderate_image', { image_path }, 'modResult');
+        }
+    </script>
+</body>
+</html>

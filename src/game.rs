@@ -71,6 +71,18 @@ impl State {
             .unwrap(),
         );
     }
+    pub fn ban_user(&mut self, player: &String) {
+        self.banned_players.insert(player.clone());
+        if let Some(p) = self.peer_map.get(player) {
+            let _ = p.send(serde_json::to_string(&packets::Outgoing::Banned {}).unwrap());
+        }
+        self.peer_map.remove(player);
+        if let Some(p_state) = self.sendable.players.get_mut(player) {
+            p_state.active = false;
+        }
+        self.sendable.fix_host();
+        self.broadcast_state();
+    }
     fn broadcast(&self, message: String) {
         for (_, tx) in self.peer_map.iter() {
             tx.send(message.clone()).unwrap_or(0);
