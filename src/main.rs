@@ -21,6 +21,22 @@ mod args;
 use std::collections::HashMap;
 
 #[derive(Deserialize)]
+struct CloseGameRequest {
+    lobby: String,
+}
+
+#[derive(Deserialize)]
+struct BanUserRequest {
+    lobby: String,
+    user: String,
+}
+
+#[derive(Deserialize)]
+struct ModerateImageRequest {
+    image_path: String,
+}
+
+#[derive(Deserialize)]
 struct Query {
     lobby: String,
     name: String,
@@ -194,12 +210,81 @@ async fn main() -> Result<(), Box<dyn Error>> {
             warp::reply::json(&keys)
         });
 
+    let lobby_manager_close = lobby_manager.clone();
+    let admin_close_game = warp::path!("admin" / "close_game")
+        .and(warp::post())
+        .and(warp::body::json())
+        .and(warp::any().map(move || lobby_manager_close.clone()))
+        .then(|req: CloseGameRequest, lm: LobbyManager| async move {
+            let mut lobbies = lm.lock().await;
+            if lobbies.remove(&req.lobby).is_some() {
+                warp::reply::json(&"Game closed")
+            } else {
+                warp::reply::json(&"Lobby not found")
+            }
+        });
+
+    let lobby_manager_ban = lobby_manager.clone();
+    let admin_ban_user = warp::path!("admin" / "ban_user")
+        .and(warp::post())
+        .and(warp::body::json())
+        .and(warp::any().map(move || lobby_manager_ban.clone()))
+        .then(|req: BanUserRequest, lm: LobbyManager| async move {
+            let lobbies = lm.lock().await;
+            if let Some(lobby) = lobbies.get(&req.lobby) {
+                let mut state = lobby.state.lock().await;
+                state.ban_user(&req.user);
+                warp::reply::json(&"User banned")
+            } else {
+                warp::reply::json(&"Lobby not found")
+            }
+        });
+
+    let admin_moderate_image = warp::path!("admin" / "moderate_image")
+        .and(warp::post())
+        .and(warp::body::json())
+        .then(|req: ModerateImageRequest| async move {
+            let base_path = std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from(".")).join("frontend");
+            let mut path = base_path.clone();
+            path.push(req.image_path.trim_start_matches('/'));
+
+            if path.components().any(|x| x == std::path::Component::ParentDir) {
+                return warp::reply::json(&"Invalid path");
+            }
+            if !path.starts_with(&base_path) {
+                return warp::reply::json(&"Invalid path");
+            }
+
+            if tokio::fs::remove_file(&path).await.is_ok() {
+                warp::reply::json(&"Image deleted")
+            } else {
+                warp::reply::json(&"Failed to delete image or image not found")
+            }
+        });
+
+    let admin_static = warp::fs::dir("admin_frontend");
+    let admin_index = warp::path::end().and(warp::fs::file("admin_frontend/index.html"));
+    let admin_routes = admin_close_game
+        .or(admin_ban_user)
+        .or(admin_moderate_image)
+        .or(admin_index)
+        .or(admin_static);
+
     let static_files = warp::fs::dir("frontend");
     let routes = ws_route.or(global_chat_route).or(lobbies_api).or(static_files);
 
+    if let Some(admin_port) = cliargs.admin_port {
+        info!("Admin console listening on http://127.0.0.1:{}", admin_port);
+        task::spawn(async move {
+            warp::serve(admin_routes)
+                .run(([127, 0, 0, 1], admin_port))
+                .await;
+        });
+    }
+
     let port = cliargs.port;
     let server = if let (Some(cert), Some(key)) = (cliargs.tls_cert, cliargs.tls_key) {
-        info!("Webserver listening on https://127.0.0.0:{}", port);
+        info!("Webserver listening on https://0.0.0.0:{}", port);
         task::spawn(async move {
             warp::serve(routes)
                 .tls()
@@ -209,7 +294,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 .await;
         })
     } else {
-        info!("Webserver listening on http://127.0.0.0:{}", port);
+        info!("Webserver listening on http://0.0.0.0:{}", port);
         task::spawn(async move {
             warp::serve(routes)
                 .run(([0, 0, 0, 0], port))
