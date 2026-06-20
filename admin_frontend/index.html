@@ -33,11 +33,10 @@
     </div>
 
     <div class="section">
-        <h2>Moderate Image</h2>
-        <input type="text" id="modImage" placeholder="Image Path (e.g. drawings/.../xyz.png)">
-        <br>
-        <button onclick="moderateImage()">Delete Image</button>
+        <h2>Moderate Images</h2>
+        <button onclick="loadImages()">Load Images</button>
         <div id="modResult" class="result"></div>
+        <div id="imageGallery" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px;"></div>
     </div>
 
     <script>
@@ -70,10 +69,59 @@
             sendRequest('/admin/ban_user', { lobby, user }, 'banResult');
         }
 
-        function moderateImage() {
-            const image_path = document.getElementById("modImage").value;
-            if (!image_path) return alert("Enter image path");
-            sendRequest('/admin/moderate_image', { image_path }, 'modResult');
+        async function loadImages() {
+            const resElem = document.getElementById("modResult");
+            resElem.innerText = "Loading images...";
+            try {
+                const response = await fetch('/admin/images');
+                const images = await response.json();
+
+                const gallery = document.getElementById("imageGallery");
+                gallery.innerHTML = "";
+
+                if (images.length === 0) {
+                    resElem.innerText = "No images found.";
+                    return;
+                }
+
+                resElem.innerText = `Found ${images.length} images. Click an image to delete it.`;
+
+                for (const imgPath of images) {
+                    const container = document.createElement("div");
+                    container.style.border = "1px solid #ccc";
+                    container.style.padding = "5px";
+                    container.style.cursor = "pointer";
+                    container.style.textAlign = "center";
+
+                    const img = document.createElement("img");
+                    img.src = "/" + imgPath;
+                    img.style.width = "200px";
+                    img.style.height = "auto";
+                    img.style.display = "block";
+                    img.style.marginBottom = "5px";
+
+                    container.appendChild(img);
+
+                    const label = document.createElement("div");
+                    label.innerText = imgPath.split("/").pop();
+                    label.style.fontSize = "12px";
+                    label.style.wordBreak = "break-all";
+                    label.style.maxWidth = "200px";
+                    container.appendChild(label);
+
+                    container.onclick = async () => {
+                        if (confirm(`Are you sure you want to delete ${imgPath}?`)) {
+                            container.style.opacity = "0.5";
+                            await sendRequest('/admin/moderate_image', { image_path: imgPath }, 'modResult');
+                            loadImages(); // Reload gallery after delete
+                        }
+                    };
+
+                    gallery.appendChild(container);
+                }
+            } catch (err) {
+                resElem.innerText = "Error: " + err.message;
+            }
         }
     </script>
 </body>

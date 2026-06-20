@@ -240,6 +240,48 @@ async fn main() -> Result<(), Box<dyn Error>> {
             }
         });
 
+    let admin_list_images = warp::path!("admin" / "images")
+        .and(warp::get())
+        .then(|| async move {
+            let mut images = Vec::new();
+            let base_path = std::path::PathBuf::from("frontend/drawings");
+
+            // Simple recursive read for drawings directories (e.g. frontend/drawings/abcd/xyz.png)
+            if let Ok(mut entries) = tokio::fs::read_dir(&base_path).await {
+                while let Ok(Some(entry)) = entries.next_entry().await {
+                    if let Ok(file_type) = entry.file_type().await {
+                        if file_type.is_dir() {
+                            if let Ok(mut sub_entries) = tokio::fs::read_dir(entry.path()).await {
+                                while let Ok(Some(sub_entry)) = sub_entries.next_entry().await {
+                                    if let Ok(sub_ft) = sub_entry.file_type().await {
+                                        if sub_ft.is_file() {
+                                            if let Some(ext) = sub_entry.path().extension() {
+                                                if ext == "png" {
+                                                    // Convert frontend/drawings/abcd/xyz.png to drawings/abcd/xyz.png
+                                                    if let Ok(rel_path) = sub_entry.path().strip_prefix("frontend/") {
+                                                        images.push(rel_path.to_string_lossy().to_string());
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else if file_type.is_file() {
+                             if let Some(ext) = entry.path().extension() {
+                                if ext == "png" {
+                                    if let Ok(rel_path) = entry.path().strip_prefix("frontend/") {
+                                        images.push(rel_path.to_string_lossy().to_string());
+                                    }
+                                }
+                             }
+                        }
+                    }
+                }
+            }
+            warp::reply::json(&images)
+        });
+
     let admin_moderate_image = warp::path!("admin" / "moderate_image")
         .and(warp::post())
         .and(warp::body::json())
@@ -263,12 +305,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
         });
 
     let admin_static = warp::fs::dir("admin_frontend");
+    let admin_drawings = warp::path("drawings").and(warp::fs::dir("frontend/drawings"));
     let admin_index = warp::path::end().and(warp::fs::file("admin_frontend/index.html"));
     let admin_routes = admin_close_game
         .or(admin_ban_user)
+        .or(admin_list_images)
         .or(admin_moderate_image)
         .or(admin_index)
-        .or(admin_static);
+        .or(admin_static)
+        .or(admin_drawings);
 
     let static_files = warp::fs::dir("frontend");
     let routes = ws_route.or(global_chat_route).or(lobbies_api).or(static_files);
