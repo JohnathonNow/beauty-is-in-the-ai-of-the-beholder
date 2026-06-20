@@ -1,0 +1,3 @@
+## 2026-06-20 - Adding ARIA Labels to Missing UI Controls
+**Learning:** Found multiple instances where the drawing tools and text inputs were relying solely on standard `title` or `placeholder` attributes which can be insufficient for many screen readers, especially icon-only buttons. The learning here is that standard interactive drawing tool canvases often miss these since the icons provide clear visual context but completely lack accessibility context.
+**Action:** Always ensure form elements have a linked `<label>` or `aria-label` attribute if a visual label would clutter the layout, and double-check icon-only `<button>`s across the board.
