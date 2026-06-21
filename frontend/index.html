@@ -15,7 +15,7 @@
     <div id="login" align="center">
         <h3 class="full">Login</h3>
         <div class="flex">
-            <div class="full"> Enter your name: </div> <input type="text" class="full" maxlength="24" name="FirstName" id="name" value="">
+            <div class="full"> Enter your name: </div> <input type="text" class="full" maxlength="24" name="FirstName" id="name" value="" aria-label="Enter your name">
         </div>
     </div>
     <div id="lobby-selection" align="center" style="display: none;">
@@ -24,18 +24,18 @@
         <button id="show-create-lobby-btn" style="margin-top: 10px;">Create Lobby</button>
         <div id="create-lobby-section" class="flex" style="display: none; margin-top: 10px; flex-direction: column; align-items: center;">
             <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; margin-bottom: 5px;">
-                <input type="text" id="new-lobby-name" placeholder="New Lobby Name" maxlength="24">
+                <input type="text" id="new-lobby-name" placeholder="New Lobby Name" maxlength="24" aria-label="New Lobby Name">
                 <button id="create-lobby" style="margin-left: 10px;">Create & Join</button>
             </div>
-            <textarea id="new-lobby-words" placeholder="Optional: Custom word list (comma-separated)" rows="3" style="width: 80%; max-width: 400px; margin-top: 5px;"></textarea>
+            <textarea id="new-lobby-words" placeholder="Optional: Custom word list (comma-separated)" rows="3" style="width: 80%; max-width: 400px; margin-top: 5px;" aria-label="Custom word list"></textarea>
             <div style="margin-top: 5px;">
                 <label for="new-lobby-mode">Game Mode:</label>
-                <select id="new-lobby-mode">
+                <select id="new-lobby-mode" aria-label="Game Mode">
                     <option value="AI">AI Mode</option>
                     <option value="Classic">Classic Mode</option>
                 </select>
                 <label for="new-lobby-time" style="margin-left: 10px;">Time Limit (30-300s):</label>
-                <input type="number" id="new-lobby-time" min="30" max="300" value="120" style="width: 60px;">
+                <input type="number" id="new-lobby-time" min="30" max="300" value="120" style="width: 60px;" aria-label="Time Limit">
             </div>
         </div>
         <button id="refresh-lobbies" style="margin-top: 10px;">Refresh</button>
@@ -43,7 +43,7 @@
         <div id="global-chat-container" style="margin-top: 20px; width: 80%; max-width: 600px; text-align: left; border: 1px solid #ccc; padding: 10px;">
             <h3>Global Chat</h3>
             <div id="global-chat-messages" style="height: 150px; overflow-y: scroll; border: 1px solid #eee; margin-bottom: 10px; padding: 5px;"></div>
-            <input type="text" id="global-chat-input" placeholder="Say something..." maxlength="256" style="width: 100%;">
+            <input type="text" id="global-chat-input" placeholder="Say something..." maxlength="256" style="width: 100%;" aria-label="Global Chat Input">
         </div>
     </div>
     <div align="center" id="game" style="display: none;">
@@ -73,17 +73,17 @@
                                 <p>Color:</p> <div id="colorpicker"></div>
                             </div>
                             <div id="stroke-container">
-                                <p>Stroke:</p> <input type="range" id="size" value="5" min="1" max="50">
+                                <p>Stroke:</p> <input type="range" id="size" value="5" min="1" max="50" aria-label="Stroke Size">
                             </div>
                             <div id="tool-buttons">
-                                <button id="erase" title="Eraser">🧽</button>
-                                <button id="pencil" title="Pencil">✏️</button>
-                                <button id="flood" title="Flood Fill">🪣</button>
-                                <button id="undo" title="Undo">↩️</button>
-                                <button id="judge" title="Judge">👨‍⚖️</button>
-                                <button id="select" title="Select">⬚</button>
-                                <button id="text" title="Text">T</button>
-                                <button id="shape" title="Shape">△</button>
+                                <button id="erase" title="Eraser" aria-label="Eraser">🧽</button>
+                                <button id="pencil" title="Pencil" aria-label="Pencil">✏️</button>
+                                <button id="flood" title="Flood Fill" aria-label="Flood Fill">🪣</button>
+                                <button id="undo" title="Undo" aria-label="Undo">↩️</button>
+                                <button id="judge" title="Judge" aria-label="Judge">👨‍⚖️</button>
+                                <button id="select" title="Select" aria-label="Select">⬚</button>
+                                <button id="text" title="Text" aria-label="Text Tool">T</button>
+                                <button id="shape" title="Shape" aria-label="Shape Tool">△</button>
                             </div>
                             <div id="selection-options" style="display: none;">
                                 <button id="copy-btn">Copy</button>
@@ -91,17 +91,17 @@
                                 <button id="paste-btn" style="display: none;">Paste</button>
                             </div>
                             <div id="text-options" style="display: none;">
-                                <input type="text" id="text-input" placeholder="Enter text">
-                                <select id="font-select">
+                                <input type="text" id="text-input" placeholder="Enter text" aria-label="Text Input">
+                                <select id="font-select" aria-label="Font Select">
                                     <option value="Arial">Arial</option>
                                     <option value="Times New Roman">Times New Roman</option>
                                     <option value="Courier New">Courier New</option>
                                     <option value="Georgia">Georgia</option>
                                 </select>
-                                <input type="number" id="text-size" value="20" min="10" max="100">
+                                <input type="number" id="text-size" value="20" min="10" max="100" aria-label="Text Size">
                             </div>
                             <div id="shape-options" style="display: none;">
-                                <select id="shape-select">
+                                <select id="shape-select" aria-label="Shape Select">
                                     <option value="rectangle">Rectangle</option>
                                     <option value="circle">Circle</option>
                                     <option value="triangle">Triangle</option>
@@ -123,7 +123,7 @@
                 <button id="restart" style="display: none;">Restart</button>
             </div>
             <div id="answerscontainer">
-                <div id="dummy"> <input type="text" name="FirstName" id="guess" value="" placeholder="Guess or chat:" maxlength="256"> </div>
+                <div id="dummy"> <input type="text" name="FirstName" id="guess" value="" placeholder="Guess or chat:" maxlength="256" aria-label="Guess or chat"> </div>
                 <div id="answers"> </div>
             </div>
             <div id="finalgallery"></div>
