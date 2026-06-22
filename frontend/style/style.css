@@ -407,3 +407,25 @@ input {
     #progress-container {
         flex-direction: column;
     }
+
+/* Accessibility focus states */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid #4CAF50;
+    outline-offset: 2px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #4CAF50;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+}
+
+#guess:focus {
+    outline: none; /* Keep original behavior but rely on box-shadow from input:focus */
+}
