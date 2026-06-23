@@ -407,3 +407,15 @@ input {
     #progress-container {
         flex-direction: column;
     }
+/* Accessibility: Focus visible styles for keyboard navigation */
+:focus-visible {
+    outline: 3px solid #4CAF50;
+    outline-offset: 2px;
+}
+
+/* UX: Disabled button states */
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(50%);
+}
