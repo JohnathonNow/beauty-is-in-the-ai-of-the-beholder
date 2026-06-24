@@ -544,14 +544,23 @@ function onload_billiards() {
             .then(data => {
                 const list = document.getElementById("lobby-list");
                 list.innerHTML = "";
-                data.forEach(lobby => {
+                if (data.length === 0) {
                     const li = document.createElement("li");
-                    const btn = document.createElement("button");
-                    btn.textContent = lobby;
-                    btn.onclick = () => join_lobby(lobby);
-                    li.appendChild(btn);
+                    li.textContent = "No active lobbies found. Create one to get started!";
+                    li.style.color = "#888";
+                    li.style.fontStyle = "italic";
+                    li.style.padding = "10px";
                     list.appendChild(li);
-                });
+                } else {
+                    data.forEach(lobby => {
+                        const li = document.createElement("li");
+                        const btn = document.createElement("button");
+                        btn.textContent = lobby;
+                        btn.onclick = () => join_lobby(lobby);
+                        li.appendChild(btn);
+                        list.appendChild(li);
+                    });
+                }
             });
     }
 
