@@ -20,6 +20,14 @@ var lastJudged = null;
 var gLobby = null;
 var globalChatSocket = null;
 
+function getBasePath() {
+    let path = window.location.pathname;
+    if (!path.endsWith('/')) {
+        path += '/';
+    }
+    return path;
+}
+
 function reset() {
     gStrokes = new Map();
     gMapLobby = new Map();
@@ -42,7 +50,8 @@ function onload_billiards() {
     function connect(customWords, timeLimit, gametype) {
         reset();
         let wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-        let wsUrl = wsProtocol + window.location.hostname + ':' + window.location.port + window.location.pathname + 'chat?name=' + encodeURIComponent(gName) + "&lobby=" + encodeURIComponent(gLobby);
+        let wsPort = window.location.port ? ':' + window.location.port : '';
+        let wsUrl = wsProtocol + window.location.hostname + wsPort + getBasePath() + 'chat?name=' + encodeURIComponent(gName) + "&lobby=" + encodeURIComponent(gLobby);
         if (customWords && customWords.length > 0) {
             wsUrl += "&words=" + encodeURIComponent(customWords);
         }
@@ -172,7 +181,7 @@ function onload_billiards() {
                 if (data["FullState"]["state"]["gametype"] == "Classic" && data["FullState"]["state"]["drawer"] !== gName && data["FullState"]["state"]["drawer"] !== null) {
                     let drawerName = data["FullState"]["state"]["drawer"];
                     if (data["FullState"]["state"]["players"][drawerName] && data["FullState"]["state"]["players"][drawerName]["image_path"]) {
-                        let path = data["FullState"]["state"]["players"][drawerName]["image_path"];
+                        let path = getBasePath() + data["FullState"]["state"]["players"][drawerName]["image_path"];
                         if (gImgMap.get(drawerName) !== path) {
                             gImgMap.set(drawerName, path);
                             let img = new Image();
@@ -308,9 +317,9 @@ function onload_billiards() {
                         redraw_other(gMap.get(player).getContext("2d"), gstrks);
                     }
                     if (gState["players"][player] && gState["players"][player]["image_path"]) {
-                        picture.src = gState["players"][player]["image_path"];
+                        picture.src = getBasePath() + gState["players"][player]["image_path"];
                     } else {
-                        picture.src = "drawings/" + player + "-" + gAssign.replaceAll(" ", "-") + ".png";
+                        picture.src = getBasePath() + "drawings/" + player + "-" + gAssign.replaceAll(" ", "-") + ".png";
                     }
                    thumb.src = picture.src;
                     image.onclick = function() {
@@ -539,7 +548,7 @@ function onload_billiards() {
     canvas.addEventListener("mouseleave", draw_event_handler);
     canvas.addEventListener("mouseup", draw_event_handler);
     function fetch_lobbies() {
-        fetch('lobbies')
+        fetch(getBasePath() + 'lobbies')
             .then(response => response.json())
             .then(data => {
                 const list = document.getElementById("lobby-list");
@@ -574,8 +583,8 @@ function onload_billiards() {
             // Connect to global chat
             let wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
             let wsPort = window.location.port ? ':' + window.location.port : '';
-            console.log(wsProtocol + window.location.hostname + wsPort + window.location.pathname + 'global_chat?name=' + encodeURIComponent(gName));
-            globalChatSocket = new WebSocket(wsProtocol + window.location.hostname + wsPort + window.location.pathname + 'global_chat?name=' + encodeURIComponent(gName));
+            console.log(wsProtocol + window.location.hostname + wsPort + getBasePath() + 'global_chat?name=' + encodeURIComponent(gName));
+            globalChatSocket = new WebSocket(wsProtocol + window.location.hostname + wsPort + getBasePath() + 'global_chat?name=' + encodeURIComponent(gName));
             globalChatSocket.addEventListener('message', event => {
                 let chat = document.getElementById('global-chat-messages');
                 let line = document.createElement("div");
