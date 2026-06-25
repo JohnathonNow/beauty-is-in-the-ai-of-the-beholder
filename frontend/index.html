@@ -14,8 +14,12 @@
     </div>
     <div id="login" align="center">
         <h3 class="full">Login</h3>
-        <div class="flex">
-            <div class="full"> Enter your name: </div> <input type="text" class="full" maxlength="24" name="FirstName" id="name" value="" aria-label="Enter your name">
+        <div class="flex" style="flex-direction: column; align-items: center;">
+            <div class="full" style="margin-bottom: 10px;"> Enter your name: </div>
+            <div style="display: flex; flex-direction: row; width: 100%; max-width: 300px; gap: 10px;">
+                <input type="text" class="full" maxlength="24" name="FirstName" id="name" value="" aria-label="Enter your name" placeholder="e.g. Artist99" autofocus>
+                <button id="login-btn" aria-label="Play">Play</button>
+            </div>
         </div>
     </div>
     <div id="lobby-selection" align="center" style="display: none;">
