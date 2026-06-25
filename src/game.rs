@@ -281,35 +281,6 @@ pub async fn handle(
                         let mut gs = game_state.lock().await;
                         if let Some(host) = gs.sendable.get_host() {
                             if host == &login_name {
-                                if gs.sendable.gametype == "Story" {
-                                    let active_players: Vec<String> = gs.sendable.players.iter()
-                                        .filter_map(|(name, p)| if p.active { Some(name.clone()) } else { None })
-                                        .collect();
-                                    if active_players.len() != gs.word_pool.len() + 1 {
-                                        let _ = gtx.send(
-                                            serde_json::to_string(&packets::Outgoing::Error {
-                                                message: format!("Number of players ({}) must match the number of prompts ({}) to start Story mode.", active_players.len(), gs.word_pool.len() + 1),
-                                            })
-                                            .unwrap(),
-                                        );
-                                        continue;
-                                    }
-
-                                    let mut words_to_assign = Vec::new();
-                                    let current_word = gs.sendable.word.clone();
-                                    words_to_assign.push(current_word);
-                                    for w in gs.word_pool.iter().rev() {
-                                        words_to_assign.push(w.word.clone());
-                                    }
-
-                                    for (i, p_name) in active_players.iter().enumerate() {
-                                        if let Some(player) = gs.sendable.players.get_mut(p_name) {
-                                            player.word = Some(words_to_assign[i].clone());
-                                            player.page = Some(i + 1);
-                                        }
-                                    }
-                                }
-
                                 gs.sendable.set_state(GameState::RUNNING);
                                 if gs.sendable.gametype == "Classic" {
                                     let active_players: Vec<String> = gs.sendable.players.iter()
@@ -488,20 +459,20 @@ pub async fn handle(
 
                         let mut final_score = 0.0;
 
-                        if gs.sendable.gametype == "AI" {
+                        if gs.sendable.gametype != "Classic" {
                             let score = gs.score(&file_path).await.unwrap_or(0f32);
                             info!("Wow, score is {}", score);
                             final_score = 160.0 - score;
                         }
 
-                        let is_ai = gs.sendable.gametype == "AI";
+                        let is_classic = gs.sendable.gametype == "Classic";
                         let player = gs.sendable.get_player_mut(&login_name);
-                        if is_ai {
+                        if !is_classic {
                             player.score = final_score;
                         }
                         player.image_path = Some(format!("drawings/{}/{}.png", dir_prefix, uuid));
 
-                        if is_ai {
+                        if !is_classic {
                             let _ = gtx.send(
                                 serde_json::to_string(&packets::Outgoing::Score {
                                     username: login_name.clone(),
@@ -632,8 +603,6 @@ pub struct PlayerState {
     pub image_path: Option<String>,
     pub has_guessed: bool,
     pub has_drawn: bool,
-    pub word: Option<String>,
-    pub page: Option<usize>,
 }
 
 impl PlayerState {
@@ -644,8 +613,6 @@ impl PlayerState {
             image_path: None,
             has_guessed: false,
             has_drawn: false,
-            word: None,
-            page: None,
         }
     }
     pub fn restart(&mut self) {
@@ -653,8 +620,6 @@ impl PlayerState {
         self.image_path = None;
         self.has_guessed = false;
         self.has_drawn = false;
-        self.word = None;
-        self.page = None;
     }
     pub fn set_active(&mut self, active: bool) {
         self.active = active
