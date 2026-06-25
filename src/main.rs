@@ -99,7 +99,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                         time_limit = custom_time.clamp(30, 300);
                     }
                     let gametype = query.gametype.clone().unwrap_or_else(|| "AI".to_string());
-                    let mut inner_game_state = game::State::new(time_limit, mp, eot, gametype);
+                    let mut inner_game_state = game::State::new(time_limit, mp, eot, gametype.clone());
 
                     let mut final_words = bw;
                     if let Some(custom_words_str) = &query.words {
@@ -125,7 +125,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
                                 }
                             }
                             if !fetched_words.is_empty() {
-                                fetched_words.shuffle(&mut thread_rng());
+                                if gametype == "Story" {
+                                    fetched_words.reverse();
+                                } else {
+                                    fetched_words.shuffle(&mut thread_rng());
+                                }
                                 final_words = fetched_words;
                             }
                         }

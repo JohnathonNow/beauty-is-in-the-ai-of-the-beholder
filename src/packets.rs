@@ -34,4 +34,7 @@ pub enum Outgoing<'a> {
     },
     Kicked {},
     Banned {},
+    Error {
+        message: String,
+    },
 }

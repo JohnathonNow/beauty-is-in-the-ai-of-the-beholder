@@ -1,0 +1,64 @@
+127.0.0.1 - - [25/Jun/2026 21:51:08] "GET /frontend/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:51:08] "GET /frontend/style/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:51:08] "GET /frontend/js/drawing.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:51:08] "GET /frontend/js/billiards.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:51:08] "GET /frontend/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:51:08] "GET /frontend/style/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:51:08] "GET /frontend/js/drawing.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:51:08] "GET /frontend/js/billiards.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:51:09] "GET /frontend/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:51:09] "GET /frontend/js/drawing.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:51:09] "GET /frontend/js/billiards.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:51:09] "GET /frontend/style/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:51:09] "GET /frontend/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:51:09] "GET /frontend/style/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:51:09] "GET /frontend/js/billiards.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:51:09] "GET /frontend/js/drawing.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:52:33] "GET /frontend/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:52:33] "GET /frontend/js/drawing.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:52:33] "GET /frontend/js/billiards.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:52:33] "GET /frontend/style/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:52:34] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:52:34] "GET /frontend/index.html/lobbies HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:52:34] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:52:34] "GET /frontend/index.html/global_chat?name=User1 HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:52:35] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:52:35] "GET /frontend/index.html/chat?name=User1&lobby=StoryLobby&words=Apple%2C%20Banana%2C%20Cherry&time=120&gametype=Story HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:52:39] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:52:39] "GET /frontend/index.html/chat?name=User1&lobby=StoryLobby HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:52:43] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:52:43] "GET /frontend/index.html/chat?name=User1&lobby=StoryLobby HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:52:47] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:52:47] "GET /frontend/index.html/chat?name=User1&lobby=StoryLobby HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:52:51] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:52:51] "GET /frontend/index.html/chat?name=User1&lobby=StoryLobby HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:52:55] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:52:55] "GET /frontend/index.html/chat?name=User1&lobby=StoryLobby HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:52:59] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:52:59] "GET /frontend/index.html/chat?name=User1&lobby=StoryLobby HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:53:03] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:53:03] "GET /frontend/index.html/chat?name=User1&lobby=StoryLobby HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:53:48] "GET /frontend/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:53:48] "GET /frontend/style/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:53:48] "GET /frontend/js/drawing.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:53:48] "GET /frontend/js/billiards.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jun/2026 21:53:48] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:53:48] "GET /frontend/index.html/global_chat?name=User1 HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:53:48] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:53:48] "GET /frontend/index.html/lobbies HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:53:50] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:53:50] "GET /frontend/index.html/chat?name=User1&lobby=StoryLobby&words=Apple%2C%20Banana%2C%20Cherry&time=120&gametype=Story HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:53:54] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:53:54] "GET /frontend/index.html/chat?name=User1&lobby=StoryLobby HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:53:58] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:53:58] "GET /frontend/index.html/chat?name=User1&lobby=StoryLobby HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:54:02] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:54:02] "GET /frontend/index.html/chat?name=User1&lobby=StoryLobby HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:54:06] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:54:06] "GET /frontend/index.html/chat?name=User1&lobby=StoryLobby HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:54:10] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:54:10] "GET /frontend/index.html/chat?name=User1&lobby=StoryLobby HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:54:14] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:54:14] "GET /frontend/index.html/chat?name=User1&lobby=StoryLobby HTTP/1.1" 404 -
+127.0.0.1 - - [25/Jun/2026 21:54:18] code 404, message File not found
+127.0.0.1 - - [25/Jun/2026 21:54:18] "GET /frontend/index.html/chat?name=User1&lobby=StoryLobby HTTP/1.1" 404 -
