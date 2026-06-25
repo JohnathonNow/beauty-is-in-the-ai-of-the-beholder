@@ -41,11 +41,19 @@
     </div>
 
     <script>
+        function getBasePath() {
+            let path = window.location.pathname;
+            if (!path.endsWith('/')) {
+                path += '/';
+            }
+            return path;
+        }
+
         async function sendRequest(endpoint, body, resultElemId) {
             const resElem = document.getElementById(resultElemId);
             resElem.innerText = "Processing...";
             try {
-                const response = await fetch(endpoint, {
+                const response = await fetch(getBasePath() + endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(body)
@@ -60,20 +68,20 @@
         function closeGame() {
             const lobby = document.getElementById("closeLobby").value;
             if (!lobby) return alert("Enter lobby name");
-            sendRequest('/admin/close_game', { lobby }, 'closeResult');
+            sendRequest('admin/close_game', { lobby }, 'closeResult');
         }
 
         function banUser() {
             const lobby = document.getElementById("banLobby").value;
             const user = document.getElementById("banUser").value;
             if (!lobby || !user) return alert("Enter lobby and user");
-            sendRequest('/admin/ban_user', { lobby, user }, 'banResult');
+            sendRequest('admin/ban_user', { lobby, user }, 'banResult');
         }
 
         function moderateImage() {
             const image_path = document.getElementById("modImage").value;
             if (!image_path) return alert("Enter image path");
-            sendRequest('/admin/moderate_image', { image_path }, 'modResult');
+            sendRequest('admin/moderate_image', { image_path }, 'modResult');
         }
     </script>
 </body>
