@@ -121,7 +121,12 @@ function onload_drawing() {
 		let ce = document.createElement("div");
 		ce.style["background-color"] = c;
 		ce.classList.add("colorchoice");
-		ce.onclick = function(e) {
+		ce.setAttribute("role", "button");
+		ce.setAttribute("tabindex", "0");
+		ce.setAttribute("aria-label", c + " color");
+		ce.setAttribute("aria-pressed", "false");
+
+		const selectColor = function() {
 			mode = DRAW_MODE;
 			color = c;
 			// Select all elements with the class "myClass"
@@ -130,15 +135,25 @@ function onload_drawing() {
 			// Loop through the elements and remove the class
 			for (const element of elements) {
 				element.classList.remove('colorpicked');
+				element.setAttribute("aria-pressed", "false");
 			}
 			ce.classList.add("colorpicked");
+			ce.setAttribute("aria-pressed", "true");
 
 			if (tool === "text" && activeStrokeIndex !== -1 && strokes[activeStrokeIndex] && strokes[activeStrokeIndex].o === "text") {
 				strokes[activeStrokeIndex].c = color;
 				redraw();
 				if (typeof sendDrawing === 'function') sendDrawing();
 			}
-		}
+		};
+
+		ce.onclick = selectColor;
+		ce.onkeydown = function(e) {
+			if (e.key === "Enter" || e.key === " ") {
+				e.preventDefault();
+				selectColor();
+			}
+		};
 		colorpicker.appendChild(ce);
 	}
 	canvas = document.getElementById('canvas');

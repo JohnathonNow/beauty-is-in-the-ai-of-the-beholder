@@ -1,0 +1,3 @@
+## 2024-05-24 - Interactive Div Accessibility
+**Learning:** When using `div` elements to create custom interactive UI components like color picker swatches, it's critical to replicate native `<button>` accessibility features by explicitly adding `role="button"`, `tabindex="0"`, screen-reader labels (`aria-label`), state markers (`aria-pressed`), and keyboard event handlers (for `Enter` and `Space`).
+**Action:** Always prefer native `<button>` elements for interactive actions, but if styling constraints dictate using `div`s, always implement the full suite of ARIA and keyboard navigation attributes.
