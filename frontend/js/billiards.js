@@ -81,6 +81,8 @@ function onload_billiards() {
             let data = JSON.parse(message);
             if (data["Reset"]) {
                 reset();
+            } else if (data["Error"]) {
+                alert(data["Error"]["message"]);
             } else if (data["NewName"]) {
                 alert("Name " + gName + " is taken! Try again!");
                 location.reload();
@@ -142,7 +144,13 @@ function onload_billiards() {
                     console.log("NUKED!");
                     reset();
                 }
-                gAssign = data["FullState"]["state"]["word"];
+
+                if (data["FullState"]["state"]["gametype"] == "Story" && data["FullState"]["state"]["players"][gName] && data["FullState"]["state"]["players"][gName]["word"]) {
+                    gAssign = data["FullState"]["state"]["players"][gName]["word"];
+                } else {
+                    gAssign = data["FullState"]["state"]["word"];
+                }
+
                 if (data["FullState"]["state"]["gametype"] == "Classic" && data["FullState"]["state"]["drawer"] !== gName) {
                     document.getElementById("word").textContent = "Guess the word!";
                 } else {
@@ -281,8 +289,64 @@ function onload_billiards() {
         }
         gameover = true;
         sendDrawing();
-        setTimeout(show_winners, 3000);
+        if (gState && gState["gametype"] == "Story") {
+            setTimeout(show_storybook, 3000);
+        } else {
+            setTimeout(show_winners, 3000);
+        }
     }
+
+    function show_storybook() {
+        let namelist = document.getElementById("user-list-3");
+        namelist.style.display = "none";
+
+        let values = Object.entries(gState["players"]).filter(([_, p]) => p.page !== null && p.page !== undefined);
+        values.sort((a, b) => a[1].page - b[1].page);
+
+        let finalGallery = document.getElementById("finalgallery");
+        finalGallery.innerHTML = "";
+        finalGallery.style.display = "flex";
+        finalGallery.style.flexDirection = "column";
+        finalGallery.style.alignItems = "center";
+
+        for (let i = 0; i < values.length; ++i) {
+            let player = values[i][0];
+            let pageData = values[i][1];
+
+            let pageContainer = document.createElement("div");
+            pageContainer.style.marginBottom = "40px";
+            pageContainer.style.textAlign = "center";
+            pageContainer.style.border = "1px solid #ccc";
+            pageContainer.style.padding = "20px";
+            pageContainer.style.borderRadius = "10px";
+            pageContainer.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+
+            let promptText = document.createElement("h3");
+            promptText.textContent = "Page " + pageData.page + ": " + pageData.word;
+
+            let authorText = document.createElement("p");
+            authorText.textContent = "Drawn by: " + player;
+            authorText.style.fontStyle = "italic";
+
+            let image = document.createElement("img");
+            image.style.maxWidth = "800px";
+            image.style.width = "100%";
+            image.style.marginTop = "10px";
+            image.style.border = "2px solid white";
+
+            if (pageData.image_path) {
+                image.src = getBasePath() + pageData.image_path;
+            } else {
+                image.src = getBasePath() + "drawings/" + player + "-" + pageData.word.replaceAll(" ", "-") + ".png";
+            }
+
+            pageContainer.appendChild(promptText);
+            pageContainer.appendChild(authorText);
+            pageContainer.appendChild(image);
+            finalGallery.appendChild(pageContainer);
+        }
+    }
+
     function show_winners() {
         let namelist = document.getElementById("user-list-3");
         let values = Object.entries(gState["players"]);
