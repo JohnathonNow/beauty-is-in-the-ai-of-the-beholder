@@ -151,7 +151,7 @@ function onload_billiards() {
                     gAssign = data["FullState"]["state"]["word"];
                 }
 
-                if (data["FullState"]["state"]["gametype"] == "Classic" && data["FullState"]["state"]["drawer"] !== gName) {
+                if ((data["FullState"]["state"]["gametype"] == "Classic" || data["FullState"]["state"]["gametype"] == "Evolution") && data["FullState"]["state"]["drawer"] !== gName) {
                     document.getElementById("word").textContent = "Guess the word!";
                 } else {
                     document.getElementById("word").textContent = "Please draw: " + gAssign;
@@ -186,7 +186,7 @@ function onload_billiards() {
                     add_drawing(p, []);
                 }
 
-                if (data["FullState"]["state"]["gametype"] == "Classic" && data["FullState"]["state"]["drawer"] !== gName && data["FullState"]["state"]["drawer"] !== null) {
+                if ((data["FullState"]["state"]["gametype"] == "Classic" || data["FullState"]["state"]["gametype"] == "Evolution") && data["FullState"]["state"]["drawer"] !== gName && data["FullState"]["state"]["drawer"] !== null) {
                     let drawerName = data["FullState"]["state"]["drawer"];
                     if (data["FullState"]["state"]["players"][drawerName] && data["FullState"]["state"]["players"][drawerName]["image_path"]) {
                         let path = getBasePath() + data["FullState"]["state"]["players"][drawerName]["image_path"];
@@ -242,9 +242,11 @@ function onload_billiards() {
             timer.max = state["timelimit"];
             on_visible();
 
-            if (state["gametype"] == "Classic") {
+            if (state["gametype"] == "Classic" || state["gametype"] == "Evolution") {
                 if (gLastDrawer !== state["drawer"]) {
-                    clear_canvas();
+                    if (state["gametype"] === "Classic" || gLastDrawer === null) {
+                        clear_canvas();
+                    }
                     gLastDrawer = state["drawer"];
                 }
 
@@ -603,7 +605,7 @@ function onload_billiards() {
     }
     function draw_event_handler(e) {
         e.preventDefault();
-        if (gState && gState["gametype"] == "Classic" && gState["drawer"] == gName) {
+        if (gState && (gState["gametype"] == "Classic" || gState["gametype"] == "Evolution") && gState["drawer"] == gName) {
             sendDrawing();
         }
     }

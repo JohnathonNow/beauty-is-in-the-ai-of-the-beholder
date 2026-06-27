@@ -132,7 +132,7 @@ impl State {
                 self.sendable.tick_running();
                 let mut should_end = self.sendable.is_over();
 
-                if self.sendable.gametype == "Classic" {
+                if self.sendable.gametype == "Classic" || self.sendable.gametype == "Evolution" {
                     let mut active_count = 0;
                     let mut guessed_count = 0;
                     for (name, player) in self.sendable.players.iter() {
@@ -164,22 +164,33 @@ impl State {
 
                 if should_end {
                     let mut start_new_turn = false;
-                    if self.sendable.gametype == "Classic" {
+                    if self.sendable.gametype == "Classic" || self.sendable.gametype == "Evolution" {
                         let undrawn_players: Vec<String> = self.sendable.players.iter()
                             .filter_map(|(name, p)| if p.active && !p.has_drawn { Some(name.clone()) } else { None })
                             .collect();
                         if !undrawn_players.is_empty() {
                             start_new_turn = true;
                             self.sendable.time = 0;
+                            let mut latest_image_path = None;
+                            if let Some(drawer) = &self.sendable.drawer {
+                                if let Some(player) = self.sendable.players.get(drawer) {
+                                    latest_image_path = player.image_path.clone();
+                                }
+                            }
+
                             for (_, p) in self.sendable.players.iter_mut() {
                                 p.has_guessed = false;
                                 p.image_path = None;
                             }
+
                             let mut rng = thread_rng();
                             if let Some(new_drawer) = undrawn_players.choose(&mut rng) {
                                 self.sendable.drawer = Some(new_drawer.clone());
                                 if let Some(player) = self.sendable.players.get_mut(new_drawer) {
                                     player.has_drawn = true;
+                                    if self.sendable.gametype == "Evolution" {
+                                        player.image_path = latest_image_path;
+                                    }
                                 }
                             }
                             if let Some(word) = self.word_pool.pop() {
@@ -282,7 +293,7 @@ pub async fn handle(
                         if let Some(host) = gs.sendable.get_host() {
                             if host == &login_name {
                                 gs.sendable.set_state(GameState::RUNNING);
-                                if gs.sendable.gametype == "Classic" {
+                                if gs.sendable.gametype == "Classic" || gs.sendable.gametype == "Evolution" {
                                     let active_players: Vec<String> = gs.sendable.players.iter()
                                         .filter_map(|(name, p)| if p.active { Some(name.clone()) } else { None })
                                         .collect();
@@ -368,7 +379,7 @@ pub async fn handle(
                         let mut guess_points = 0;
                         let mut the_drawer = String::new();
 
-                        if gs.sendable.gametype == "Classic" && gs.sendable.get_state() as u8 == GameState::RUNNING as u8 {
+                        if (gs.sendable.gametype == "Classic" || gs.sendable.gametype == "Evolution") && gs.sendable.get_state() as u8 == GameState::RUNNING as u8 {
                             if guess.to_lowercase() == gs.sendable.word.to_lowercase() {
                                 let drawer_clone = gs.sendable.drawer.clone();
                                 if let Some(d) = drawer_clone {
@@ -438,10 +449,12 @@ pub async fn handle(
                     packets::Incoming::Image { image } => {
                         let mut gs = game_state.lock().await;
 
-                        if gs.sendable.gametype == "Classic" {
+                        let is_turn_based = gs.sendable.gametype == "Classic" || gs.sendable.gametype == "Evolution";
+
+                        if is_turn_based {
                             if let Some(drawer) = &gs.sendable.drawer {
                                 if *drawer != login_name {
-                                    continue; // Only the drawer can submit images in Classic mode
+                                    continue; // Only the drawer can submit images in Turn-based modes
                                 }
                             } else {
                                 continue;
@@ -459,20 +472,19 @@ pub async fn handle(
 
                         let mut final_score = 0.0;
 
-                        if gs.sendable.gametype != "Classic" {
+                        if !is_turn_based {
                             let score = gs.score(&file_path).await.unwrap_or(0f32);
                             info!("Wow, score is {}", score);
                             final_score = 160.0 - score;
                         }
 
-                        let is_classic = gs.sendable.gametype == "Classic";
                         let player = gs.sendable.get_player_mut(&login_name);
-                        if !is_classic {
+                        if !is_turn_based {
                             player.score = final_score;
                         }
                         player.image_path = Some(format!("drawings/{}/{}.png", dir_prefix, uuid));
 
-                        if !is_classic {
+                        if !is_turn_based {
                             let _ = gtx.send(
                                 serde_json::to_string(&packets::Outgoing::Score {
                                     username: login_name.clone(),
