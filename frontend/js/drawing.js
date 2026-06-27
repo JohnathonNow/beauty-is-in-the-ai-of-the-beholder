@@ -121,7 +121,11 @@ function onload_drawing() {
 		let ce = document.createElement("div");
 		ce.style["background-color"] = c;
 		ce.classList.add("colorchoice");
-		ce.onclick = function(e) {
+		ce.setAttribute("role", "button");
+		ce.setAttribute("tabindex", "0");
+		ce.setAttribute("aria-label", "Select color " + c);
+
+		const selectColor = function() {
 			mode = DRAW_MODE;
 			color = c;
 			// Select all elements with the class "myClass"
@@ -138,7 +142,15 @@ function onload_drawing() {
 				redraw();
 				if (typeof sendDrawing === 'function') sendDrawing();
 			}
-		}
+		};
+
+		ce.onclick = selectColor;
+		ce.onkeydown = function(e) {
+			if (e.key === "Enter" || e.key === " ") {
+				e.preventDefault();
+				selectColor();
+			}
+		};
 		colorpicker.appendChild(ce);
 	}
 	canvas = document.getElementById('canvas');
