@@ -166,4 +166,85 @@ test.describe('Game Modes UI Tests', () => {
         // Alice is guesser, so she should see "Guess the word!"
         await expect(wordElem).toHaveText('Guess the word!');
     });
+
+    test('verify Evolution mode UI loop correctly switches drawer/guesser but retains canvas', async ({ page }) => {
+        // Login
+        await page.fill('#name', 'Alice');
+        await page.press('#name', 'Enter');
+
+        // Create Lobby and Connect
+        await page.click('#show-create-lobby-btn');
+        await page.fill('#new-lobby-name', 'TestLobbyEvolution');
+        await page.selectOption('#new-lobby-mode', 'Evolution');
+        await page.click('#create-lobby');
+
+        // Wait for the UI to switch to the game view
+        await expect(page.locator('#game')).toBeVisible();
+
+        // Simulate server sending FullState for Evolution mode with Alice as drawer
+        await page.evaluate(() => {
+            window.sendMockMessage({
+                "FullState": {
+                    "state": {
+                        "state": "RUNNING",
+                        "gametype": "Evolution",
+                        "drawer": "Alice",
+                        "word": "apple", "timelimit": 60, "time": 30 ,
+                        "players": {
+                            "Alice": { "score": 10, "active": true, "image_path": null },
+                            "Bob": { "score": 20, "active": true, "image_path": null }
+                        }
+                    }
+                }
+            });
+        });
+
+        const wordElem = page.locator('#word');
+        await expect(wordElem).toHaveText('Please draw: apple');
+
+        // Draw a red pixel at 0,0 on the canvas using strokes logic so redraw() doesn't overwrite it
+        await page.evaluate(() => {
+            if (typeof strokes !== 'undefined') {
+                strokes.push({
+                    "x": 0, "y": 0, "c": "red", "s": 5, "m": "source-over", "o": "paint", "t": 1, "d": false
+                });
+                strokes.push({
+                    "x": 10, "y": 10, "c": "red", "s": 5, "m": "source-over", "o": "paint", "t": 1, "d": true
+                });
+                redraw();
+            }
+        });
+
+        // Simulate server sending FullState for Evolution mode with Bob as drawer (Alice is guesser)
+        await page.evaluate(() => {
+            window.sendMockMessage({
+                "FullState": {
+                    "state": {
+                        "state": "RUNNING",
+                        "gametype": "Evolution",
+                        "drawer": "Bob",
+                        "word": "banana", "timelimit": 60, "time": 30 ,
+                        "players": {
+                            "Alice": { "score": 10, "active": true, "image_path": null },
+                            "Bob": { "score": 20, "active": true, "image_path": null }
+                        }
+                    }
+                }
+            });
+        });
+
+        // Alice is guesser, so she should see "Guess the word!"
+        await expect(wordElem).toHaveText('Guess the word!');
+
+        // The red pixel should still be there because clear_canvas() is skipped in Evolution mode for subsequent turns
+        const pixel = await page.evaluate(() => {
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+            const pixelData = ctx.getImageData(0, 0, 1, 1).data;
+            return Array.from(pixelData);
+        });
+        const pixelStillThere = pixel[0] === 255 && pixel[1] === 0 && pixel[2] === 0;
+
+        expect(pixelStillThere).toBe(true);
+    });
 });
