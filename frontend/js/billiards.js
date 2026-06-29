@@ -647,30 +647,41 @@ function onload_billiards() {
         connect(customWords, timeLimit, gametype);
     }
 
+    function handleLogin() {
+        let nameInput = document.getElementById("name");
+        let nameVal = nameInput.value.trim();
+        if (!nameVal) return;
+        gName = nameVal;
+        document.getElementById("login").style.display = "none";
+        document.getElementById("lobby-selection").style.display = "block";
+        fetch_lobbies();
+        document.cookie = gName;
+
+        // Connect to global chat
+        let wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+        let wsPort = window.location.port ? ':' + window.location.port : '';
+        console.log(wsProtocol + window.location.hostname + wsPort + getBasePath() + 'global_chat?name=' + encodeURIComponent(gName));
+        globalChatSocket = new WebSocket(wsProtocol + window.location.hostname + wsPort + getBasePath() + 'global_chat?name=' + encodeURIComponent(gName));
+        globalChatSocket.addEventListener('message', event => {
+            let chat = document.getElementById('global-chat-messages');
+            let line = document.createElement("div");
+            line.textContent = event.data;
+            chat.append(line);
+            while (chat.children.length > MAX_CHAT) {
+                chat.removeChild(chat.children[0]);
+            }
+            chat.scrollTop = chat.scrollHeight;
+        });
+    }
+
     document.getElementById("name").addEventListener("keydown", function (e) {
         if (e.key  == "Enter") {
-            gName = e.target.value;
-            document.getElementById("login").style.display = "none";
-            document.getElementById("lobby-selection").style.display = "block";
-            fetch_lobbies();
-            document.cookie = gName;
-
-            // Connect to global chat
-            let wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-            let wsPort = window.location.port ? ':' + window.location.port : '';
-            console.log(wsProtocol + window.location.hostname + wsPort + getBasePath() + 'global_chat?name=' + encodeURIComponent(gName));
-            globalChatSocket = new WebSocket(wsProtocol + window.location.hostname + wsPort + getBasePath() + 'global_chat?name=' + encodeURIComponent(gName));
-            globalChatSocket.addEventListener('message', event => {
-                let chat = document.getElementById('global-chat-messages');
-                let line = document.createElement("div");
-                line.textContent = event.data;
-                chat.append(line);
-                while (chat.children.length > MAX_CHAT) {
-                    chat.removeChild(chat.children[0]);
-                }
-                chat.scrollTop = chat.scrollHeight;
-            });
+            handleLogin();
         }
+    });
+
+    document.getElementById("login-btn").addEventListener("click", function (e) {
+        handleLogin();
     });
 
     document.getElementById("global-chat-input").addEventListener("keydown", function (e) {
