@@ -684,14 +684,23 @@ function onload_billiards() {
         handleLogin();
     });
 
-    document.getElementById("global-chat-input").addEventListener("keydown", function (e) {
-        if (e.key === "Enter" && e.target.value.trim() !== "") {
+    function sendGlobalChatMessage() {
+        const input = document.getElementById("global-chat-input");
+        if (input.value.trim() !== "") {
             if (globalChatSocket && globalChatSocket.readyState === WebSocket.OPEN) {
-                globalChatSocket.send(e.target.value);
-                e.target.value = "";
+                globalChatSocket.send(input.value);
+                input.value = "";
             }
         }
+    }
+
+    document.getElementById("global-chat-input").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+            sendGlobalChatMessage();
+        }
     });
+
+    document.getElementById("global-chat-send").addEventListener("click", sendGlobalChatMessage);
 
     document.getElementById("refresh-lobbies").onclick = fetch_lobbies;
     document.getElementById("show-create-lobby-btn").onclick = function() {
@@ -718,16 +727,25 @@ function onload_billiards() {
             }
         }
     });
+    function handleGuessSubmit() {
+        const input = document.getElementById("guess");
+        if (input.value.trim() !== "") {
+            gName = input.value;
+            sendGuess(input.value);
+            input.value = "";
+        }
+    }
+
     document.getElementById("guess").addEventListener("keydown", function search(e) {
         if (e.key  == "Enter") {
-            gName = e.target.value;
-            sendGuess(e.target.value);
-            e.target.value = "";
+            handleGuessSubmit();
         } else if (e.key  == "Tab") {
             //cycle(e.shiftKey);
             e.preventDefault();
         }
     });
+
+    document.getElementById("guess-send").addEventListener("click", handleGuessSubmit);
 
     //document.onmouseup = function () { document.getElementById("guess").focus(); };
 
