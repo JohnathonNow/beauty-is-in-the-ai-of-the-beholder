@@ -440,7 +440,21 @@ function onload_billiards() {
             listItem.textContent = player;
             listItem.classList.add('user-list-item');
             listItem.setAttribute("__player", player);
+            listItem.setAttribute("role", "button");
+            listItem.setAttribute("tabindex", "0");
+            listItem.setAttribute("aria-label", "Player " + player);
             listItem.onclick = player_click;
+            listItem.onkeydown = function(e) {
+                // Ensure event isn't bubbling up from a child button
+                if (e.target.tagName.toLowerCase() === 'button') {
+                    return;
+                }
+
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    player_click({ currentTarget: listItem, target: { tagName: 'LI' } });
+                }
+            };
             let kickBtn = document.createElement("button");
             kickBtn.textContent = "Kick";
             kickBtn.className = "kick-btn";
@@ -466,8 +480,8 @@ function onload_billiards() {
     function player_click(e) {
         let clickedPlayer = e.currentTarget.getAttribute("__player");
 
-        // Prevent toggle if the click was directly on a button
-        if (e.target.tagName.toLowerCase() !== 'button') {
+        // Prevent toggle if the click was directly on a native button element
+        if (!e.target || e.target.tagName.toLowerCase() !== 'button') {
             if (gState && gState["host"] == gName && clickedPlayer != gName) {
                 let kickBtn = e.currentTarget.querySelector(".kick-btn");
                 let banBtn = e.currentTarget.querySelector(".ban-btn");
