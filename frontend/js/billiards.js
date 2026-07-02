@@ -441,6 +441,17 @@ function onload_billiards() {
             listItem.classList.add('user-list-item');
             listItem.setAttribute("__player", player);
             listItem.onclick = player_click;
+            listItem.setAttribute("role", "button");
+            listItem.setAttribute("tabindex", "0");
+            listItem.setAttribute("aria-label", "Player " + player);
+            listItem.onkeydown = function(e) {
+                if (e.key === "Enter" || e.key === " ") {
+                    if (e.target.tagName.toLowerCase() === 'button') return;
+                    e.preventDefault();
+                    // Trigger the click logic
+                    player_click.call(this, e);
+                }
+            };
             let kickBtn = document.createElement("button");
             kickBtn.textContent = "Kick";
             kickBtn.className = "kick-btn";
