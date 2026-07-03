@@ -46,6 +46,17 @@ function reset() {
     clear_canvas();
 }
 
+function setupInputValidation(inputId, buttonId) {
+    const input = document.getElementById(inputId);
+    const button = document.getElementById(buttonId);
+    if (!input || !button) return;
+
+    button.disabled = input.value.trim() === "";
+    input.addEventListener("input", function() {
+        button.disabled = input.value.trim() === "";
+    });
+}
+
 function onload_billiards() {
     function connect(customWords, timeLimit, gametype) {
         reset();
@@ -684,12 +695,15 @@ function onload_billiards() {
         handleLogin();
     });
 
+    setupInputValidation("name", "login-btn");
+
     function sendGlobalChatMessage() {
         const input = document.getElementById("global-chat-input");
         if (input.value.trim() !== "") {
             if (globalChatSocket && globalChatSocket.readyState === WebSocket.OPEN) {
                 globalChatSocket.send(input.value);
                 input.value = "";
+                input.dispatchEvent(new Event("input"));
             }
         }
     }
@@ -701,6 +715,8 @@ function onload_billiards() {
     });
 
     document.getElementById("global-chat-send").addEventListener("click", sendGlobalChatMessage);
+
+    setupInputValidation("global-chat-input", "global-chat-send");
 
     document.getElementById("refresh-lobbies").onclick = fetch_lobbies;
     document.getElementById("show-create-lobby-btn").onclick = function() {
@@ -716,6 +732,8 @@ function onload_billiards() {
             join_lobby(name.trim(), customWords.trim(), timeLimit, gametype);
         }
     };
+    setupInputValidation("new-lobby-name", "create-lobby");
+
     document.getElementById("new-lobby-name").addEventListener("keydown", function (e) {
         if (e.key  == "Enter") {
             const name = e.target.value;
@@ -733,6 +751,7 @@ function onload_billiards() {
             gName = input.value;
             sendGuess(input.value);
             input.value = "";
+            input.dispatchEvent(new Event("input"));
         }
     }
 
@@ -746,6 +765,8 @@ function onload_billiards() {
     });
 
     document.getElementById("guess-send").addEventListener("click", handleGuessSubmit);
+
+    setupInputValidation("guess", "guess-send");
 
     //document.onmouseup = function () { document.getElementById("guess").focus(); };
 
