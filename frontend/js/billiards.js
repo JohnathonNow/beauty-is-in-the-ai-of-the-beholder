@@ -335,6 +335,7 @@ function onload_billiards() {
             image.style.width = "100%";
             image.style.marginTop = "10px";
             image.style.border = "2px solid white";
+            image.alt = "Drawing by " + player + " for prompt: " + pageData.word;
 
             if (pageData.image_path) {
                 image.src = getBasePath() + pageData.image_path;
@@ -368,6 +369,7 @@ function onload_billiards() {
                 thumb.style.objectFit = "contain";
                 thumb.style.marginRight = "10px";
                 thumb.style.verticalAlign = "middle";
+                thumb.alt = "Thumbnail of drawing by " + player;
                 child.appendChild(thumb);
 
                 let txtSpan = document.createElement("span");
@@ -378,6 +380,7 @@ function onload_billiards() {
                     let image = document.createElement("div");
                     image.classList = "finalimagecontainer";
                     let picture = document.createElement("img");
+                    picture.alt = "Full drawing by " + player;
                     gstrks = gStrokes.get(player);
                     if (gstrks) {
                         redraw_other(gMap.get(player).getContext("2d"), gstrks);
