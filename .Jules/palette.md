@@ -7,3 +7,6 @@
 ## 2026-06-30 - Missing Submit Buttons on Primary Forms
 **Learning:** Primary forms and workflows in the UI (like global chat and game chat/guessing) lacked explicit submit buttons, relying entirely on implicit 'Enter' keyboard events. This is a critical accessibility and usability violation, as the action to submit is not easily discoverable to users, especially on mobile or for those using screen readers who expect standard form controls.
 **Action:** Always include explicit, visible submit buttons alongside any implicit keyboard submission events (like 'Enter') when designing primary input workflows.
+## 2026-07-06 - [Aria-Pressed state for toggle buttons]
+**Learning:** The application's custom drawing tools and color picker choices acted as toggle buttons but lacked the 'aria-pressed' attribute, making their active state invisible to screen readers.
+**Action:** Always use the 'aria-pressed' attribute and dynamically update it between 'true' and 'false' for custom UI elements that behave like toggle buttons to ensure accessibility.

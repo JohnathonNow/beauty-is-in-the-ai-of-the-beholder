@@ -124,6 +124,10 @@ function onload_drawing() {
 		ce.setAttribute("role", "button");
 		ce.setAttribute("tabindex", "0");
 		ce.setAttribute("aria-label", "Select color " + c);
+		ce.setAttribute("aria-pressed", c === "black" ? "true" : "false");
+		if (c === "black") {
+			ce.classList.add("colorpicked");
+		}
 
 		const selectColor = function() {
 			mode = DRAW_MODE;
@@ -134,8 +138,10 @@ function onload_drawing() {
 			// Loop through the elements and remove the class
 			for (const element of elements) {
 				element.classList.remove('colorpicked');
+				element.setAttribute("aria-pressed", "false");
 			}
 			ce.classList.add("colorpicked");
+			ce.setAttribute("aria-pressed", "true");
 
 			if (tool === "text" && activeStrokeIndex !== -1 && strokes[activeStrokeIndex] && strokes[activeStrokeIndex].o === "text") {
 				strokes[activeStrokeIndex].c = color;
@@ -414,12 +420,18 @@ function onload_drawing() {
 		const toolIds = ["pencil", "erase", "flood", "select", "text", "shape"];
 		for (let id of toolIds) {
 			let btn = document.getElementById(id);
-			if (btn) btn.classList.remove("active-tool");
+			if (btn) {
+				btn.classList.remove("active-tool");
+				btn.setAttribute("aria-pressed", "false");
+			}
 		}
 		let activeId = t;
 		if (t === "paint") activeId = "pencil";
 		let activeBtn = document.getElementById(activeId);
-		if (activeBtn) activeBtn.classList.add("active-tool");
+		if (activeBtn) {
+			activeBtn.classList.add("active-tool");
+			activeBtn.setAttribute("aria-pressed", "true");
+		}
 	}
 
 
