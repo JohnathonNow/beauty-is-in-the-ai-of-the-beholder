@@ -16,3 +16,6 @@
 ## 2026-07-01 - Synchronizing aria-pressed state for custom toggle buttons
 **Learning:** For custom toggle buttons in the vanilla JS frontend (such as drawing tools or dynamically generated color picker swatches), failing to explicitly synchronize the `aria-pressed` attribute when visual selection classes (like `.active-tool` or `.colorpicked`) change leaves screen reader users unaware of their currently active selection.
 **Action:** Whenever implementing or modifying custom toggle controls, dynamically set `aria-pressed="true"` on the newly selected element and `aria-pressed="false"` on the unselected elements along with visual class toggling.
+## 2024-07-07 - Contextual aria-labels for generic buttons
+**Learning:** Dynamically generating buttons with brief, generic text (e.g., 'Kick' or 'Ban') that rely on visual adjacency for context creates an accessibility issue for screen reader users. They will only hear "Kick, button" without knowing who they are kicking.
+**Action:** When dynamically generating such buttons, always add an explicit, contextual `aria-label` (e.g., 'Kick [PlayerName]') to ensure proper screen reader accessibility.

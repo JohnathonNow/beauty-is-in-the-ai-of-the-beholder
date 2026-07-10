@@ -468,11 +468,13 @@ function onload_billiards() {
             let kickBtn = document.createElement("button");
             kickBtn.textContent = "Kick";
             kickBtn.className = "kick-btn";
+            kickBtn.setAttribute("aria-label", "Kick " + player);
             kickBtn.style.display = "none";
             kickBtn.onclick = function(e) { e.stopPropagation(); socket.send(JSON.stringify({"Kick": {"player": player}})); };
             let banBtn = document.createElement("button");
             banBtn.textContent = "Ban";
             banBtn.className = "ban-btn";
+            banBtn.setAttribute("aria-label", "Ban " + player);
             banBtn.style.display = "none";
             banBtn.onclick = function(e) { e.stopPropagation(); socket.send(JSON.stringify({"Ban": {"player": player}})); };
             let nameSpan = document.createElement("span");
@@ -655,6 +657,7 @@ function onload_billiards() {
                         const li = document.createElement("li");
                         const btn = document.createElement("button");
                         btn.textContent = lobby;
+                        btn.setAttribute("aria-label", "Join lobby " + lobby);
                         btn.onclick = () => join_lobby(lobby);
                         li.appendChild(btn);
                         list.appendChild(li);
