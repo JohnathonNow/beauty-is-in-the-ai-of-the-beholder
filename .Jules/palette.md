@@ -7,6 +7,9 @@
 ## 2026-06-30 - Missing Submit Buttons on Primary Forms
 **Learning:** Primary forms and workflows in the UI (like global chat and game chat/guessing) lacked explicit submit buttons, relying entirely on implicit 'Enter' keyboard events. This is a critical accessibility and usability violation, as the action to submit is not easily discoverable to users, especially on mobile or for those using screen readers who expect standard form controls.
 **Action:** Always include explicit, visible submit buttons alongside any implicit keyboard submission events (like 'Enter') when designing primary input workflows.
+## 2026-07-03 - Added input validation to submit buttons
+**Learning:** In vanilla JavaScript web apps where input values are cleared programmatically after submission, native `input` events do not fire automatically. This causes input-validation event listeners (e.g. enabling/disabling a submit button) to get out of sync with the actual DOM state.
+**Action:** When programmatically changing an input field's value, manually dispatch an `input` event (`input.dispatchEvent(new Event("input"))`) to ensure UI state remains synchronized.
 ## 2024-07-06 - [Dynamic Image Accessibility]
 **Learning:** Dynamically created `<img>` elements in the vanilla JavaScript frontend lacked `alt` text, which is an accessibility violation for screen readers.
 **Action:** When dynamically creating `<img>` tags via `document.createElement("img")`, always explicitly assign descriptive `alt` text to ensure screen reader users have context.
