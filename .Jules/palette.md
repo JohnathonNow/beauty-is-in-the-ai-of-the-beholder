@@ -10,3 +10,9 @@
 ## 2026-07-03 - Added input validation to submit buttons
 **Learning:** In vanilla JavaScript web apps where input values are cleared programmatically after submission, native `input` events do not fire automatically. This causes input-validation event listeners (e.g. enabling/disabling a submit button) to get out of sync with the actual DOM state.
 **Action:** When programmatically changing an input field's value, manually dispatch an `input` event (`input.dispatchEvent(new Event("input"))`) to ensure UI state remains synchronized.
+## 2024-07-06 - [Dynamic Image Accessibility]
+**Learning:** Dynamically created `<img>` elements in the vanilla JavaScript frontend lacked `alt` text, which is an accessibility violation for screen readers.
+**Action:** When dynamically creating `<img>` tags via `document.createElement("img")`, always explicitly assign descriptive `alt` text to ensure screen reader users have context.
+## 2026-07-01 - Synchronizing aria-pressed state for custom toggle buttons
+**Learning:** For custom toggle buttons in the vanilla JS frontend (such as drawing tools or dynamically generated color picker swatches), failing to explicitly synchronize the `aria-pressed` attribute when visual selection classes (like `.active-tool` or `.colorpicked`) change leaves screen reader users unaware of their currently active selection.
+**Action:** Whenever implementing or modifying custom toggle controls, dynamically set `aria-pressed="true"` on the newly selected element and `aria-pressed="false"` on the unselected elements along with visual class toggling.
