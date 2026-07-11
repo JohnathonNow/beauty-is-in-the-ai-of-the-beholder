@@ -51,10 +51,18 @@ function setupInputValidation(inputId, buttonId) {
     const button = document.getElementById(buttonId);
     if (!input || !button) return;
 
-    button.disabled = input.value.trim() === "";
-    input.addEventListener("input", function() {
-        button.disabled = input.value.trim() === "";
-    });
+    const updateButtonState = () => {
+        const isDisabled = input.value.trim() === "";
+        button.disabled = isDisabled;
+        if (isDisabled) {
+            button.title = "Please enter a value to continue.";
+        } else {
+            button.removeAttribute("title");
+        }
+    };
+
+    updateButtonState();
+    input.addEventListener("input", updateButtonState);
 }
 
 function onload_billiards() {
