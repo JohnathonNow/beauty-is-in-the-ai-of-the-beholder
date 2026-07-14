@@ -20,7 +20,7 @@ jobs:
         node-version: 18
 
     - name: Install dependencies
-      run: npm install
+      run: npm install @playwright/test playwright
 
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps chromium
