@@ -51,10 +51,17 @@ function setupInputValidation(inputId, buttonId) {
     const button = document.getElementById(buttonId);
     if (!input || !button) return;
 
-    button.disabled = input.value.trim() === "";
-    input.addEventListener("input", function() {
+    const updateButtonState = () => {
         button.disabled = input.value.trim() === "";
-    });
+        if (button.disabled) {
+            button.setAttribute("title", "Input required to enable this button");
+        } else {
+            button.removeAttribute("title");
+        }
+    };
+
+    updateButtonState();
+    input.addEventListener("input", updateButtonState);
 }
 
 function onload_billiards() {
