@@ -19,3 +19,7 @@
 ## 2024-07-07 - Contextual aria-labels for generic buttons
 **Learning:** Dynamically generating buttons with brief, generic text (e.g., 'Kick' or 'Ban') that rely on visual adjacency for context creates an accessibility issue for screen reader users. They will only hear "Kick, button" without knowing who they are kicking.
 **Action:** When dynamically generating such buttons, always add an explicit, contextual `aria-label` (e.g., 'Kick [PlayerName]') to ensure proper screen reader accessibility.
+
+## 2026-07-15 - ARIA live regions for dynamic DOM updates
+**Learning:** Dynamic DOM updates for chat messages and game state (e.g., prompts to draw, score updates) in the vanilla JavaScript frontend lack automatic announcements for screen reader users, creating an accessibility barrier.
+**Action:** Always use `aria-live="polite"` and `role="log"` on container elements that dynamically receive updates (like chat or game status areas) to ensure screen reader users are notified of new content without interrupting their current task.
