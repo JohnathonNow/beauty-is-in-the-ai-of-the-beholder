@@ -23,3 +23,6 @@
 ## 2026-07-04 - Screen reader notifications for dynamic game state updates
 **Learning:** Dynamic DOM updates for game state (like chat messages, prompts to draw, score updates) in the vanilla JS frontend were not notifying screen readers because the container elements lacked `aria-live` and `role` attributes. This left screen reader users unaware of critical game events (e.g. someone chatting, it's their turn to draw, or receiving a score).
 **Action:** Always add `aria-live="polite"` and either `role="log"` (for message streams) or `role="status"` (for single state updates) to container elements where dynamic game information is updated to ensure screen reader users receive timely notifications.
+## 2026-07-06 - Temporary visual feedback on buttons
+**Learning:** When implementing temporary visual feedback on buttons in the vanilla JS frontend (like changing text to "Copied!" and reverting after 2 seconds), failing to clear the timeout on rapid consecutive clicks causes the revert text (e.g. "Copied!" captured in the second click) to become permanently stuck when the final timeout fires.
+**Action:** Always use `clearTimeout` to reset any pending timeouts before applying new state, and manage variables carefully to prevent race conditions during rapid user interaction.
