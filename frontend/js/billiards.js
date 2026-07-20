@@ -647,10 +647,29 @@ function onload_billiards() {
     canvas.addEventListener("mouseleave", draw_event_handler);
     canvas.addEventListener("mouseup", draw_event_handler);
     function fetch_lobbies() {
+        const refreshBtn = document.getElementById("refresh-lobbies");
+        if (refreshBtn) {
+            refreshBtn.disabled = true;
+        }
+        const list = document.getElementById("lobby-list");
+        list.innerHTML = "";
+        const loadingLi = document.createElement("li");
+        loadingLi.textContent = "Loading lobbies...";
+        loadingLi.style.color = "#888";
+        loadingLi.style.fontStyle = "italic";
+        loadingLi.style.padding = "10px";
+        loadingLi.setAttribute("role", "status");
+        loadingLi.setAttribute("aria-live", "polite");
+        list.appendChild(loadingLi);
+
         fetch(getBasePath() + 'lobbies')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to fetch lobbies");
+                }
+                return response.json();
+            })
             .then(data => {
-                const list = document.getElementById("lobby-list");
                 list.innerHTML = "";
                 if (data.length === 0) {
                     const li = document.createElement("li");
@@ -669,6 +688,21 @@ function onload_billiards() {
                         li.appendChild(btn);
                         list.appendChild(li);
                     });
+                }
+            })
+            .catch(error => {
+                list.innerHTML = "";
+                const errorLi = document.createElement("li");
+                errorLi.textContent = "Failed to load lobbies. Please try again.";
+                errorLi.style.color = "#ff6b6b";
+                errorLi.style.fontStyle = "italic";
+                errorLi.style.padding = "10px";
+                errorLi.setAttribute("role", "alert");
+                list.appendChild(errorLi);
+            })
+            .finally(() => {
+                if (refreshBtn) {
+                    refreshBtn.disabled = false;
                 }
             });
     }
