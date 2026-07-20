@@ -717,7 +717,9 @@ function onload_drawing() {
 		}
 	};
 
+	let copyBtnTimeoutId = null;
 	document.getElementById("copy-btn").onclick = function() {
+		let wasCopied = false;
 		if (selectionRect && selectionRect.w !== 0 && selectionRect.h !== 0) {
 			let rx = Math.min(selectionRect.x, selectionRect.x + selectionRect.w) * context.canvas.width/1000;
 			let ry = Math.min(selectionRect.y, selectionRect.y + selectionRect.h) * context.canvas.height/1000;
@@ -732,10 +734,23 @@ function onload_drawing() {
 				tctx.drawImage(context.canvas, rx, ry, rw, rh, 0, 0, rw, rh);
 				clipboardData = tempCanvas.toDataURL();
 				document.getElementById("paste-btn").style.display = "inline-block";
+				wasCopied = true;
 			}
 		} else if (activeStrokeIndex !== -1 && strokes[activeStrokeIndex] && strokes[activeStrokeIndex].o === "image") {
 			clipboardData = strokes[activeStrokeIndex].imgData;
 			document.getElementById("paste-btn").style.display = "inline-block";
+			wasCopied = true;
+		}
+
+		if (wasCopied) {
+			let copyBtn = document.getElementById("copy-btn");
+			copyBtn.textContent = "Copied!";
+			if (copyBtnTimeoutId) {
+				clearTimeout(copyBtnTimeoutId);
+			}
+			copyBtnTimeoutId = setTimeout(function() {
+				copyBtn.textContent = "Copy";
+			}, 2000);
 		}
 	};
 
