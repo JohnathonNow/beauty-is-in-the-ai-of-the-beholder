@@ -23,3 +23,6 @@
 ## 2026-07-04 - Screen reader notifications for dynamic game state updates
 **Learning:** Dynamic DOM updates for game state (like chat messages, prompts to draw, score updates) in the vanilla JS frontend were not notifying screen readers because the container elements lacked `aria-live` and `role` attributes. This left screen reader users unaware of critical game events (e.g. someone chatting, it's their turn to draw, or receiving a score).
 **Action:** Always add `aria-live="polite"` and either `role="log"` (for message streams) or `role="status"` (for single state updates) to container elements where dynamic game information is updated to ensure screen reader users receive timely notifications.
+## 2026-07-08 - Async Loading and Error States
+**Learning:** Fetch operations for lists (like lobby lists) without explicit loading states cause UI freezing/jank, and without error states they leave users and screen readers confused if the request fails (e.g., an empty list without explanation).
+**Action:** Always include explicit visual and accessible loading states (e.g., `role="status"`, `aria-live="polite"`) and disable retry buttons during the fetch. Also, provide clear error states (`role="alert"`) if the operation fails.
