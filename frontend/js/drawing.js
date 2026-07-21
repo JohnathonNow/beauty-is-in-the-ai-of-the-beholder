@@ -681,7 +681,9 @@ function onload_drawing() {
 		paint = false;
 
 	};
-	document.getElementById("size").onchange = function(e) { 
+	document.getElementById("size").oninput = function(e) {
+		let output = document.getElementById("stroke-output");
+		if (output) output.textContent = e.target.value;
 		size = e.target.value;
 	};
 	document.getElementById("undo").onclick = undo;

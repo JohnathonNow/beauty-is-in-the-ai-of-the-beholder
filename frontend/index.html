@@ -76,10 +76,10 @@
                         </div>
                         <div id="controls">
                             <div id="colorpicker-container">
-                                <p>Color:</p> <div id="colorpicker"></div>
+                                <p id="colorpicker-label">Color:</p> <div id="colorpicker" role="group" aria-labelledby="colorpicker-label"></div>
                             </div>
                             <div id="stroke-container">
-                                <p>Stroke:</p> <input type="range" id="size" value="5" min="1" max="50" aria-label="Stroke Size">
+                                <p><label for="size">Stroke: <span id="stroke-output">5</span>px</label></p> <input type="range" id="size" value="5" min="1" max="50" aria-label="Stroke Size">
                             </div>
                             <div id="tool-buttons">
                                 <button id="erase" title="Eraser" aria-label="Eraser" aria-pressed="false">🧽</button>

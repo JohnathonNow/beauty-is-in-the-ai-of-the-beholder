@@ -26,3 +26,6 @@
 ## 2026-07-08 - Async Loading and Error States
 **Learning:** Fetch operations for lists (like lobby lists) without explicit loading states cause UI freezing/jank, and without error states they leave users and screen readers confused if the request fails (e.g., an empty list without explanation).
 **Action:** Always include explicit visual and accessible loading states (e.g., `role="status"`, `aria-live="polite"`) and disable retry buttons during the fetch. Also, provide clear error states (`role="alert"`) if the operation fails.
+## 2024-07-09 - [Visual Feedback for Range Inputs]
+**Learning:** Range inputs (sliders) like the stroke size selector lacked real-time visual feedback, making it hard for users to know the exact value they are selecting. Furthermore, using `onchange` only updates the value after the user stops dragging, which feels unresponsive.
+**Action:** Always provide immediate, adjacent visual feedback for range inputs (e.g., displaying the current value next to the label). Use the `oninput` event instead of `onchange` so the visual feedback and state update continuously as the slider is dragged.
