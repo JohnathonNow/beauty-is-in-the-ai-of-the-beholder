@@ -681,7 +681,8 @@ function onload_drawing() {
 		paint = false;
 
 	};
-	document.getElementById("size").onchange = function(e) { 
+	document.getElementById("size").oninput = function(e) {
+		document.getElementById("stroke-size-display").textContent = e.target.value;
 		size = e.target.value;
 	};
 	document.getElementById("undo").onclick = undo;
@@ -701,7 +702,7 @@ function onload_drawing() {
 			if (typeof sendDrawing === 'function') sendDrawing();
 		}
 	};
-	document.getElementById("text-size").onchange = function(e) {
+	document.getElementById("text-size").oninput = function(e) {
 		activeTextSize = e.target.value;
 		if (activeStrokeIndex !== -1 && strokes[activeStrokeIndex] && strokes[activeStrokeIndex].o === "text") {
 			strokes[activeStrokeIndex].size = activeTextSize;
