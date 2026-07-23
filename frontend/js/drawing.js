@@ -681,8 +681,9 @@ function onload_drawing() {
 		paint = false;
 
 	};
-	document.getElementById("size").onchange = function(e) { 
+	document.getElementById("size").oninput = function(e) {
 		size = e.target.value;
+		document.getElementById("stroke-size-display").textContent = size;
 	};
 	document.getElementById("undo").onclick = undo;
 	document.getElementById("pencil").onclick = () => { pencil(); selectTool("paint"); };
