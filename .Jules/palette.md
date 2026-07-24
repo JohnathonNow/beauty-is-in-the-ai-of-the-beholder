@@ -26,3 +26,6 @@
 ## 2026-07-08 - Async Loading and Error States
 **Learning:** Fetch operations for lists (like lobby lists) without explicit loading states cause UI freezing/jank, and without error states they leave users and screen readers confused if the request fails (e.g., an empty list without explanation).
 **Action:** Always include explicit visual and accessible loading states (e.g., `role="status"`, `aria-live="polite"`) and disable retry buttons during the fetch. Also, provide clear error states (`role="alert"`) if the operation fails.
+## 2024-07-09 - [Dynamic UI State Sync on Sliders]
+**Learning:** For range inputs (sliders) in vanilla JavaScript applications, binding display updates to the `onchange` event only triggers feedback when the user releases the slider handle. This creates a disconnected and confusing UX, especially for continuous values like brush size.
+**Action:** When creating or updating sliders that require visual feedback, always use the `oninput` event instead of `onchange` to provide immediate, real-time updates to the UI, and ensure dynamic display elements (like a `<span>` showing the value) have `aria-live="polite"` so screen readers are notified of the changes.
