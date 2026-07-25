@@ -681,8 +681,12 @@ function onload_drawing() {
 		paint = false;
 
 	};
-	document.getElementById("size").onchange = function(e) { 
+	document.getElementById("size").oninput = function(e) {
 		size = e.target.value;
+		let sizeValue = document.getElementById("size-value");
+		if (sizeValue) {
+			sizeValue.textContent = size;
+		}
 	};
 	document.getElementById("undo").onclick = undo;
 	document.getElementById("pencil").onclick = () => { pencil(); selectTool("paint"); };
