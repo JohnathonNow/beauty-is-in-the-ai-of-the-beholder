@@ -29,3 +29,6 @@
 ## 2026-07-25 - Real-time feedback for range inputs
 **Learning:** Range inputs (sliders) that only update their associated value display on the `change` event fail to provide immediate, real-time visual feedback to users while they are dragging the slider, which is a poor UX.
 **Action:** For range inputs, use the `input` event (e.g. `oninput` in vanilla JS) instead of `change` so that users see the value update dynamically as they adjust the slider, improving discoverability and accessibility. Ensure the displayed value is associated with the input, e.g. via a `<label>` or adjacent element with `aria-live`.
+## 2024-07-10 - Standard Keyboard Shortcuts
+**Learning:** Web-based drawing applications should match user expectations from native applications by providing standard keyboard shortcuts like Ctrl+Z for Undo. Without this, users may feel frustrated when their muscle memory fails them. Adding visual feedback to the button when the shortcut is used further enhances the experience.
+**Action:** When implementing common tools like Undo, always include standard keyboard shortcuts (e.g., Ctrl+Z) and add the shortcut text to the button's tooltip (`title`) and `aria-label` for discoverability.

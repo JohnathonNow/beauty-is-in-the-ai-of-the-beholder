@@ -901,4 +901,21 @@ function onload_drawing() {
 			ctx.putImageData(imageData, 0, 0);
 		}
 	}
+
+	document.addEventListener('keydown', function(e) {
+		if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+			let tagName = e.target.tagName.toLowerCase();
+			if (tagName !== 'input' && tagName !== 'textarea') {
+				e.preventDefault();
+				undo();
+				let undoBtn = document.getElementById("undo");
+				if (undoBtn) {
+					undoBtn.classList.add("active-tool");
+					setTimeout(() => {
+						undoBtn.classList.remove("active-tool");
+					}, 200);
+				}
+			}
+		}
+	});
 }
