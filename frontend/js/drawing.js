@@ -903,18 +903,42 @@ function onload_drawing() {
 	}
 
 	document.addEventListener('keydown', function(e) {
+		let tagName = e.target.tagName.toLowerCase();
+		if (tagName === 'input' || tagName === 'textarea') return;
+
 		if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-			let tagName = e.target.tagName.toLowerCase();
-			if (tagName !== 'input' && tagName !== 'textarea') {
-				e.preventDefault();
-				undo();
-				let undoBtn = document.getElementById("undo");
-				if (undoBtn) {
-					undoBtn.classList.add("active-tool");
-					setTimeout(() => {
-						undoBtn.classList.remove("active-tool");
-					}, 200);
-				}
+			e.preventDefault();
+			undo();
+			let undoBtn = document.getElementById("undo");
+			if (undoBtn) {
+				undoBtn.classList.add("active-tool");
+				setTimeout(() => {
+					undoBtn.classList.remove("active-tool");
+				}, 200);
+			}
+		} else if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+			e.preventDefault();
+			let copyBtn = document.getElementById("copy-btn");
+			if (copyBtn && copyBtn.offsetParent !== null) {
+				copyBtn.click();
+				copyBtn.classList.add("active-tool");
+				setTimeout(() => copyBtn.classList.remove("active-tool"), 200);
+			}
+		} else if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+			e.preventDefault();
+			let pasteBtn = document.getElementById("paste-btn");
+			if (pasteBtn && pasteBtn.offsetParent !== null) {
+				pasteBtn.click();
+				pasteBtn.classList.add("active-tool");
+				setTimeout(() => pasteBtn.classList.remove("active-tool"), 200);
+			}
+		} else if (e.key === 'Delete' || e.key === 'Backspace') {
+			e.preventDefault();
+			let deleteBtn = document.getElementById("delete-btn");
+			if (deleteBtn && deleteBtn.offsetParent !== null) {
+				deleteBtn.click();
+				deleteBtn.classList.add("active-tool");
+				setTimeout(() => deleteBtn.classList.remove("active-tool"), 200);
 			}
 		}
 	});
