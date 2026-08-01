@@ -903,19 +903,34 @@ function onload_drawing() {
 	}
 
 	document.addEventListener('keydown', function(e) {
+		let tagName = e.target.tagName.toLowerCase();
+		if (tagName === 'input' || tagName === 'textarea') return;
+
+		let selectionOptions = document.getElementById("selection-options");
+		let isSelectionActive = selectionOptions && selectionOptions.style.display !== "none";
+
 		if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-			let tagName = e.target.tagName.toLowerCase();
-			if (tagName !== 'input' && tagName !== 'textarea') {
-				e.preventDefault();
-				undo();
-				let undoBtn = document.getElementById("undo");
-				if (undoBtn) {
-					undoBtn.classList.add("active-tool");
-					setTimeout(() => {
-						undoBtn.classList.remove("active-tool");
-					}, 200);
-				}
+			e.preventDefault();
+			undo();
+			let undoBtn = document.getElementById("undo");
+			if (undoBtn) {
+				undoBtn.classList.add("active-tool");
+				setTimeout(() => {
+					undoBtn.classList.remove("active-tool");
+				}, 200);
 			}
+		} else if ((e.ctrlKey || e.metaKey) && e.key === 'c' && isSelectionActive) {
+			e.preventDefault();
+			let copyBtn = document.getElementById("copy-btn");
+			if (copyBtn) copyBtn.click();
+		} else if ((e.ctrlKey || e.metaKey) && e.key === 'v' && isSelectionActive) {
+			e.preventDefault();
+			let pasteBtn = document.getElementById("paste-btn");
+			if (pasteBtn && pasteBtn.style.display !== "none") pasteBtn.click();
+		} else if (e.key === 'Delete' && isSelectionActive) {
+			e.preventDefault();
+			let deleteBtn = document.getElementById("delete-btn");
+			if (deleteBtn) deleteBtn.click();
 		}
 	});
 }
