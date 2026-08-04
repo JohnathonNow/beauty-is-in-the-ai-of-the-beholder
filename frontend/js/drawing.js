@@ -903,18 +903,37 @@ function onload_drawing() {
 	}
 
 	document.addEventListener('keydown', function(e) {
-		if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-			let tagName = e.target.tagName.toLowerCase();
-			if (tagName !== 'input' && tagName !== 'textarea') {
+		let tagName = e.target.tagName.toLowerCase();
+		if (tagName === 'input' || tagName === 'textarea') return;
+
+		let key = e.key.toLowerCase();
+		let selectionOptionsVisible = document.getElementById("selection-options").style.display !== 'none';
+
+		if ((e.ctrlKey || e.metaKey) && key === 'z') {
+			e.preventDefault();
+			undo();
+			let undoBtn = document.getElementById("undo");
+			if (undoBtn) {
+				undoBtn.classList.add("active-tool");
+				setTimeout(() => {
+					undoBtn.classList.remove("active-tool");
+				}, 200);
+			}
+		} else if ((e.ctrlKey || e.metaKey) && key === 'c') {
+			if (selectionOptionsVisible) {
 				e.preventDefault();
-				undo();
-				let undoBtn = document.getElementById("undo");
-				if (undoBtn) {
-					undoBtn.classList.add("active-tool");
-					setTimeout(() => {
-						undoBtn.classList.remove("active-tool");
-					}, 200);
-				}
+				document.getElementById("copy-btn").click();
+			}
+		} else if ((e.ctrlKey || e.metaKey) && key === 'v') {
+			let pasteBtn = document.getElementById("paste-btn");
+			if (selectionOptionsVisible && pasteBtn.style.display !== 'none') {
+				e.preventDefault();
+				pasteBtn.click();
+			}
+		} else if (key === 'delete' || key === 'backspace') {
+			if (selectionOptionsVisible) {
+				e.preventDefault();
+				document.getElementById("delete-btn").click();
 			}
 		}
 	});
