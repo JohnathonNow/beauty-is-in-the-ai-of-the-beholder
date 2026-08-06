@@ -32,3 +32,6 @@
 ## 2024-07-10 - Standard Keyboard Shortcuts
 **Learning:** Web-based drawing applications should match user expectations from native applications by providing standard keyboard shortcuts like Ctrl+Z for Undo. Without this, users may feel frustrated when their muscle memory fails them. Adding visual feedback to the button when the shortcut is used further enhances the experience.
 **Action:** When implementing common tools like Undo, always include standard keyboard shortcuts (e.g., Ctrl+Z) and add the shortcut text to the button's tooltip (`title`) and `aria-label` for discoverability.
+## 2024-07-28 - Keyboard shortcuts with specific UI contexts
+**Learning:** Adding global keyboard shortcuts (like copy/paste/delete) in complex web apps often triggers unintended side-effects if active context isn't considered, especially when multiple interactive tools exist. Relying purely on key events without verifying tool activity causes issues.
+**Action:** When implementing global keyboard shortcuts that trigger specific UI actions, always verify that the target element's container (e.g., `#selection-options`) is currently visible before executing the action to ensure the shortcut is only active in its intended context.
