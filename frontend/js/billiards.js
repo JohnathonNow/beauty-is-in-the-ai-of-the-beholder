@@ -477,13 +477,13 @@ function onload_billiards() {
             kickBtn.className = "kick-btn";
             kickBtn.setAttribute("aria-label", "Kick " + player);
             kickBtn.style.display = "none";
-            kickBtn.onclick = function(e) { e.stopPropagation(); socket.send(JSON.stringify({"Kick": {"player": player}})); };
+            kickBtn.onclick = function(e) { e.stopPropagation(); if (confirm("Are you sure you want to kick " + player + "?")) { socket.send(JSON.stringify({"Kick": {"player": player}})); } };
             let banBtn = document.createElement("button");
             banBtn.textContent = "Ban";
             banBtn.className = "ban-btn";
             banBtn.setAttribute("aria-label", "Ban " + player);
             banBtn.style.display = "none";
-            banBtn.onclick = function(e) { e.stopPropagation(); socket.send(JSON.stringify({"Ban": {"player": player}})); };
+            banBtn.onclick = function(e) { e.stopPropagation(); if (confirm("Are you sure you want to ban " + player + "?")) { socket.send(JSON.stringify({"Ban": {"player": player}})); } };
             let nameSpan = document.createElement("span");
             nameSpan.textContent = player;
             listItem.innerHTML = "";
