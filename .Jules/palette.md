@@ -35,3 +35,6 @@
 ## 2024-07-28 - Keyboard shortcuts with specific UI contexts
 **Learning:** Adding global keyboard shortcuts (like copy/paste/delete) in complex web apps often triggers unintended side-effects if active context isn't considered, especially when multiple interactive tools exist. Relying purely on key events without verifying tool activity causes issues.
 **Action:** When implementing global keyboard shortcuts that trigger specific UI actions, always verify that the target element's container (e.g., `#selection-options`) is currently visible before executing the action to ensure the shortcut is only active in its intended context.
+## 2026-08-06 - Confirmation for Destructive Actions
+**Learning:** Destructive actions (like Kick or Ban) that are dynamically revealed and easily misclicked can cause frustration if they lack an explicit confirmation step.
+**Action:** When adding secondary destructive actions, implement a confirmation dialog (e.g., `confirm()`) to ensure they are intentional, especially if they result in permanent state changes like a kick or ban.
