@@ -38,3 +38,7 @@
 ## 2026-08-06 - Confirmation for Destructive Actions
 **Learning:** Destructive actions (like Kick or Ban) that are dynamically revealed and easily misclicked can cause frustration if they lack an explicit confirmation step.
 **Action:** When adding secondary destructive actions, implement a confirmation dialog (e.g., `confirm()`) to ensure they are intentional, especially if they result in permanent state changes like a kick or ban.
+
+## 2024-05-24 - Missing Cancel Actions in Form States
+**Learning:** The lobby creation form trapped users because it lacked an explicit "Cancel" action, forcing users to refresh the page to exit the form, which disrupts their flow and potentially loses global chat context.
+**Action:** Always pair progressive disclosure forms (like "Create Lobby") with an explicit "Cancel" button to allow users to safely revert to the previous UI state without page reloads.
