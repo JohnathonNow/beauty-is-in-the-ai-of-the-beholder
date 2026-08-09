@@ -38,3 +38,7 @@
 ## 2026-08-06 - Confirmation for Destructive Actions
 **Learning:** Destructive actions (like Kick or Ban) that are dynamically revealed and easily misclicked can cause frustration if they lack an explicit confirmation step.
 **Action:** When adding secondary destructive actions, implement a confirmation dialog (e.g., `confirm()`) to ensure they are intentional, especially if they result in permanent state changes like a kick or ban.
+
+## 2024-08-08 - Progressive Disclosure Cancellation
+**Learning:** Progressive disclosure forms or stateful sections (like the lobby creation view) require an explicit 'Cancel' or 'Close' action. Without this, users feel trapped or must rely on destructive actions like page reloads to revert to the previous UI state, causing frustration.
+**Action:** Always pair progressive disclosure UI elements that reveal new forms or workflows with a clear, accessible cancel button to ensure users have a safe way back.
