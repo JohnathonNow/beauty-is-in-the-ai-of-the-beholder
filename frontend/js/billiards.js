@@ -809,6 +809,15 @@ function onload_billiards() {
             }
         }
     });
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+            const createLobbySection = document.getElementById("create-lobby-section");
+            if (createLobbySection && createLobbySection.style.display !== "none") {
+                document.getElementById("cancel-create-lobby").click();
+            }
+        }
+    });
     function handleGuessSubmit() {
         const input = document.getElementById("guess");
         if (input.value.trim() !== "") {
