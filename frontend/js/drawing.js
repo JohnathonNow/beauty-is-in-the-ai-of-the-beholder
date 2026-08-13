@@ -429,6 +429,13 @@ function onload_drawing() {
 			activeBtn.classList.add("active-tool");
 			activeBtn.setAttribute("aria-pressed", "true");
 		}
+
+		let layer = document.getElementById("ui-layer") || document.getElementById("canvas");
+		if (layer) {
+			if (t === "text") layer.style.cursor = "text";
+			else if (["paint", "erase", "shape", "select", "flood"].includes(t)) layer.style.cursor = "crosshair";
+			else layer.style.cursor = "default";
+		}
 	}
 
 
