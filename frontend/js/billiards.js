@@ -787,6 +787,18 @@ function onload_billiards() {
         document.getElementById("new-lobby-words").value = "";
         document.getElementById("new-lobby-time").value = "120";
     };
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape") {
+            let createLobbySection = document.getElementById("create-lobby-section");
+            if (createLobbySection && createLobbySection.style.display !== "none") {
+                let cancelBtn = document.getElementById("cancel-create-lobby");
+                if (cancelBtn) {
+                    cancelBtn.click();
+                }
+            }
+        }
+    });
+
     document.getElementById("create-lobby").onclick = function() {
         const name = document.getElementById("new-lobby-name").value;
         const customWords = document.getElementById("new-lobby-words").value;

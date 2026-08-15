@@ -42,3 +42,6 @@
 ## 2024-08-08 - Progressive Disclosure Cancellation
 **Learning:** Progressive disclosure forms or stateful sections (like the lobby creation view) require an explicit 'Cancel' or 'Close' action. Without this, users feel trapped or must rely on destructive actions like page reloads to revert to the previous UI state, causing frustration.
 **Action:** Always pair progressive disclosure UI elements that reveal new forms or workflows with a clear, accessible cancel button to ensure users have a safe way back.
+## 2026-08-15 - Escape Keyboard Shortcut added to Create Lobby Cancel
+**Learning:** For application-wide Escape key dismissals of full-page overlays or modal-like sections, attach the listener directly to `document` but strictly verify `element.style.display !== "none"` prior to dispatching `.click()`. Additionally, input/textarea element filtering must intentionally be skipped for Escape shortcuts to ensure modals can be closed even while users are focused in a text field.
+**Action:** When adding standard modal dismissal shortcuts, configure `Escape` listeners globally on the document, bypass target input filtering, and explicitly map the shortcut tooltip directly on the relevant "Cancel" or "Close" button.
