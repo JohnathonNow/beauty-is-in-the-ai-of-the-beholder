@@ -42,3 +42,7 @@
 ## 2024-08-08 - Progressive Disclosure Cancellation
 **Learning:** Progressive disclosure forms or stateful sections (like the lobby creation view) require an explicit 'Cancel' or 'Close' action. Without this, users feel trapped or must rely on destructive actions like page reloads to revert to the previous UI state, causing frustration.
 **Action:** Always pair progressive disclosure UI elements that reveal new forms or workflows with a clear, accessible cancel button to ensure users have a safe way back.
+
+## 2024-08-23 - Escape Key for Modals/Forms
+**Learning:** When designing progressive disclosure forms, stateful sections, or modals (like the lobby creation view), users expect the standard 'Escape' key to trigger cancellation. Without it, keyboard users are forced to manually navigate back to the cancel button, disrupting flow and accessibility.
+**Action:** Always map the standard 'Escape' key to trigger the cancel or close action for modals and progressive forms. Ensure the shortcut is documented in the button's `title` and `aria-keyshortcuts` attributes to improve discoverability and accessibility. Additionally, ensure the shortcut bypasses typical input focus checks so users can dismiss the view even while typing.

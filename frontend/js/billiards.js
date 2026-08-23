@@ -798,6 +798,18 @@ function onload_billiards() {
     };
     setupInputValidation("new-lobby-name", "create-lobby");
 
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape") {
+            const createLobbySection = document.getElementById("create-lobby-section");
+            if (createLobbySection && createLobbySection.style.display !== "none") {
+                const cancelBtn = document.getElementById("cancel-create-lobby");
+                if (cancelBtn) {
+                    cancelBtn.click();
+                }
+            }
+        }
+    });
+
     document.getElementById("new-lobby-name").addEventListener("keydown", function (e) {
         if (e.key  == "Enter") {
             const name = e.target.value;
