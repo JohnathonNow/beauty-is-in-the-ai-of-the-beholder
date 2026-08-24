@@ -872,4 +872,16 @@ function onload_billiards() {
         sendDrawing();
         e.target.disabled = true;
     };
+
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape") {
+            let createLobbySection = document.getElementById("create-lobby-section");
+            if (createLobbySection && createLobbySection.style.display !== "none") {
+                let cancelBtn = document.getElementById("cancel-create-lobby");
+                if (cancelBtn) {
+                    cancelBtn.click();
+                }
+            }
+        }
+    });
 }
