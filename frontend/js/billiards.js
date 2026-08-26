@@ -775,6 +775,15 @@ function onload_billiards() {
 
     setupInputValidation("global-chat-input", "global-chat-send");
 
+    document.addEventListener("keydown", function(e) {
+        if (e.key.toLowerCase() === "escape") {
+            let createLobbySection = document.getElementById("create-lobby-section");
+            if (createLobbySection && createLobbySection.style.display !== "none") {
+                document.getElementById("cancel-create-lobby").click();
+            }
+        }
+    });
+
     document.getElementById("refresh-lobbies").onclick = fetch_lobbies;
     document.getElementById("show-create-lobby-btn").onclick = function() {
         document.getElementById("create-lobby-section").style.display = "flex";
