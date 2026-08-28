@@ -8,10 +8,11 @@ importers:
 
   .:
     dependencies:
-      '@playwright/test':
+      playwright:
         specifier: ^1.61.1
         version: 1.62.1
-      playwright:
+    devDependencies:
+      '@playwright/test':
         specifier: ^1.61.1
         version: 1.62.1
 
