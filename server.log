@@ -1,0 +1,8 @@
+127.0.0.1 - - [29/Aug/2026 17:40:00] "GET /frontend/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [29/Aug/2026 17:40:00] "GET /frontend/js/billiards.js HTTP/1.1" 200 -
+127.0.0.1 - - [29/Aug/2026 17:40:00] "GET /frontend/js/drawing.js HTTP/1.1" 200 -
+127.0.0.1 - - [29/Aug/2026 17:40:00] "GET /frontend/style/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [29/Aug/2026 17:40:01] code 404, message File not found
+127.0.0.1 - - [29/Aug/2026 17:40:01] "GET /frontend/index.html/lobbies HTTP/1.1" 404 -
+127.0.0.1 - - [29/Aug/2026 17:40:01] code 404, message File not found
+127.0.0.1 - - [29/Aug/2026 17:40:01] "GET /frontend/index.html/global_chat?name=TestUser HTTP/1.1" 404 -
