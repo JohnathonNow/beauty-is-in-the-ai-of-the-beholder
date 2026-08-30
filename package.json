@@ -19,7 +19,9 @@
   },
   "homepage": "https://github.com/JohnathonNow/beauty-is-in-the-ai-of-the-beholder#readme",
   "dependencies": {
-    "@playwright/test": "^1.61.1",
     "playwright": "^1.61.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1"
   }
 }
