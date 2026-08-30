@@ -650,6 +650,7 @@ function onload_billiards() {
         const refreshBtn = document.getElementById("refresh-lobbies");
         if (refreshBtn) {
             refreshBtn.disabled = true;
+            refreshBtn.setAttribute("title", "Fetching lobbies...");
         }
         const list = document.getElementById("lobby-list");
         list.innerHTML = "";
@@ -703,6 +704,7 @@ function onload_billiards() {
             .finally(() => {
                 if (refreshBtn) {
                     refreshBtn.disabled = false;
+                    refreshBtn.removeAttribute("title");
                 }
             });
     }
@@ -873,6 +875,10 @@ function onload_billiards() {
         let judge = document.getElementById("judge");
         if (!lastJudged || lastJudged + 10000 < Date.now()) {
             judge.disabled = false;
+            judge.removeAttribute("title");
+        } else if (judge.disabled) {
+            let secondsLeft = Math.ceil((lastJudged + 10000 - Date.now()) / 1000);
+            judge.setAttribute("title", "Please wait " + secondsLeft + "s before judging again");
         }
     }, 1000);
     document.getElementById("judge").onclick = function(e) {
@@ -883,5 +889,6 @@ function onload_billiards() {
         lastJudged = now;
         sendDrawing();
         e.target.disabled = true;
+        e.target.setAttribute("title", "Please wait 10s before judging again");
     };
 }

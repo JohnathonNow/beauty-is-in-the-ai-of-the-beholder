@@ -46,3 +46,9 @@
 ## 2024-05-24 - Modal Cancellation Keyboard Mapping
 **Learning:** For progressive disclosure forms and modals (like the lobby creation view), mapping the standard 'Escape' key to a 'Cancel' action is crucial for keyboard accessibility. However, this global shortcut must bypass standard input focus checks (which usually prevent global shortcuts while typing) so users can dismiss the view even while focused on an input field.
 **Action:** Always map 'Escape' to explicit 'Cancel' or 'Close' actions, bypass input focus checks for this specific key, and document the shortcut in the button's `title` and `aria-keyshortcuts` attributes for discoverability.
+## 2026-08-30 - Standard Keyboard Shortcuts Discoverability
+**Learning:** Standard keyboard shortcuts (like Ctrl+Z for Undo) were implemented in JavaScript, but their existence was not programmatically exposed to assistive technologies, reducing their discoverability for screen reader users.
+**Action:** Always add the `aria-keyshortcuts` attribute (e.g. `aria-keyshortcuts="Control+Z"`) to buttons that have global keyboard shortcuts mapped to them, in addition to listing the shortcut in the `title` tooltip.
+## 2026-08-30 - Disabled Button Tooltips
+**Learning:** When buttons are temporarily disabled (like a 'Refresh' button during a fetch or a 'Judge' button with a cooldown), users may not understand why they cannot interact with them, leading to confusion.
+**Action:** Dynamically assign a descriptive `title` attribute to disabled buttons to explain the disabled state (e.g., 'Fetching lobbies...' or 'Please wait 10s...'), and be sure to remove the attribute when the button is re-enabled to prevent stale tooltips.
