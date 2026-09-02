@@ -52,3 +52,6 @@
 ## 2026-08-30 - Disabled Button Tooltips
 **Learning:** When buttons are temporarily disabled (like a 'Refresh' button during a fetch or a 'Judge' button with a cooldown), users may not understand why they cannot interact with them, leading to confusion.
 **Action:** Dynamically assign a descriptive `title` attribute to disabled buttons to explain the disabled state (e.g., 'Fetching lobbies...' or 'Please wait 10s...'), and be sure to remove the attribute when the button is re-enabled to prevent stale tooltips.
+## 2026-09-02 - Range inputs (sliders) in playwright tests
+**Learning:** When automating UI tests for drawing tools in the frontend, specific tool option containers (like `#text-options`) are hidden by default and must be explicitly made visible by simulating a click on the corresponding tool button (e.g., `document.getElementById('text').click()`) before interacting with them. Also, when writing Playwright tests that interact with `<input type="range">` elements (sliders), standard Playwright `fill()` actions can time out.
+**Action:** Prefer using `page.evaluate()` to set the value and manually dispatch an 'input' event instead of `page.fill()` for range sliders.
