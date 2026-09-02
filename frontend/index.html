@@ -105,7 +105,8 @@
                                     <option value="Courier New">Courier New</option>
                                     <option value="Georgia">Georgia</option>
                                 </select>
-                                <input type="number" id="text-size" value="20" min="10" max="100" aria-label="Text Size">
+                                <div><label for="text-size">Size:</label> <span id="text-size-value" aria-live="polite">20</span></div>
+                                <input type="range" id="text-size" value="20" min="10" max="100" aria-label="Text Size">
                             </div>
                             <div id="shape-options" style="display: none;">
                                 <select id="shape-select" aria-label="Shape Select">

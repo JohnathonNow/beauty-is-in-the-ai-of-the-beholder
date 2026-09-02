@@ -705,8 +705,12 @@ function onload_drawing() {
 			if (typeof sendDrawing === 'function') sendDrawing();
 		}
 	};
-	document.getElementById("text-size").onchange = function(e) {
+	document.getElementById("text-size").oninput = function(e) {
 		activeTextSize = e.target.value;
+		let textSizeValue = document.getElementById("text-size-value");
+		if (textSizeValue) {
+			textSizeValue.textContent = activeTextSize;
+		}
 		if (activeStrokeIndex !== -1 && strokes[activeStrokeIndex] && strokes[activeStrokeIndex].o === "text") {
 			strokes[activeStrokeIndex].size = activeTextSize;
 			redraw();
