@@ -15,12 +15,12 @@
     <div id="login" align="center">
         <h3 class="full">Login</h3>
         <div class="flex">
-            <label class="full" for="name">Enter your name:</label> <input type="text" class="full" maxlength="24" name="FirstName" id="name" value="" placeholder="Your name" aria-label="Enter your name">
+            <label class="full" for="name">Enter your name:</label> <input type="text" class="full" maxlength="24" name="FirstName" id="name" value="" placeholder="Your name" aria-label="Enter your name" autofocus>
         </div>
         <button id="login-btn" style="margin-top: 10px;">Join</button>
     </div>
     <div id="lobby-selection" align="center" style="display: none;">
-        <h3 class="full">Select a Lobby</h3>
+        <h3 id="lobby-selection-title" class="full" tabindex="-1">Select a Lobby</h3>
         <ul id="lobby-list" style="list-style-type: none; padding: 0;"></ul>
         <button id="show-create-lobby-btn" style="margin-top: 10px;">Create Lobby</button>
         <div id="create-lobby-section" class="flex" style="display: none; margin-top: 10px; flex-direction: column; align-items: center;">
