@@ -724,6 +724,7 @@ function onload_billiards() {
         gName = nameVal;
         document.getElementById("login").style.display = "none";
         document.getElementById("lobby-selection").style.display = "block";
+        document.getElementById("lobby-selection-title").focus();
         fetch_lobbies();
         document.cookie = gName;
 
@@ -781,10 +782,12 @@ function onload_billiards() {
     document.getElementById("show-create-lobby-btn").onclick = function() {
         document.getElementById("create-lobby-section").style.display = "flex";
         document.getElementById("show-create-lobby-btn").style.display = "none";
+        document.getElementById("new-lobby-name").focus();
     };
     document.getElementById("cancel-create-lobby").onclick = function() {
         document.getElementById("create-lobby-section").style.display = "none";
         document.getElementById("show-create-lobby-btn").style.display = "inline-block";
+        document.getElementById("show-create-lobby-btn").focus();
         document.getElementById("new-lobby-name").value = "";
         document.getElementById("new-lobby-words").value = "";
         document.getElementById("new-lobby-time").value = "120";
