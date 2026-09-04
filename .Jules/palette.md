@@ -55,3 +55,6 @@
 ## 2026-09-02 - Range inputs (sliders) in playwright tests
 **Learning:** When automating UI tests for drawing tools in the frontend, specific tool option containers (like `#text-options`) are hidden by default and must be explicitly made visible by simulating a click on the corresponding tool button (e.g., `document.getElementById('text').click()`) before interacting with them. Also, when writing Playwright tests that interact with `<input type="range">` elements (sliders), standard Playwright `fill()` actions can time out.
 **Action:** Prefer using `page.evaluate()` to set the value and manually dispatch an 'input' event instead of `page.fill()` for range sliders.
+## 2024-08-31 - Focus Management for Progressive Disclosure
+**Learning:** When progressively disclosing new forms (like opening the lobby creation section) or navigating between major views, failing to programmatically manage focus leaves keyboard and screen reader users lost, often forcing them to tab entirely through the page again from their previous position.
+**Action:** Always programmatically manage focus when revealing new UI sections. Focus the first logical input or heading when moving forward, and return focus to the triggering element (like the "Create Lobby" button) when cancelling or closing to maintain keyboard accessibility.
