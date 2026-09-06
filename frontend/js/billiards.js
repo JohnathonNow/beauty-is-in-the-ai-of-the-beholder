@@ -714,6 +714,14 @@ function onload_billiards() {
         gLobby = lobby;
         document.getElementById("lobby-selection").style.display = "none";
         document.getElementById("game").style.display = "block";
+
+        // Focus the timer element for screen readers as we enter the game view
+        let timer = document.getElementById("timer");
+        if (timer) {
+            timer.setAttribute("tabindex", "-1");
+            timer.focus();
+        }
+
         connect(customWords, timeLimit, gametype);
     }
 
@@ -724,6 +732,13 @@ function onload_billiards() {
         gName = nameVal;
         document.getElementById("login").style.display = "none";
         document.getElementById("lobby-selection").style.display = "block";
+
+        let lobbyHeading = document.querySelector("#lobby-selection h3");
+        if (lobbyHeading) {
+            lobbyHeading.setAttribute("tabindex", "-1");
+            lobbyHeading.focus();
+        }
+
         fetch_lobbies();
         document.cookie = gName;
 
@@ -781,6 +796,7 @@ function onload_billiards() {
     document.getElementById("show-create-lobby-btn").onclick = function() {
         document.getElementById("create-lobby-section").style.display = "flex";
         document.getElementById("show-create-lobby-btn").style.display = "none";
+        document.getElementById("new-lobby-name").focus();
     };
     document.getElementById("cancel-create-lobby").onclick = function() {
         document.getElementById("create-lobby-section").style.display = "none";
@@ -788,6 +804,7 @@ function onload_billiards() {
         document.getElementById("new-lobby-name").value = "";
         document.getElementById("new-lobby-words").value = "";
         document.getElementById("new-lobby-time").value = "120";
+        document.getElementById("show-create-lobby-btn").focus();
     };
     document.getElementById("create-lobby").onclick = function() {
         const name = document.getElementById("new-lobby-name").value;
