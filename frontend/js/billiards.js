@@ -781,13 +781,17 @@ function onload_billiards() {
     document.getElementById("show-create-lobby-btn").onclick = function() {
         document.getElementById("create-lobby-section").style.display = "flex";
         document.getElementById("show-create-lobby-btn").style.display = "none";
+        document.getElementById("new-lobby-name").focus();
     };
     document.getElementById("cancel-create-lobby").onclick = function() {
         document.getElementById("create-lobby-section").style.display = "none";
         document.getElementById("show-create-lobby-btn").style.display = "inline-block";
-        document.getElementById("new-lobby-name").value = "";
+        let newLobbyNameInput = document.getElementById("new-lobby-name");
+        newLobbyNameInput.value = "";
+        newLobbyNameInput.dispatchEvent(new Event("input"));
         document.getElementById("new-lobby-words").value = "";
         document.getElementById("new-lobby-time").value = "120";
+        document.getElementById("show-create-lobby-btn").focus();
     };
     document.getElementById("create-lobby").onclick = function() {
         const name = document.getElementById("new-lobby-name").value;
