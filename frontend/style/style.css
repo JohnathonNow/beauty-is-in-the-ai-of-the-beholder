@@ -426,6 +426,7 @@ input:focus, select:focus, textarea:focus {
 
 .user-list-item {
     user-select: none;
+    cursor: pointer;
     font-size: 16px;
     margin-bottom: 12px;
     padding: 14px 20px;
