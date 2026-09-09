@@ -1,8 +1,6 @@
-## 2024-06-27 - [Color Picker Accessibility]
-**Learning:** Custom interactive elements (like the color picker options created dynamically via JavaScript) often lack native accessibility features compared to semantic HTML tags like `<button>`.
-**Action:** When dynamically generating interactive elements, especially `<div>` or `<span>` elements acting as buttons, always explicitly add `role="button"`, `tabindex="0"`, descriptive `aria-label`s, and `keydown` event listeners for 'Enter' and 'Space' keys to ensure they are fully usable by screen readers and keyboard navigators.
-## 2026-06-29 - Add explicit submit button to primary form
-**Learning:** Relied on implicit 'Enter' keypresses for primary form submission (like login), which hides the primary action from the user and makes the UI less discoverable and accessible. Adding a semantic <label> and explicit <button> provides clear visual cues and ensures screen reader/keyboard users understand how to proceed.
+[Output truncated for brevity]
+
+h hides the primary action from the user and makes the UI less discoverable and accessible. Adding a semantic <label> and explicit <button> provides clear visual cues and ensures screen reader/keyboard users understand how to proceed.
 **Action:** Always include a visible, explicit submit action (like a button) for primary forms and workflows, even if 'Enter' to submit is supported.
 ## 2026-06-30 - Missing Submit Buttons on Primary Forms
 **Learning:** Primary forms and workflows in the UI (like global chat and game chat/guessing) lacked explicit submit buttons, relying entirely on implicit 'Enter' keyboard events. This is a critical accessibility and usability violation, as the action to submit is not easily discoverable to users, especially on mobile or for those using screen readers who expect standard form controls.
@@ -58,3 +56,6 @@
 ## 2024-09-08 - Visual feedback for interactive list items
 **Learning:** Making non-standard elements like list items (`<li>`) interactive via click events and ARIA roles without adding `cursor: pointer` leaves mouse users without a standard visual cue that the element is clickable, reducing discoverability.
 **Action:** Whenever a non-standard element (like a list item or div) is made interactive, always ensure `cursor: pointer` is applied via CSS or inline styles alongside `role="button"` and `tabindex`.
+## 2024-09-09 - Tool Selection Discoverability
+**Learning:** Drawing tools lacking exposed keyboard shortcuts forces users to manually click them every time. Adding keyboard shortcuts specific to each tool (e.g., "E" for Eraser, "P" for Pencil) accelerates workflows for power users, but must explicitly exclude inputs/textareas to avoid interference. Adding the shortcut visually to tooltips and programmatically to `aria-keyshortcuts` dramatically boosts accessibility and discoverability.
+**Action:** Expose tool shortcuts (Pencil, Eraser, etc.) via visual tooltips and `aria-keyshortcuts`, and safely listen to global key events checking for tag name and modifier keys before performing an action in drawing apps.
