@@ -55,3 +55,6 @@
 ## 2026-09-02 - Range inputs (sliders) in playwright tests
 **Learning:** When automating UI tests for drawing tools in the frontend, specific tool option containers (like `#text-options`) are hidden by default and must be explicitly made visible by simulating a click on the corresponding tool button (e.g., `document.getElementById('text').click()`) before interacting with them. Also, when writing Playwright tests that interact with `<input type="range">` elements (sliders), standard Playwright `fill()` actions can time out.
 **Action:** Prefer using `page.evaluate()` to set the value and manually dispatch an 'input' event instead of `page.fill()` for range sliders.
+## 2024-09-08 - Visual feedback for interactive list items
+**Learning:** Making non-standard elements like list items (`<li>`) interactive via click events and ARIA roles without adding `cursor: pointer` leaves mouse users without a standard visual cue that the element is clickable, reducing discoverability.
+**Action:** Whenever a non-standard element (like a list item or div) is made interactive, always ensure `cursor: pointer` is applied via CSS or inline styles alongside `role="button"` and `tabindex`.
