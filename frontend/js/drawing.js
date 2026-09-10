@@ -911,6 +911,17 @@ function onload_drawing() {
 		if (tagName === 'input' || tagName === 'textarea') return;
 
 		let key = e.key.toLowerCase();
+
+		let isDrawingVisible = document.getElementById("drawing") && document.getElementById("drawing").style.display !== "none";
+		if (isDrawingVisible && !e.ctrlKey && !e.metaKey && !e.altKey) {
+			if (key === 'e') { e.preventDefault(); let btn = document.getElementById("erase"); if (btn) btn.click(); }
+			else if (key === 'p') { e.preventDefault(); let btn = document.getElementById("pencil"); if (btn) btn.click(); }
+			else if (key === 'f') { e.preventDefault(); let btn = document.getElementById("flood"); if (btn) btn.click(); }
+			else if (key === 's') { e.preventDefault(); let btn = document.getElementById("select"); if (btn) btn.click(); }
+			else if (key === 't') { e.preventDefault(); let btn = document.getElementById("text"); if (btn) btn.click(); }
+			else if (key === 'u') { e.preventDefault(); let btn = document.getElementById("shape"); if (btn) btn.click(); }
+		}
+
 		if ((e.ctrlKey || e.metaKey) && key === 'z') {
 			e.preventDefault();
 			undo();
