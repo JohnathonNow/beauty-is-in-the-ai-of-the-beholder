@@ -804,6 +804,28 @@ function onload_billiards() {
     };
     setupInputValidation("new-lobby-name", "create-lobby");
 
+    const modeDescriptions = {
+        "AI": "The AI generates an image based on your prompt, and others try to guess what you wrote.",
+        "Classic": "Players take turns drawing prompts while others try to guess what it is.",
+        "Evolution": "Like Classic, but the canvas is retained between turns so the drawing evolves over time.",
+        "Story": "Collaborative mode! Everyone draws sequentially to build a story together."
+    };
+
+    document.getElementById("new-lobby-mode").addEventListener("change", function(e) {
+        const mode = e.target.value;
+        const descriptionDiv = document.getElementById("mode-description");
+        if (descriptionDiv && modeDescriptions[mode]) {
+            descriptionDiv.textContent = modeDescriptions[mode];
+        }
+    });
+
+    // Set initial mode description
+    const initialMode = document.getElementById("new-lobby-mode").value;
+    const initialDescDiv = document.getElementById("mode-description");
+    if (initialDescDiv && modeDescriptions[initialMode]) {
+        initialDescDiv.textContent = modeDescriptions[initialMode];
+    }
+
     document.getElementById("new-lobby-name").addEventListener("keydown", function (e) {
         if (e.key  == "Enter") {
             const name = e.target.value;
