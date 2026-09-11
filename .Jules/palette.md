@@ -59,3 +59,7 @@ h hides the primary action from the user and makes the UI less discoverable and 
 ## 2024-09-09 - Tool Selection Discoverability
 **Learning:** Drawing tools lacking exposed keyboard shortcuts forces users to manually click them every time. Adding keyboard shortcuts specific to each tool (e.g., "E" for Eraser, "P" for Pencil) accelerates workflows for power users, but must explicitly exclude inputs/textareas to avoid interference. Adding the shortcut visually to tooltips and programmatically to `aria-keyshortcuts` dramatically boosts accessibility and discoverability.
 **Action:** Expose tool shortcuts (Pencil, Eraser, etc.) via visual tooltips and `aria-keyshortcuts`, and safely listen to global key events checking for tag name and modifier keys before performing an action in drawing apps.
+
+## 2024-05-19 - Adding Dynamic Helper Text with ARIA Live Regions
+**Learning:** Using `role="status"` and `aria-live="polite"` on an empty container (like a mode description box) ensures that when JavaScript dynamically populates it with text based on user selections (like changing a dropdown), screen readers will announce the update automatically without requiring focus changes.
+**Action:** Always wrap dynamically updated helper text or status descriptions in a dedicated container with `role="status"` and `aria-live="polite"` to maintain context for screen reader users, instead of just visually rendering the text.
