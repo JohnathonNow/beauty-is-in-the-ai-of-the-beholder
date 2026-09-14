@@ -778,10 +778,28 @@ function onload_billiards() {
     setupInputValidation("global-chat-input", "global-chat-send");
 
     document.getElementById("refresh-lobbies").onclick = fetch_lobbies;
+    function updateModeDescription() {
+        const modeSelect = document.getElementById("new-lobby-mode");
+        const descContainer = document.getElementById("mode-description");
+        if (!modeSelect || !descContainer) return;
+
+        let desc = "";
+        switch (modeSelect.value) {
+            case "AI": desc = "Players draw prompts and an AI guesses them."; break;
+            case "Classic": desc = "Players take turns drawing while others guess the word."; break;
+            case "Evolution": desc = "Like Classic mode, but the canvas is retained between turns instead of cleared."; break;
+            case "Story": desc = "Players are assigned sequential prompts to draw. The final result is a collaborative storybook."; break;
+        }
+        descContainer.textContent = desc;
+    }
+
+    document.getElementById("new-lobby-mode").addEventListener("change", updateModeDescription);
+
     document.getElementById("show-create-lobby-btn").onclick = function() {
         document.getElementById("create-lobby-section").style.display = "flex";
         document.getElementById("show-create-lobby-btn").style.display = "none";
         document.getElementById("new-lobby-name").focus();
+        updateModeDescription();
     };
     document.getElementById("cancel-create-lobby").onclick = function() {
         document.getElementById("create-lobby-section").style.display = "none";
