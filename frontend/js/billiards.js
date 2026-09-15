@@ -848,7 +848,6 @@ function onload_billiards() {
     function handleGuessSubmit() {
         const input = document.getElementById("guess");
         if (input.value.trim() !== "") {
-            gName = input.value;
             sendGuess(input.value);
             input.value = "";
             input.dispatchEvent(new Event("input"));
@@ -858,9 +857,6 @@ function onload_billiards() {
     document.getElementById("guess").addEventListener("keydown", function search(e) {
         if (e.key  == "Enter") {
             handleGuessSubmit();
-        } else if (e.key  == "Tab") {
-            //cycle(e.shiftKey);
-            e.preventDefault();
         }
     });
 
