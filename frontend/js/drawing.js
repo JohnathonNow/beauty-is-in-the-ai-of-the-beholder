@@ -99,7 +99,7 @@ function onload_drawing() {
 	var DRAW_MODE;
 	var paint;
 	var tool = "paint";
-	var color = "#000000";
+	var color = "black";
 	var size = 5;
 	var mode;
 	var TRACEBACK = 0;
@@ -154,6 +154,12 @@ function onload_drawing() {
 				selectColor();
 			}
 		};
+
+		if (c === "black") {
+			ce.classList.add("colorpicked");
+			ce.setAttribute("aria-pressed", "true");
+		}
+
 		colorpicker.appendChild(ce);
 	}
 	canvas = document.getElementById('canvas');
