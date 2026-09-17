@@ -69,3 +69,7 @@ h hides the primary action from the user and makes the UI less discoverable and 
 ## 2024-10-18 - Explicit initial state for dynamic toolbars
 **Learning:** When generating toolbars or pickers (like a color picker) dynamically in JS, failing to explicitly mark the default active option (e.g., adding `.colorpicked` and `aria-pressed="true"`) leaves users and screen readers confused about the current system status until they interact with it.
 **Action:** Always programmatically apply the active visual class and ARIA state to the default selected option during initialization.
+
+## 2026-09-17 - Add tooltips to color picker swatches
+**Learning:** Dynamically generated interactive elements (like color swatches) that only provide `aria-label`s fail to provide context for mouse users. Adding a `title` attribute greatly improves discoverability. We also learned that parsing camelCase color strings (e.g., `SaddleBrown`) to naturally readable tooltips (`Saddle Brown`) adds an extra layer of polish.
+**Action:** To improve discoverability for mouse users, dynamically generated interactive elements lacking visible text (such as color picker swatches or icon-only buttons) should include a descriptive `title` attribute with naturally formatted text (e.g., converting camelCase strings to spaced, capitalized words).

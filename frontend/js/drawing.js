@@ -126,6 +126,10 @@ function onload_drawing() {
 		ce.setAttribute("aria-label", "Select color " + c);
 		ce.setAttribute("aria-pressed", "false");
 
+		// Add capitalized title for mouse hover discoverability
+		let camelCaseToSpaces = c.replace(/([A-Z])/g, ' $1').trim();
+		ce.title = camelCaseToSpaces.charAt(0).toUpperCase() + camelCaseToSpaces.slice(1);
+
 		const selectColor = function() {
 			mode = DRAW_MODE;
 			color = c;
