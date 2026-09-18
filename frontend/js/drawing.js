@@ -123,7 +123,10 @@ function onload_drawing() {
 		ce.classList.add("colorchoice");
 		ce.setAttribute("role", "button");
 		ce.setAttribute("tabindex", "0");
-		ce.setAttribute("aria-label", "Select color " + c);
+		let friendlyName = c.replace(/([a-z])([A-Z])/g, '$1 $2');
+		friendlyName = friendlyName.charAt(0).toUpperCase() + friendlyName.slice(1);
+		ce.setAttribute("title", friendlyName);
+		ce.setAttribute("aria-label", "Select color " + friendlyName);
 		ce.setAttribute("aria-pressed", "false");
 
 		const selectColor = function() {
