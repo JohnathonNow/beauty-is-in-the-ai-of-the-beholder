@@ -121,6 +121,9 @@ function onload_drawing() {
 		let ce = document.createElement("div");
 		ce.style["background-color"] = c;
 		ce.classList.add("colorchoice");
+		let naturalColor = c.replace(/([A-Z])/g, ' $1').trim().toLowerCase();
+		naturalColor = naturalColor.charAt(0).toUpperCase() + naturalColor.slice(1);
+		ce.title = naturalColor;
 		ce.setAttribute("role", "button");
 		ce.setAttribute("tabindex", "0");
 		ce.setAttribute("aria-label", "Select color " + c);
