@@ -69,3 +69,6 @@ h hides the primary action from the user and makes the UI less discoverable and 
 ## 2024-10-18 - Explicit initial state for dynamic toolbars
 **Learning:** When generating toolbars or pickers (like a color picker) dynamically in JS, failing to explicitly mark the default active option (e.g., adding `.colorpicked` and `aria-pressed="true"`) leaves users and screen readers confused about the current system status until they interact with it.
 **Action:** Always programmatically apply the active visual class and ARIA state to the default selected option during initialization.
+## 2024-10-18 - Tooltip formatting for camelCase strings
+**Learning:** Dynamically generated elements with color names often use camelCase strings (e.g., 'SaddleBrown', 'RebeccaPurple') which are difficult to read and look unpolished when presented directly in tooltips (`title` attributes). Mouse users rely on these tooltips for context when interacting with icon-only or color-only elements.
+**Action:** When adding `title` tooltips for dynamically generated elements derived from code strings (like camelCase color names), always format the string into naturally readable text (e.g., 'Saddle Brown', 'Rebecca Purple') to improve polish and usability for mouse users.
