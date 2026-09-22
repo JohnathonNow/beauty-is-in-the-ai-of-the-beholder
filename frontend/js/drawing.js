@@ -117,13 +117,22 @@ function onload_drawing() {
 	var isScaling = false;
 
 	let colorpicker = document.getElementById('colorpicker');
+
+	const formatColorName = (name) => {
+		let spaced = name.replace(/([a-z])([A-Z])/g, '$1 $2');
+		spaced = spaced.replace(/^(dark|light|lime)(?=[a-z])/i, '$1 ');
+		return spaced.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+	};
+
 	for (const c of gradientColors) {
 		let ce = document.createElement("div");
+		let formattedName = formatColorName(c);
 		ce.style["background-color"] = c;
 		ce.classList.add("colorchoice");
 		ce.setAttribute("role", "button");
 		ce.setAttribute("tabindex", "0");
-		ce.setAttribute("aria-label", "Select color " + c);
+		ce.setAttribute("title", formattedName);
+		ce.setAttribute("aria-label", "Select color " + formattedName);
 		ce.setAttribute("aria-pressed", "false");
 
 		const selectColor = function() {

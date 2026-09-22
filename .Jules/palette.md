@@ -69,3 +69,6 @@ h hides the primary action from the user and makes the UI less discoverable and 
 ## 2024-10-18 - Explicit initial state for dynamic toolbars
 **Learning:** When generating toolbars or pickers (like a color picker) dynamically in JS, failing to explicitly mark the default active option (e.g., adding `.colorpicked` and `aria-pressed="true"`) leaves users and screen readers confused about the current system status until they interact with it.
 **Action:** Always programmatically apply the active visual class and ARIA state to the default selected option during initialization.
+## 2024-10-25 - Formatted color names for tooltips and screen readers
+**Learning:** Color picker swatches that rely purely on a background color and raw CSS string names (like `SaddleBrown` or `darkorange`) in their `aria-label` or `title` can be difficult to read for both sighted users (via tooltips) and screen reader users, who hear unspaced camelCase strings.
+**Action:** When creating color picker tools or similar palettes, programmatically format CSS color names into capitalized, spaced words (e.g., "Saddle Brown") to populate the `title` attribute for mouse users and the `aria-label` for screen reader users, improving overall accessibility and discoverability.
