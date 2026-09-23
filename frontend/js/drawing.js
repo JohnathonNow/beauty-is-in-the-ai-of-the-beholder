@@ -119,11 +119,13 @@ function onload_drawing() {
 	let colorpicker = document.getElementById('colorpicker');
 	for (const c of gradientColors) {
 		let ce = document.createElement("div");
+		let naturalName = c.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/(dark|light|lime)(.*)/i, '$1 $2').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 		ce.style["background-color"] = c;
 		ce.classList.add("colorchoice");
 		ce.setAttribute("role", "button");
 		ce.setAttribute("tabindex", "0");
-		ce.setAttribute("aria-label", "Select color " + c);
+		ce.setAttribute("aria-label", "Select color " + naturalName);
+		ce.setAttribute("title", naturalName);
 		ce.setAttribute("aria-pressed", "false");
 
 		const selectColor = function() {
