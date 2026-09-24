@@ -19,8 +19,8 @@
         </div>
         <button id="login-btn" style="margin-top: 10px;">Join</button>
     </div>
-    <div id="lobby-selection" align="center" style="display: none;">
-        <h3 class="full">Select a Lobby</h3>
+    <div id="lobby-selection" align="center" style="display: none;" role="region" aria-labelledby="lobby-selection-heading">
+        <h3 class="full" id="lobby-selection-heading" tabindex="-1">Select a Lobby</h3>
         <ul id="lobby-list" style="list-style-type: none; padding: 0;"></ul>
         <button id="show-create-lobby-btn" style="margin-top: 10px;">Create Lobby</button>
         <div id="create-lobby-section" class="flex" style="display: none; margin-top: 10px; flex-direction: column; align-items: center;">
@@ -54,7 +54,7 @@
             </div>
         </div>
     </div>
-    <div align="center" id="game" style="display: none;">
+    <div align="center" id="game" style="display: none;" role="region" aria-label="Game Screen" tabindex="-1">
         <meter id="timer" min="0" max="120" aria-label="Time remaining"></meter>
         <div id="gamecontainer">
             <div id="progress-container">
