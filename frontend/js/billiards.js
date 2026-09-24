@@ -714,6 +714,7 @@ function onload_billiards() {
         gLobby = lobby;
         document.getElementById("lobby-selection").style.display = "none";
         document.getElementById("game").style.display = "block";
+        document.getElementById("game").focus();
         connect(customWords, timeLimit, gametype);
     }
 
@@ -724,6 +725,7 @@ function onload_billiards() {
         gName = nameVal;
         document.getElementById("login").style.display = "none";
         document.getElementById("lobby-selection").style.display = "block";
+        document.getElementById("lobby-selection-heading").focus();
         fetch_lobbies();
         document.cookie = gName;
 
