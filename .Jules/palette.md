@@ -73,3 +73,7 @@ h hides the primary action from the user and makes the UI less discoverable and 
 ## 2024-10-25 - Natural language formatting for dynamic color names
 **Learning:** Dynamically generated elements with visually hidden text or tooltips (like color picker swatches) often rely on technical names (e.g., `darkorange`, `SaddleBrown`) derived from CSS/data structures. These names are poorly pronounced by screen readers and look unpolished in tooltips.
 **Action:** Always format technical string identifiers into natural language (e.g., converting camelCase or concatenated strings to spaced, capitalized words like `Dark Orange`) before assigning them to `aria-label` or `title` attributes to improve accessibility and user experience.
+
+## 2024-11-20 - Programmatic focus management for major view transitions
+**Learning:** When moving between major, full-screen views (like from a login screen to a lobby, or lobby to game), focus is often lost if not explicitly managed. If focus is dropped to the `<body>` (or remains on an element that is now `display: none`), keyboard and screen reader users lose their context and must manually navigate from the top of the page.
+**Action:** Always programmatically manage focus when progressively disclosing or navigating between major views. When a new view becomes active, find a logical element to focus—such as the view's main heading (`<h1>` - `<h3>`) or the main container itself—apply `tabindex="-1"`, and call `.focus()` to immediately orient the user.

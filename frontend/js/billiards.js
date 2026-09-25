@@ -713,7 +713,10 @@ function onload_billiards() {
         if (!lobby) return;
         gLobby = lobby;
         document.getElementById("lobby-selection").style.display = "none";
-        document.getElementById("game").style.display = "block";
+        let gameContainer = document.getElementById("game");
+        gameContainer.style.display = "block";
+        gameContainer.setAttribute("tabindex", "-1");
+        gameContainer.focus();
         connect(customWords, timeLimit, gametype);
     }
 
@@ -723,7 +726,13 @@ function onload_billiards() {
         if (!nameVal) return;
         gName = nameVal;
         document.getElementById("login").style.display = "none";
-        document.getElementById("lobby-selection").style.display = "block";
+        let lobbySelection = document.getElementById("lobby-selection");
+        lobbySelection.style.display = "block";
+        let lobbyHeading = lobbySelection.querySelector("h3");
+        if (lobbyHeading) {
+            lobbyHeading.setAttribute("tabindex", "-1");
+            lobbyHeading.focus();
+        }
         fetch_lobbies();
         document.cookie = gName;
 
