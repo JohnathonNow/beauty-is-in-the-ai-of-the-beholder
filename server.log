@@ -1,0 +1,8 @@
+127.0.0.1 - - [26/Sep/2026 17:53:50] "GET /frontend/index.html HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 17:53:50] "GET /frontend/js/billiards.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 17:53:50] "GET /frontend/js/drawing.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 17:53:50] "GET /frontend/style/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 17:53:52] code 404, message File not found
+127.0.0.1 - - [26/Sep/2026 17:53:52] "GET /frontend/index.html/lobbies HTTP/1.1" 404 -
+127.0.0.1 - - [26/Sep/2026 17:53:52] code 404, message File not found
+127.0.0.1 - - [26/Sep/2026 17:53:52] "GET /frontend/index.html/global_chat?name=PaletteUX HTTP/1.1" 404 -
