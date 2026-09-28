@@ -418,6 +418,20 @@ function onload_drawing() {
 
 	function selectTool(t) {
 		tool = t;
+
+		let canvasElem = document.getElementById("canvas");
+		if (canvasElem) {
+			if (t === "text") {
+				canvasElem.style.cursor = "text";
+			} else if (t === "select") {
+				canvasElem.style.cursor = "default";
+			} else if (t === "flood") {
+				canvasElem.style.cursor = "alias";
+			} else {
+				canvasElem.style.cursor = "crosshair";
+			}
+		}
+
 		document.getElementById("selection-options").style.display = t === "select" ? "block" : "none";
 		document.getElementById("text-options").style.display = t === "text" ? "block" : "none";
 		document.getElementById("shape-options").style.display = t === "shape" ? "block" : "none";
