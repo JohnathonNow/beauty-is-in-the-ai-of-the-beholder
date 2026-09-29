@@ -55,7 +55,10 @@
         </div>
     </div>
     <div align="center" id="game" style="display: none;">
-        <meter id="timer" min="0" max="120" aria-label="Time remaining"></meter>
+        <div id="timer-container" style="display: none; align-items: center;" class="flex">
+            <meter id="timer" min="0" max="120" aria-label="Time remaining"></meter>
+            <span id="timer-text" style="margin-left: 10px; font-weight: bold; min-width: 40px; color: #cbd5e1;">120s</span>
+        </div>
         <div id="gamecontainer">
             <div id="progress-container">
                 <div id="player-container">
