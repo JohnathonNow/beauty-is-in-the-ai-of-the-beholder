@@ -511,3 +511,7 @@ button:disabled {
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(148, 163, 184, 1);
 }
+#timer-container {
+    display: none;
+    align-items: center;
+}

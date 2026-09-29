@@ -255,9 +255,11 @@ function onload_billiards() {
             document.getElementById("progress-container").style.display = "flex";
             document.getElementById("lobby-container").style.display = "none";
             document.getElementById("endgame-container").style.display = "none";
-            timer.style.display = "block";
+            document.getElementById("timer-container").style.display = "flex";
             timer.value = state["time"];
             timer.max = state["timelimit"];
+            let remaining = state["timelimit"] - state["time"];
+            document.getElementById("timer-text").textContent = remaining + "s";
             on_visible();
 
             if (state["gametype"] == "Classic" || state["gametype"] == "Evolution") {
@@ -289,12 +291,12 @@ function onload_billiards() {
             document.getElementById("progress-container").style.display = "none";
             document.getElementById("lobby-container").style.display = "block";
             document.getElementById("endgame-container").style.display = "none";
-            timer.style.display = "none";
+            document.getElementById("timer-container").style.display = "none";
         } else if (state["state"] == "POSTGAME") {
             document.getElementById("progress-container").style.display = "none";
             document.getElementById("lobby-container").style.display = "none";
             document.getElementById("endgame-container").style.display = "block";
-            timer.style.display = "none";
+            document.getElementById("timer-container").style.display = "none";
             gameend();
         }
         if (gName == state["host"]) {
@@ -890,6 +892,8 @@ function onload_billiards() {
         if (gState && gState["state"] == "RUNNING") {
             let timer = document.getElementById("timer");
             timer.value += 1;
+            let remaining = timer.max - timer.value;
+            document.getElementById("timer-text").textContent = remaining + "s";
         }
         let judge = document.getElementById("judge");
         if (!lastJudged || lastJudged + 10000 < Date.now()) {
