@@ -171,8 +171,10 @@ function onload_billiards() {
 
                 if ((data["FullState"]["state"]["gametype"] == "Classic" || data["FullState"]["state"]["gametype"] == "Evolution") && data["FullState"]["state"]["drawer"] !== gName) {
                     document.getElementById("word").textContent = "Guess the word!";
+                    document.getElementById("word").className = "guessing";
                 } else {
                     document.getElementById("word").textContent = "Please draw: " + gAssign;
+                    document.getElementById("word").className = "drawing";
                 }
                 let namelist = get_namelist(data["FullState"]["state"]);
                 for (var p in data["FullState"]["state"]["players"]) {
@@ -272,12 +274,12 @@ function onload_billiards() {
 
                 if (state["drawer"] !== gName) {
                     document.getElementById("word").textContent = "Guess the word!";
-                    document.getElementById("word").style.backgroundColor = "blue";
+                    document.getElementById("word").className = "guessing";
                     document.getElementById("drawing").style.display = "none";
                     document.getElementById("gallery").style.display = "flex";
                 } else {
                     document.getElementById("word").textContent = "Please draw: " + state["word"];
-                    document.getElementById("word").style.backgroundColor = "green";
+                    document.getElementById("word").className = "drawing";
                     document.getElementById("drawing").style.display = "block";
                     document.getElementById("gallery").style.display = "flex";
                 }
