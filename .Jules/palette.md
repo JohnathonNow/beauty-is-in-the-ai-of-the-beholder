@@ -86,3 +86,7 @@ h hides the primary action from the user and makes the UI less discoverable and 
 ## 2024-10-31 - Active pseudo-class for interactive elements
 **Learning:** Interactive elements like `.user-list-item` and `.colorchoice` lacked an `:active` pseudo-class state. While they had `:hover` effects, missing the `:active` state leaves users without tactile visual feedback when clicking, making the UI feel unresponsive or laggy, as they don't get immediate confirmation of their action before the app responds.
 **Action:** Always implement `:active` pseudo-class states (e.g., subtle scaling down and reduced shadow) alongside hover states for interactive elements (not just buttons, but any element acting as a button or selectable item) to provide immediate tactile visual feedback upon click, enhancing interface responsiveness.
+
+## 2024-06-25 - CSS State Indicators vs Inline Styling
+**Learning:** Migrating critical state indicators (like the game prompt that indicates whether it's your turn to draw or guess) from crude inline styling (`style.backgroundColor = "green"`) to maintainable, semantic CSS classes (`.drawing`, `.guessing`) not only improves visual polish (enabling gradients, shadows, borders) but also ensures a cohesive and predictable UI state transition across the application.
+**Action:** When defining UI states in JS, strictly use class toggling instead of directly mutating CSS attributes. Ensure active and contextual UI prompts use appropriate shadows and gradients to highlight their importance.
