@@ -654,6 +654,7 @@ function onload_billiards() {
         const refreshBtn = document.getElementById("refresh-lobbies");
         if (refreshBtn) {
             refreshBtn.disabled = true;
+            refreshBtn.textContent = "Refreshing...";
             refreshBtn.setAttribute("title", "Fetching lobbies...");
         }
         const list = document.getElementById("lobby-list");
@@ -708,7 +709,8 @@ function onload_billiards() {
             .finally(() => {
                 if (refreshBtn) {
                     refreshBtn.disabled = false;
-                    refreshBtn.removeAttribute("title");
+                    refreshBtn.textContent = "Refresh";
+                    refreshBtn.setAttribute("title", "Refresh (R)");
                 }
             });
     }
@@ -847,6 +849,15 @@ function onload_billiards() {
                 if (cancelBtn) {
                     cancelBtn.click();
                 }
+            }
+        } else if (e.key.toLowerCase() === 'r') {
+            const tagName = e.target.tagName.toLowerCase();
+            if (tagName === 'input' || tagName === 'textarea') return;
+            const lobbySelection = document.getElementById("lobby-selection");
+            const refreshBtn = document.getElementById("refresh-lobbies");
+            if (lobbySelection && lobbySelection.style.display !== "none" && refreshBtn) {
+                e.preventDefault();
+                refreshBtn.click();
             }
         }
     });
