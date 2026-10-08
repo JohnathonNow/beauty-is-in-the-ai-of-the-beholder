@@ -655,6 +655,7 @@ function onload_billiards() {
         if (refreshBtn) {
             refreshBtn.disabled = true;
             refreshBtn.setAttribute("title", "Fetching lobbies...");
+            refreshBtn.textContent = "Refreshing...";
         }
         const list = document.getElementById("lobby-list");
         list.innerHTML = "";
@@ -708,7 +709,8 @@ function onload_billiards() {
             .finally(() => {
                 if (refreshBtn) {
                     refreshBtn.disabled = false;
-                    refreshBtn.removeAttribute("title");
+                    refreshBtn.setAttribute("title", "Refresh (Alt+R)");
+                    refreshBtn.textContent = "Refresh";
                 }
             });
     }
@@ -846,6 +848,20 @@ function onload_billiards() {
                 const cancelBtn = document.getElementById("cancel-create-lobby");
                 if (cancelBtn) {
                     cancelBtn.click();
+                }
+            }
+        }
+
+        let tagName = e.target.tagName.toLowerCase();
+        if (tagName === 'input' || tagName === 'textarea') return;
+
+        if (e.altKey && e.key.toLowerCase() === "r") {
+            const lobbySelection = document.getElementById("lobby-selection");
+            if (lobbySelection && lobbySelection.style.display !== "none") {
+                const refreshBtn = document.getElementById("refresh-lobbies");
+                if (refreshBtn && !refreshBtn.disabled) {
+                    e.preventDefault();
+                    refreshBtn.click();
                 }
             }
         }

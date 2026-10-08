@@ -90,3 +90,7 @@ h hides the primary action from the user and makes the UI less discoverable and 
 ## 2024-06-25 - CSS State Indicators vs Inline Styling
 **Learning:** Migrating critical state indicators (like the game prompt that indicates whether it's your turn to draw or guess) from crude inline styling (`style.backgroundColor = "green"`) to maintainable, semantic CSS classes (`.drawing`, `.guessing`) not only improves visual polish (enabling gradients, shadows, borders) but also ensures a cohesive and predictable UI state transition across the application.
 **Action:** When defining UI states in JS, strictly use class toggling instead of directly mutating CSS attributes. Ensure active and contextual UI prompts use appropriate shadows and gradients to highlight their importance.
+
+## 2026-10-08 - Dynamic Feedback and Shortcuts for Refresh Buttons
+**Learning:** Users lack immediate visual confirmation when manually refreshing data lists (like lobbies) if the action is purely asynchronous and lacks a visual state change. Furthermore, power users benefit from keyboard shortcuts (like Alt+R) for frequent actions, but these are often undiscoverable.
+**Action:** Always provide explicit visual feedback during asynchronous actions (e.g., changing button text to 'Refreshing...'). When adding global keyboard shortcuts, ensure they are documented in both the `title` and `aria-keyshortcuts` attributes, and include defensive checks in the global key listener to prevent overriding input fields or throwing errors on synthetically dispatched events.
