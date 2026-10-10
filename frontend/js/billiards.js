@@ -654,6 +654,7 @@ function onload_billiards() {
         const refreshBtn = document.getElementById("refresh-lobbies");
         if (refreshBtn) {
             refreshBtn.disabled = true;
+            refreshBtn.textContent = "Refreshing...";
             refreshBtn.setAttribute("title", "Fetching lobbies...");
         }
         const list = document.getElementById("lobby-list");
@@ -708,10 +709,27 @@ function onload_billiards() {
             .finally(() => {
                 if (refreshBtn) {
                     refreshBtn.disabled = false;
-                    refreshBtn.removeAttribute("title");
+                    refreshBtn.textContent = "Refresh";
+                    refreshBtn.setAttribute("title", "Refresh (R)");
                 }
             });
     }
+
+    document.addEventListener("keydown", function (e) {
+        let tagName = e.target.tagName.toLowerCase();
+        if (tagName === 'input' || tagName === 'textarea') return;
+
+        if (e.key.toLowerCase() === 'r') {
+            let lobbySelection = document.getElementById("lobby-selection");
+            if (lobbySelection && lobbySelection.style.display !== "none") {
+                e.preventDefault();
+                let refreshBtn = document.getElementById("refresh-lobbies");
+                if (refreshBtn && !refreshBtn.disabled) {
+                    refreshBtn.click();
+                }
+            }
+        }
+    });
 
     function join_lobby(lobby, customWords, timeLimit, gametype) {
         if (!lobby) return;
