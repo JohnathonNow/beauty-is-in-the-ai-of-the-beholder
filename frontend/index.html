@@ -84,7 +84,17 @@
                                 <p>Color:</p> <div id="colorpicker"></div>
                             </div>
                             <div id="stroke-container">
-                                <p><label for="size">Stroke:</label> <span id="size-value" aria-live="polite">5</span></p> <input type="range" id="size" value="5" min="1" max="50" aria-label="Stroke Size">
+                                <div class="flex">
+                                    <div style="flex: 1; padding-right: 10px;">
+                                        <p><label for="size">Stroke:</label> <span id="size-value" aria-live="polite">5</span></p>
+                                        <input type="range" id="size" value="5" min="1" max="50" aria-label="Stroke Size" style="width: 100%;">
+                                    </div>
+                                    <div style="flex: 0 0 50px; display: flex; align-items: center; justify-content: center;">
+                                        <div style="width: 40px; height: 40px; background-color: white; border: 1px solid #ccc; border-radius: 4px; display: flex; justify-content: center; align-items: center;" aria-hidden="true" title="Stroke size and color preview">
+                                            <div id="stroke-preview" style="width: 5px; height: 5px; background-color: black; border-radius: 50%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div id="tool-buttons">
                                 <button id="erase" title="Eraser (E)" aria-label="Eraser" aria-keyshortcuts="E" aria-pressed="false">🧽</button>

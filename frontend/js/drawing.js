@@ -142,6 +142,11 @@ function onload_drawing() {
 			ce.classList.add("colorpicked");
 			ce.setAttribute("aria-pressed", "true");
 
+			let preview = document.getElementById("stroke-preview");
+			if (preview) {
+				preview.style.backgroundColor = c;
+			}
+
 			if (tool === "text" && activeStrokeIndex !== -1 && strokes[activeStrokeIndex] && strokes[activeStrokeIndex].o === "text") {
 				strokes[activeStrokeIndex].c = color;
 				redraw();
@@ -708,6 +713,11 @@ function onload_drawing() {
 		let sizeValue = document.getElementById("size-value");
 		if (sizeValue) {
 			sizeValue.textContent = size;
+		}
+		let preview = document.getElementById("stroke-preview");
+		if (preview) {
+			preview.style.width = size + "px";
+			preview.style.height = size + "px";
 		}
 	};
 	document.getElementById("undo").onclick = undo;
