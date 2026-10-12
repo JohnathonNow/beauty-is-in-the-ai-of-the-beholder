@@ -116,6 +116,19 @@ function onload_drawing() {
 	var isRotating = false;
 	var isScaling = false;
 
+	function updateStrokePreview() {
+		let previewCanvas = document.getElementById("stroke-preview");
+		if (previewCanvas) {
+			let pctx = previewCanvas.getContext("2d");
+			let currentSize = document.getElementById("size") ? document.getElementById("size").value : size;
+			pctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+			pctx.fillStyle = color;
+			pctx.beginPath();
+			pctx.arc(previewCanvas.width / 2, previewCanvas.height / 2, currentSize / 2, 0, 2 * Math.PI);
+			pctx.fill();
+		}
+	}
+
 	let colorpicker = document.getElementById('colorpicker');
 	for (const c of gradientColors) {
 		let ce = document.createElement("div");
@@ -147,6 +160,7 @@ function onload_drawing() {
 				redraw();
 				if (typeof sendDrawing === 'function') sendDrawing();
 			}
+			updateStrokePreview();
 		};
 
 		ce.onclick = selectColor;
@@ -709,6 +723,7 @@ function onload_drawing() {
 		if (sizeValue) {
 			sizeValue.textContent = size;
 		}
+		updateStrokePreview();
 	};
 	document.getElementById("undo").onclick = undo;
 	document.getElementById("pencil").onclick = () => { pencil(); selectTool("paint"); };
@@ -822,6 +837,7 @@ function onload_drawing() {
 	};
 
 	selectTool(tool);
+	updateStrokePreview();
 
 	function getPixel(pixelData, x, y) {
 		if (x < 0 || y < 0 || x >= pixelData.width || y >= pixelData.height) {
