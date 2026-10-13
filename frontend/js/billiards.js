@@ -655,6 +655,7 @@ function onload_billiards() {
         if (refreshBtn) {
             refreshBtn.disabled = true;
             refreshBtn.setAttribute("title", "Fetching lobbies...");
+            refreshBtn.textContent = "Refreshing...";
         }
         const list = document.getElementById("lobby-list");
         list.innerHTML = "";
@@ -708,7 +709,8 @@ function onload_billiards() {
             .finally(() => {
                 if (refreshBtn) {
                     refreshBtn.disabled = false;
-                    refreshBtn.removeAttribute("title");
+                    refreshBtn.setAttribute("title", "Refresh Lobbies (R)");
+                    refreshBtn.textContent = "Refresh";
                 }
             });
     }
@@ -840,12 +842,22 @@ function onload_billiards() {
     });
 
     document.addEventListener("keydown", function (e) {
+        const createLobbySection = document.getElementById("create-lobby-section");
+        const lobbySelection = document.getElementById("lobby-selection");
+        const tagName = e.target.tagName.toLowerCase();
+
         if (e.key.toLowerCase() === "escape") {
-            const createLobbySection = document.getElementById("create-lobby-section");
             if (createLobbySection && createLobbySection.style.display !== "none") {
                 const cancelBtn = document.getElementById("cancel-create-lobby");
                 if (cancelBtn) {
                     cancelBtn.click();
+                }
+            }
+        } else if (e.key.toLowerCase() === "r" && tagName !== 'input' && tagName !== 'textarea') {
+            if (lobbySelection && lobbySelection.style.display !== "none") {
+                const refreshBtn = document.getElementById("refresh-lobbies");
+                if (refreshBtn && !refreshBtn.disabled) {
+                    refreshBtn.click();
                 }
             }
         }

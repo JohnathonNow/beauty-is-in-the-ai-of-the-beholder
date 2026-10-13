@@ -93,3 +93,6 @@ h hides the primary action from the user and makes the UI less discoverable and 
 ## 2026-10-12 - Adjacent Visual Previews
 **Learning:** When implementing range inputs for abstract visual parameters (like stroke size/color), providing an adjacent, dynamically updating visual preview element eliminates trial-and-error and improves intuitiveness.
 **Action:** Add visual preview elements alongside range inputs that control visual properties.
+## 2024-05-18 - Visual Verification of Transient States
+**Learning:** When testing rapid asynchronous UI transitions (like a button updating to "Refreshing..." during a fetch), Playwright can easily miss the state if the local network is too fast.
+**Action:** When visually verifying transient UI states (like loading indicators) in Playwright tests, use `page.route` to intercept network requests and artificially delay the response (e.g., `await page.waitForTimeout(2000)` inside the route handler) to ensure the temporary state is visible long enough to be captured in screenshots or videos.
