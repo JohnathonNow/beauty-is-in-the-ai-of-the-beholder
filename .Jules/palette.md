@@ -90,3 +90,6 @@ h hides the primary action from the user and makes the UI less discoverable and 
 ## 2024-06-25 - CSS State Indicators vs Inline Styling
 **Learning:** Migrating critical state indicators (like the game prompt that indicates whether it's your turn to draw or guess) from crude inline styling (`style.backgroundColor = "green"`) to maintainable, semantic CSS classes (`.drawing`, `.guessing`) not only improves visual polish (enabling gradients, shadows, borders) but also ensures a cohesive and predictable UI state transition across the application.
 **Action:** When defining UI states in JS, strictly use class toggling instead of directly mutating CSS attributes. Ensure active and contextual UI prompts use appropriate shadows and gradients to highlight their importance.
+## 2026-10-12 - Adjacent Visual Previews
+**Learning:** When implementing range inputs for abstract visual parameters (like stroke size/color), providing an adjacent, dynamically updating visual preview element eliminates trial-and-error and improves intuitiveness.
+**Action:** Add visual preview elements alongside range inputs that control visual properties.
