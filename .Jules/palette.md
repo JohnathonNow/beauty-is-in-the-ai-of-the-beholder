@@ -93,3 +93,4 @@ h hides the primary action from the user and makes the UI less discoverable and 
 ## 2026-10-12 - Adjacent Visual Previews
 **Learning:** When implementing range inputs for abstract visual parameters (like stroke size/color), providing an adjacent, dynamically updating visual preview element eliminates trial-and-error and improves intuitiveness.
 **Action:** Add visual preview elements alongside range inputs that control visual properties.
+## 2026-10-16 - Refresh Lobbies UX Improvements\n**Learning:** Implementing visual feedback (like 'Refreshing...') and keyboard shortcuts (like 'R') for asynchronous lists significantly improves user experience and accessibility, especially when waiting for server responses.\n**Action:** For all data-fetching buttons, apply loading text states, disable the button temporarily to prevent spam, and add a discoverable keyboard shortcut using `aria-keyshortcuts` and `title`.
