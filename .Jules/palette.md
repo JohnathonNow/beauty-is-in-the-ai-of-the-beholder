@@ -93,3 +93,6 @@ h hides the primary action from the user and makes the UI less discoverable and 
 ## 2026-10-12 - Adjacent Visual Previews
 **Learning:** When implementing range inputs for abstract visual parameters (like stroke size/color), providing an adjacent, dynamically updating visual preview element eliminates trial-and-error and improves intuitiveness.
 **Action:** Add visual preview elements alongside range inputs that control visual properties.
+## 2026-10-15 - Visual Feedback and Keyboard Shortcuts for Async Actions
+**Learning:** Asynchronous list operations (like fetching a lobby list) often lack clear visual feedback (e.g., text changing to "Refreshing...") and discoverable keyboard shortcuts. In vanilla JS applications, changing the button text and temporarily disabling the button provides explicit feedback. Also, adding global keyboard shortcuts (e.g., 'R' to refresh) must be documented using `title` and `aria-keyshortcuts` attributes to ensure discoverability and keyboard accessibility.
+**Action:** Always provide explicit visual and accessible loading states for asynchronous list fetch actions. Provide discoverable keyboard shortcuts documented via `title` and `aria-keyshortcuts` to ensure efficiency and accessibility for all users.
