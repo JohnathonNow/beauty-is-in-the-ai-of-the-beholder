@@ -93,3 +93,6 @@ h hides the primary action from the user and makes the UI less discoverable and 
 ## 2026-10-12 - Adjacent Visual Previews
 **Learning:** When implementing range inputs for abstract visual parameters (like stroke size/color), providing an adjacent, dynamically updating visual preview element eliminates trial-and-error and improves intuitiveness.
 **Action:** Add visual preview elements alongside range inputs that control visual properties.
+## 2026-10-22 - Visual and Accessible Loading States for List Refreshes
+**Learning:** Asynchronous fetch operations for lists (like the lobby list) in the vanilla JavaScript frontend often lack explicit loading states on the triggering button itself. Without temporarily disabling the retry/refresh button and updating its text to indicate progress (e.g., changing 'Refresh' to 'Refreshing...'), users might spam click it. Furthermore, adding discoverable keyboard shortcuts (like 'R' for Refresh) documented via `title` and `aria-keyshortcuts` drastically ensures clarity and efficiency for all users.
+**Action:** When implementing async fetch lists, always disable the fetch button during the request, update its text to indicate a loading state, and restore it in a `.finally()` block. Add accessible keyboard shortcuts when appropriate.
