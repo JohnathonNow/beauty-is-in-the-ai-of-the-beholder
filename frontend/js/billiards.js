@@ -44,6 +44,15 @@ function reset() {
     document.getElementById("user-list-1").innerHTML = "";
     gMap.set(gName, document.getElementById("canvas"));
     clear_canvas();
+
+    let loadingElem = document.getElementById("game-loading");
+    if (loadingElem) loadingElem.style.display = "block";
+    let progressContainer = document.getElementById("progress-container");
+    if (progressContainer) progressContainer.style.display = "none";
+    let lobbyContainer = document.getElementById("lobby-container");
+    if (lobbyContainer) lobbyContainer.style.display = "none";
+    let endgameContainer = document.getElementById("endgame-container");
+    if (endgameContainer) endgameContainer.style.display = "none";
 }
 
 function setupInputValidation(inputId, buttonId) {
@@ -253,6 +262,9 @@ function onload_billiards() {
     function tick(state) {
         gState = state;
         let timer = document.getElementById("timer");
+        let loadingElem = document.getElementById("game-loading");
+        if (loadingElem) loadingElem.style.display = "none";
+
         if (state["state"] == "RUNNING") {
             document.getElementById("progress-container").style.display = "flex";
             document.getElementById("lobby-container").style.display = "none";
