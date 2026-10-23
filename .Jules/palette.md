@@ -96,3 +96,7 @@ h hides the primary action from the user and makes the UI less discoverable and 
 ## 2026-10-19 - Actionable Loading States and Shortcuts
 **Learning:** For primary application actions (like refreshing lobbies), failing to provide both an explicit loading state (e.g., text changing to "Refreshing...") and a discoverable keyboard shortcut leads to poor accessibility. Users shouldn't be left wondering if an action succeeded or failed silently.
 **Action:** Always implement explicit loading state feedback (changing button text and restoring it) and provide a global keyboard shortcut (bound cleanly, bypassing inputs) alongside the standard button.
+
+## 2026-10-23 - Added Loading Screen for WebSocket Reconnects/Lobby Joins
+**Learning:** Prevent the "blank screen of confusion" by ensuring async state transitions (like waiting for the initial game state payload from the server after joining a lobby or reconnecting) always have intermediate loading indicators equipped with `role="status"` and `aria-live="polite"`.
+**Action:** Applied a blurred, stylized "Connecting to lobby..." element that takes over the screen during `reset()` and disappears on the first `tick()` of the state.
