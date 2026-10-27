@@ -17,16 +17,16 @@
         <div class="flex">
             <label class="full" for="name">Enter your name:</label> <input type="text" class="full" maxlength="24" name="username" id="name" value="" placeholder="Your name" aria-label="Enter your name" autocomplete="off" autofocus>
         </div>
-        <button id="login-btn" style="margin-top: 10px;">Join</button>
+        <button id="login-btn" style="margin-top: 10px;" title="Join (Enter)" aria-keyshortcuts="Enter">Join</button>
     </div>
     <div id="lobby-selection" align="center" style="display: none;">
         <h3 class="full" id="lobby-selection-heading" tabindex="-1">Select a Lobby</h3>
         <ul id="lobby-list" style="list-style-type: none; padding: 0;"></ul>
-        <button id="show-create-lobby-btn" style="margin-top: 10px;">Create Lobby</button>
+        <button id="show-create-lobby-btn" style="margin-top: 10px;" title="Create Lobby (C)" aria-keyshortcuts="C">Create Lobby</button>
         <div id="create-lobby-section" class="flex" style="display: none; margin-top: 10px; flex-direction: column; align-items: center;">
             <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; margin-bottom: 5px;">
                 <input type="text" id="new-lobby-name" placeholder="New Lobby Name" maxlength="24" aria-label="New Lobby Name">
-                <button id="create-lobby" style="margin-left: 10px;">Create & Join</button>
+                <button id="create-lobby" style="margin-left: 10px;" title="Create & Join (Enter)" aria-keyshortcuts="Enter">Create & Join</button>
                 <button id="cancel-create-lobby" style="margin-left: 10px;" title="Cancel (Esc)" aria-keyshortcuts="Escape">Cancel</button>
             </div>
             <textarea id="new-lobby-words" placeholder="Optional: Custom word list (comma-separated)" rows="3" style="width: 80%; max-width: 400px; margin-top: 5px;" aria-label="Custom word list"></textarea>
@@ -50,7 +50,7 @@
             <div id="global-chat-messages" style="height: 150px; overflow-y: scroll; border: 1px solid #eee; margin-bottom: 10px; padding: 5px;" role="log" aria-live="polite"></div>
             <div style="display: flex; flex-direction: row; gap: 5px;">
                 <input type="text" id="global-chat-input" placeholder="Say something..." maxlength="256" style="width: 100%;" aria-label="Global Chat Input" autocomplete="off">
-                <button id="global-chat-send" aria-label="Send global chat">Send</button>
+                <button id="global-chat-send" aria-label="Send global chat" title="Send (Enter)" aria-keyshortcuts="Enter">Send</button>
             </div>
         </div>
     </div>
@@ -139,7 +139,7 @@
             <div id="answerscontainer">
                 <div id="dummy">
                     <input type="text" id="guess" value="" placeholder="Guess or chat:" maxlength="256" aria-label="Guess or chat" autocomplete="off">
-                    <button id="guess-send" aria-label="Send guess or chat" style="margin: 0 0 0 5px; flex-shrink: 0; padding: 12px 18px;">Send</button>
+                    <button id="guess-send" aria-label="Send guess or chat" style="margin: 0 0 0 5px; flex-shrink: 0; padding: 12px 18px;" title="Send (Enter)" aria-keyshortcuts="Enter">Send</button>
                 </div>
                 <div id="answers" role="log" aria-live="polite"> </div>
             </div>
