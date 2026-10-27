@@ -51,12 +51,21 @@ function setupInputValidation(inputId, buttonId) {
     const button = document.getElementById(buttonId);
     if (!input || !button) return;
 
+    // Cache the original title so it can be restored when the button is enabled
+    if (!button.dataset.originalTitle && button.hasAttribute("title")) {
+        button.dataset.originalTitle = button.getAttribute("title");
+    }
+
     const updateButtonState = () => {
         button.disabled = input.value.trim() === "";
         if (button.disabled) {
             button.setAttribute("title", "Input required to enable this button");
         } else {
-            button.removeAttribute("title");
+            if (button.dataset.originalTitle) {
+                button.setAttribute("title", button.dataset.originalTitle);
+            } else {
+                button.removeAttribute("title");
+            }
         }
     };
 
@@ -860,6 +869,14 @@ function onload_billiards() {
                 const refreshBtn = document.getElementById("refresh-lobbies");
                 if (refreshBtn && !refreshBtn.disabled) {
                     refreshBtn.click();
+                }
+            }
+        } else if (e.key.toLowerCase() === "c" && !isInputFocus) {
+            const lobbySelection = document.getElementById("lobby-selection");
+            if (lobbySelection && lobbySelection.style.display !== "none") {
+                const showCreateLobbyBtn = document.getElementById("show-create-lobby-btn");
+                if (showCreateLobbyBtn && showCreateLobbyBtn.style.display !== "none") {
+                    showCreateLobbyBtn.click();
                 }
             }
         }

@@ -96,3 +96,6 @@ h hides the primary action from the user and makes the UI less discoverable and 
 ## 2026-10-19 - Actionable Loading States and Shortcuts
 **Learning:** For primary application actions (like refreshing lobbies), failing to provide both an explicit loading state (e.g., text changing to "Refreshing...") and a discoverable keyboard shortcut leads to poor accessibility. Users shouldn't be left wondering if an action succeeded or failed silently.
 **Action:** Always implement explicit loading state feedback (changing button text and restoring it) and provide a global keyboard shortcut (bound cleanly, bypassing inputs) alongside the standard button.
+## 2024-11-20 - Preserving original tooltips on disabled elements
+**Learning:** When dynamically managing disabled button states via JavaScript, simply replacing the `title` attribute with a disabled reason (e.g., "Input required") can permanently lose the original tooltip (like keyboard shortcut hints). This degrades discoverability once the button is re-enabled.
+**Action:** When overriding tooltips for temporary UI states like `disabled`, always cache the element's original `title` (e.g., in a `dataset` attribute) during initialization, and explicitly restore it when the element is re-enabled.
