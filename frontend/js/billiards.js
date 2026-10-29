@@ -246,12 +246,26 @@ function onload_billiards() {
 
         // Event listener for WebSocket connection closure
         socket.addEventListener('close', event => {
+            let loading = document.getElementById("game-loading");
+            if (loading) {
+                loading.style.display = "flex";
+                let text = document.getElementById("game-loading-text");
+                if (text) text.textContent = "Reconnecting...";
+            }
+            document.getElementById("progress-container").style.display = "none";
+            document.getElementById("lobby-container").style.display = "none";
+            document.getElementById("endgame-container").style.display = "none";
+            document.getElementById("timer-container").style.display = "none";
+
             setTimeout(connect, 4000);
         });
     }
 
     function tick(state) {
         gState = state;
+        let loading = document.getElementById("game-loading");
+        if (loading) loading.style.display = "none";
+
         let timer = document.getElementById("timer");
         if (state["state"] == "RUNNING") {
             document.getElementById("progress-container").style.display = "flex";
@@ -723,6 +737,18 @@ function onload_billiards() {
         gLobby = lobby;
         document.getElementById("lobby-selection").style.display = "none";
         document.getElementById("game").style.display = "block";
+
+        let loading = document.getElementById("game-loading");
+        if (loading) {
+            loading.style.display = "flex";
+            let text = document.getElementById("game-loading-text");
+            if (text) text.textContent = "Connecting to lobby...";
+        }
+        document.getElementById("progress-container").style.display = "none";
+        document.getElementById("lobby-container").style.display = "none";
+        document.getElementById("endgame-container").style.display = "none";
+        document.getElementById("timer-container").style.display = "none";
+
         connect(customWords, timeLimit, gametype);
     }
 
