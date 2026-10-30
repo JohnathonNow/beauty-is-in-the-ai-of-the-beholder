@@ -246,13 +246,36 @@ function onload_billiards() {
 
         // Event listener for WebSocket connection closure
         socket.addEventListener('close', event => {
+            let loadingIndicator = document.getElementById("loading-indicator");
+            if (loadingIndicator) {
+                loadingIndicator.style.display = "flex";
+                loadingIndicator.textContent = "Reconnecting...";
+            }
+            let gameContainer = document.getElementById("gamecontainer");
+            if (gameContainer) {
+                gameContainer.style.display = "none";
+            }
             setTimeout(connect, 4000);
         });
     }
 
+    let cachedLoadingIndicator = null;
+    let cachedGameContainer = null;
+
     function tick(state) {
         gState = state;
         let timer = document.getElementById("timer");
+
+        if (!cachedLoadingIndicator) cachedLoadingIndicator = document.getElementById("loading-indicator");
+        if (cachedLoadingIndicator && cachedLoadingIndicator.style.display !== "none") {
+            cachedLoadingIndicator.style.display = "none";
+        }
+
+        if (!cachedGameContainer) cachedGameContainer = document.getElementById("gamecontainer");
+        if (cachedGameContainer && cachedGameContainer.style.display === "none") {
+            cachedGameContainer.style.display = ""; // Revert to CSS default (flex)
+        }
+
         if (state["state"] == "RUNNING") {
             document.getElementById("progress-container").style.display = "flex";
             document.getElementById("lobby-container").style.display = "none";
@@ -723,6 +746,17 @@ function onload_billiards() {
         gLobby = lobby;
         document.getElementById("lobby-selection").style.display = "none";
         document.getElementById("game").style.display = "block";
+
+        let loadingIndicator = document.getElementById("loading-indicator");
+        if (loadingIndicator) {
+            loadingIndicator.style.display = "flex";
+            loadingIndicator.textContent = "Connecting...";
+        }
+        let gameContainer = document.getElementById("gamecontainer");
+        if (gameContainer) {
+            gameContainer.style.display = "none";
+        }
+
         connect(customWords, timeLimit, gametype);
     }
 
