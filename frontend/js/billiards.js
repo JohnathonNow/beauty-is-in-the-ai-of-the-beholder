@@ -54,9 +54,16 @@ function setupInputValidation(inputId, buttonId) {
     const updateButtonState = () => {
         button.disabled = input.value.trim() === "";
         if (button.disabled) {
+            if (!button.dataset.originalTitle && button.hasAttribute("title")) {
+                button.dataset.originalTitle = button.getAttribute("title");
+            }
             button.setAttribute("title", "Input required to enable this button");
         } else {
-            button.removeAttribute("title");
+            if (button.dataset.originalTitle) {
+                button.setAttribute("title", button.dataset.originalTitle);
+            } else {
+                button.removeAttribute("title");
+            }
         }
     };
 
