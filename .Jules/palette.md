@@ -96,3 +96,6 @@ h hides the primary action from the user and makes the UI less discoverable and 
 ## 2026-10-19 - Actionable Loading States and Shortcuts
 **Learning:** For primary application actions (like refreshing lobbies), failing to provide both an explicit loading state (e.g., text changing to "Refreshing...") and a discoverable keyboard shortcut leads to poor accessibility. Users shouldn't be left wondering if an action succeeded or failed silently.
 **Action:** Always implement explicit loading state feedback (changing button text and restoring it) and provide a global keyboard shortcut (bound cleanly, bypassing inputs) alongside the standard button.
+## 2026-11-04 - Loss of existing tooltips due to validation logic
+**Learning:** When adding keyboard shortcut hints via the `title` attribute (e.g. `title="Join (Enter)"`) to buttons that have their state dynamically managed (such as being disabled with a "Input required" message when an input is empty), the custom validation logic might overwrite and permanently erase the original tooltip when the button is re-enabled.
+**Action:** When implementing dynamically toggled tooltips on buttons, always cache the original tooltip (e.g., using `dataset.originalTitle`) and restore it instead of simply calling `removeAttribute("title")` when the default state is reached.
