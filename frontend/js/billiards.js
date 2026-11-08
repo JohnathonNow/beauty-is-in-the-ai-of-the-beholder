@@ -51,12 +51,20 @@ function setupInputValidation(inputId, buttonId) {
     const button = document.getElementById(buttonId);
     if (!input || !button) return;
 
+    if (button.hasAttribute("title") && !button.dataset.originalTitle) {
+        button.dataset.originalTitle = button.getAttribute("title");
+    }
+
     const updateButtonState = () => {
         button.disabled = input.value.trim() === "";
         if (button.disabled) {
             button.setAttribute("title", "Input required to enable this button");
         } else {
-            button.removeAttribute("title");
+            if (button.dataset.originalTitle) {
+                button.setAttribute("title", button.dataset.originalTitle);
+            } else {
+                button.removeAttribute("title");
+            }
         }
     };
 
