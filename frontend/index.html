@@ -15,7 +15,11 @@
     <div id="login" align="center">
         <h3 class="full">Login</h3>
         <div class="flex">
-            <label class="full" for="name">Enter your name:</label> <input type="text" class="full" maxlength="24" name="username" id="name" value="" placeholder="Your name" aria-label="Enter your name" autocomplete="off" autofocus>
+            <label class="full" for="name">Enter your name:</label>
+            <div class="full" style="position: relative; display: flex; align-items: center;">
+                <input type="text" class="full" maxlength="24" name="username" id="name" value="" placeholder="Your name" aria-label="Enter your name" autocomplete="off" autofocus style="padding-right: 45px; box-sizing: border-box; width: 100%;">
+                <span id="name-counter" style="position: absolute; right: 8px; font-size: 0.8em; color: #aaa; pointer-events: none;" aria-hidden="true"></span>
+            </div>
         </div>
         <button id="login-btn" style="margin-top: 10px;" title="Join (Enter)" aria-keyshortcuts="Enter">Join</button>
     </div>
@@ -25,7 +29,10 @@
         <button id="show-create-lobby-btn" style="margin-top: 10px;">Create Lobby</button>
         <div id="create-lobby-section" class="flex" style="display: none; margin-top: 10px; flex-direction: column; align-items: center;">
             <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; margin-bottom: 5px;">
-                <input type="text" id="new-lobby-name" placeholder="New Lobby Name" maxlength="24" aria-label="New Lobby Name">
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="text" id="new-lobby-name" placeholder="New Lobby Name" maxlength="24" aria-label="New Lobby Name" style="padding-right: 45px; box-sizing: border-box;">
+                    <span id="new-lobby-name-counter" style="position: absolute; right: 8px; font-size: 0.8em; color: #aaa; pointer-events: none;" aria-hidden="true"></span>
+                </div>
                 <button id="create-lobby" style="margin-left: 10px;" title="Create & Join (Enter)" aria-keyshortcuts="Enter">Create & Join</button>
                 <button id="cancel-create-lobby" style="margin-left: 10px;" title="Cancel (Esc)" aria-keyshortcuts="Escape">Cancel</button>
             </div>
@@ -49,7 +56,10 @@
             <h3>Global Chat</h3>
             <div id="global-chat-messages" style="height: 150px; overflow-y: scroll; border: 1px solid #eee; margin-bottom: 10px; padding: 5px;" role="log" aria-live="polite"></div>
             <div style="display: flex; flex-direction: row; gap: 5px;">
-                <input type="text" id="global-chat-input" placeholder="Say something..." maxlength="256" style="width: 100%;" aria-label="Global Chat Input" autocomplete="off">
+                <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                    <input type="text" id="global-chat-input" placeholder="Say something..." maxlength="256" style="width: 100%; padding-right: 55px; box-sizing: border-box;" aria-label="Global Chat Input" autocomplete="off">
+                    <span id="global-chat-input-counter" style="position: absolute; right: 8px; font-size: 0.8em; color: #aaa; pointer-events: none;" aria-hidden="true"></span>
+                </div>
                 <button id="global-chat-send" aria-label="Send global chat" title="Send (Enter)" aria-keyshortcuts="Enter">Send</button>
             </div>
         </div>
@@ -139,7 +149,10 @@
             </div>
             <div id="answerscontainer">
                 <div id="dummy">
-                    <input type="text" id="guess" value="" placeholder="Guess or chat:" maxlength="256" aria-label="Guess or chat" autocomplete="off">
+                    <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                        <input type="text" id="guess" value="" placeholder="Guess or chat:" maxlength="256" aria-label="Guess or chat" autocomplete="off" style="width: 100%; padding-right: 55px; box-sizing: border-box;">
+                        <span id="guess-counter" style="position: absolute; right: 8px; font-size: 0.8em; color: #aaa; pointer-events: none;" aria-hidden="true"></span>
+                    </div>
                     <button id="guess-send" aria-label="Send guess or chat" style="margin: 0 0 0 5px; flex-shrink: 0; padding: 12px 18px;" title="Send (Enter)" aria-keyshortcuts="Enter">Send</button>
                 </div>
                 <div id="answers" role="log" aria-live="polite"> </div>

@@ -64,7 +64,34 @@ function setupInputValidation(inputId, buttonId) {
     input.addEventListener("input", updateButtonState);
 }
 
+function setupCharacterCounter(inputId) {
+    const input = document.getElementById(inputId);
+    const counter = document.getElementById(inputId + '-counter');
+    if (!input || !counter) return;
+
+    const maxLength = input.getAttribute('maxlength');
+    if (!maxLength) return;
+
+    function updateCounter() {
+        const currentLength = input.value.length;
+        counter.textContent = `${currentLength}/${maxLength}`;
+        if (currentLength >= maxLength) {
+            counter.style.color = '#ef4444';
+        } else {
+            counter.style.color = '#aaa';
+        }
+    }
+
+    input.addEventListener('input', updateCounter);
+    updateCounter();
+}
+
 function onload_billiards() {
+    setupCharacterCounter('name');
+    setupCharacterCounter('new-lobby-name');
+    setupCharacterCounter('global-chat-input');
+    setupCharacterCounter('guess');
+
     function connect(customWords, timeLimit, gametype) {
         reset();
         let wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
