@@ -46,6 +46,28 @@ function reset() {
     clear_canvas();
 }
 
+function setupCharacterCount(inputId, countId) {
+    const input = document.getElementById(inputId);
+    const count = document.getElementById(countId);
+    if (!input || !count) return;
+
+    function updateCount() {
+        const currentLength = input.value.length;
+        const maxLength = input.maxLength || 24;
+        count.textContent = currentLength + "/" + maxLength;
+
+        if (currentLength >= maxLength) {
+            count.style.color = "#ef4444"; // red-500
+        } else {
+            count.style.color = "#cbd5e1"; // slate-300
+        }
+    }
+
+    input.addEventListener("input", updateCount);
+    // Initial call to set the correct state
+    updateCount();
+}
+
 function setupInputValidation(inputId, buttonId) {
     const input = document.getElementById(inputId);
     const button = document.getElementById(buttonId);
@@ -799,6 +821,7 @@ function onload_billiards() {
     });
 
     setupInputValidation("name", "login-btn");
+    setupCharacterCount("name", "name-char-count");
 
     function sendGlobalChatMessage() {
         const input = document.getElementById("global-chat-input");
@@ -865,6 +888,7 @@ function onload_billiards() {
         }
     };
     setupInputValidation("new-lobby-name", "create-lobby");
+    setupCharacterCount("new-lobby-name", "new-lobby-name-char-count");
 
     document.getElementById("new-lobby-name").addEventListener("keydown", function (e) {
         if (e.key  == "Enter") {
