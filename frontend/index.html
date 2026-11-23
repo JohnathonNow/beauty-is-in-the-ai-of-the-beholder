@@ -15,7 +15,11 @@
     <div id="login" align="center">
         <h3 class="full">Login</h3>
         <div class="flex">
-            <label class="full" for="name">Enter your name:</label> <input type="text" class="full" maxlength="24" name="username" id="name" value="" placeholder="Your name" aria-label="Enter your name" autocomplete="off" autofocus>
+            <div class="full" style="display: flex; justify-content: space-between; align-items: baseline;">
+                <label for="name">Enter your name <span style="color: #ef4444;" aria-hidden="true">*</span>:</label>
+                <span id="name-char-count" aria-live="polite" style="font-size: 0.85em; color: #cbd5e1;">0/24</span>
+            </div>
+            <input type="text" class="full" maxlength="24" name="username" id="name" value="" placeholder="Your name" aria-label="Enter your name" autocomplete="off" autofocus required>
         </div>
         <button id="login-btn" style="margin-top: 10px;" title="Join (Enter)" aria-keyshortcuts="Enter">Join</button>
     </div>
@@ -24,10 +28,16 @@
         <ul id="lobby-list" style="list-style-type: none; padding: 0;"></ul>
         <button id="show-create-lobby-btn" style="margin-top: 10px;">Create Lobby</button>
         <div id="create-lobby-section" class="flex" style="display: none; margin-top: 10px; flex-direction: column; align-items: center;">
-            <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; margin-bottom: 5px;">
-                <input type="text" id="new-lobby-name" placeholder="New Lobby Name" maxlength="24" aria-label="New Lobby Name">
-                <button id="create-lobby" style="margin-left: 10px;" title="Create & Join (Enter)" aria-keyshortcuts="Enter">Create & Join</button>
-                <button id="cancel-create-lobby" style="margin-left: 10px;" title="Cancel (Esc)" aria-keyshortcuts="Escape">Cancel</button>
+            <div style="display: flex; flex-direction: column; width: 80%; max-width: 400px; margin-bottom: 5px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+                    <label for="new-lobby-name">Lobby Name <span style="color: #ef4444;" aria-hidden="true">*</span></label>
+                    <span id="new-lobby-name-char-count" aria-live="polite" style="font-size: 0.85em; color: #cbd5e1;">0/24</span>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%;">
+                    <input type="text" id="new-lobby-name" placeholder="New Lobby Name" maxlength="24" aria-label="New Lobby Name" required>
+                    <button id="create-lobby" style="margin-left: 10px; flex-shrink: 0;" title="Create & Join (Enter)" aria-keyshortcuts="Enter">Create & Join</button>
+                    <button id="cancel-create-lobby" style="margin-left: 10px; flex-shrink: 0;" title="Cancel (Esc)" aria-keyshortcuts="Escape">Cancel</button>
+                </div>
             </div>
             <textarea id="new-lobby-words" placeholder="Optional: Custom word list (comma-separated)" rows="3" style="width: 80%; max-width: 400px; margin-top: 5px;" aria-label="Custom word list"></textarea>
             <div style="margin-top: 5px;">

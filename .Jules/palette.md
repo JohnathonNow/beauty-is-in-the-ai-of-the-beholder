@@ -105,3 +105,6 @@ h hides the primary action from the user and makes the UI less discoverable and 
 ## 2024-05-14 - Preserve original tooltips on disabled buttons
 **Learning:** Overwriting `title` attributes on buttons to show "Input required" dynamically causes the permanent loss of original tooltips, which often contain crucial keyboard shortcut hints (like "Join (Enter)"). This degrades accessibility and discoverability.
 **Action:** When dynamically managing disabled button states, always cache the element's original `title` (e.g., in a `dataset` attribute like `dataset.originalTitle`) and explicitly restore it when the element is re-enabled.
+## 2023-10-27 - [Character Count Feedback]
+**Learning:** Inputs with strict length limits (like names and lobby names, e.g. `maxlength="24"`) without visual character counters can lead to silent truncation and user frustration.
+**Action:** Always provide dynamically updated character counters and visual cues (like color changes to red) near the input to inform users of their remaining capacity, thus preventing unexpected data loss and improving overall input UX.
